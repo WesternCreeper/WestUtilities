@@ -9,6 +9,8 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.BasicStroke;
+import java.awt.Stroke;
 
 /**
  *
@@ -45,23 +47,32 @@ public class WestGraphics
      */
     public void drawLoadingBar(double barX, double barY, double barWidth, double barHeight, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor)
     {
-        FontMetrics titleFM = g2.getFontMetrics(titleFont);
-        g2.setFont( isHorizontal ? titleFont : titleFont.deriveFont(AffineTransform.getRotateInstance(Math.PI/2)) );
-        Rectangle2D.Double originalBarRect = new Rectangle2D.Double(barX, barY, barWidth, barHeight);
-        g2.setColor(barBackgroundColor);
-        g2.fill(originalBarRect);
-        g2.setColor(barBorderColor);
+        WGLoadingBar bar = new WGLoadingBar(barX, barY, barWidth, barHeight, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor);
+        drawLoadingBar(bar);
+    }
+    /**
+     * This function draws out a loading bar based on a WGLoadingBar Object, which allows for certain defaults to exist
+     * @param loadingBar The Object representation of the loading bar to be drawn
+     */
+    public void drawLoadingBar(WGLoadingBar loadingBar)
+    {
+        FontMetrics titleFM = g2.getFontMetrics(loadingBar.getTitleFont());
+        g2.setFont( loadingBar.isHorizontal() ? loadingBar.getTitleFont() : loadingBar.getTitleFont().deriveFont(AffineTransform.getRotateInstance(Math.PI/2)) );
+        Rectangle2D.Double originalBarRect = loadingBar.getBounds();
+        g2.setColor(loadingBar.getBarBorderColor());
         g2.draw(originalBarRect);
+        g2.setColor(loadingBar.getBarBackgroundColor());
+        g2.fill(originalBarRect);
         
-        double percentWidth = originalBarRect.getWidth() * (isHorizontal ? percentFilled : 1);
-        double percentHeight = originalBarRect.getHeight() * (isHorizontal ? 1 : percentFilled);
+        double percentWidth = originalBarRect.getWidth() * (loadingBar.isHorizontal() ? loadingBar.getPercentFilled() : 1);
+        double percentHeight = originalBarRect.getHeight() * (loadingBar.isHorizontal() ? 1 : loadingBar.getPercentFilled());
         Rectangle2D.Double percentRect = new Rectangle2D.Double(originalBarRect.getX(), originalBarRect.getY(), percentWidth, percentHeight);
-        g2.setColor(barColor);
+        g2.setColor(loadingBar.getBarColor());
         g2.fill(percentRect);
         
-        g2.setColor(titleColor);
-        String text = title + (showPercentage ? (int)(percentFilled * 100) + " %" : "");
-        if(isHorizontal)
+        g2.setColor(loadingBar.getTitleColor());
+        String text = loadingBar.getTitle() + (loadingBar.getShowPercentage() ? " " + (int)(loadingBar.getPercentFilled() * 100) + "%" : "");
+        if(loadingBar.isHorizontal())
         {
             g2.drawString(text, (float)(originalBarRect.getCenterX() - (titleFM.stringWidth(text) / 2D)), (float)(originalBarRect.getY() + titleFM.getHeight()));
         }
@@ -69,5 +80,83 @@ public class WestGraphics
         {
             g2.drawString(text, (float)(originalBarRect.getCenterX() - (titleFM.getDescent())), (float)(originalBarRect.getCenterY() - (titleFM.stringWidth(text) / 2D)));
         }
+    }
+    /**
+     * This creates an announcement card, which just means a Title separated by a line and a subtitle. The separation line is option however. Also there can be an enclosing box if wanted
+     * @param x The x that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param y The y that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param splitHeight The height of the split that goes between the two texts
+     * @param title The Title for the announcement
+     * @param titleFont The font of that title
+     * @param subTitle The Subtitle for the announcement
+     * @param subTitleFont The font of that Subtitle
+     * @param titleColor The color of the title
+     * @param splitColor The color of the line that splits the title and the subtitle
+     * @param subTitleColor The color of the subtitle
+     * @param backgroundColor The color of the background of the box, can be null if the drawBackground boolean is false
+     * @param borderColor The color of the border of the box, can be null if the drawBackground boolean is false
+     */
+    public void drawAnouncementCard(double x, double y, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor)
+    {
+        WGAnnouncementCard card = new WGAnnouncementCard(x, y, splitHeight, title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, backgroundColor, borderColor);
+        drawAnouncementCard(card);
+    }
+    /**
+     * This creates an announcement card based on the object WGAnnouncementCard given
+     * @param announcementCard The Object representation of the announcement card
+     */ 
+    public void drawAnouncementCard(WGAnnouncementCard announcementCard)
+    {
+        //Find the width of the title and the subtitle, whichever is biggest is the total width of the card:
+        FontMetrics titleFM = g2.getFontMetrics(announcementCard.getTitleFont());
+        FontMetrics subTitleFM = g2.getFontMetrics(announcementCard.getSubTitleFont());
+        double titleWidth = titleFM.stringWidth(announcementCard.getTitle());
+        double subTitleWidth = subTitleFM.stringWidth(announcementCard.getSubTitle());
+        double totalWidth = (titleWidth > subTitleWidth ? titleWidth : subTitleWidth);
+        
+        //Draw the background if told to:
+        if(announcementCard.getDrawBackground())
+        {
+            double totalHeight = titleFM.getHeight() + announcementCard.getSplitHeight() + subTitleFM.getHeight();
+            if(announcementCard.getSplitHeight() == 0)
+            {
+                totalHeight -= titleFM.getDescent();
+            }
+            Rectangle2D.Double backgroundRect = new Rectangle2D.Double(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
+            g2.setColor(announcementCard.getBorderColor());
+            g2.draw(backgroundRect);
+            g2.setColor(announcementCard.getBackgroundColor());
+            g2.fill(backgroundRect);
+        }
+        
+        //Now draw the title:
+        double titleX = announcementCard.getX() + ((totalWidth - titleWidth) / 2);
+        double titleY = announcementCard.getY() + titleFM.getHeight() - subTitleFM.getDescent() - subTitleFM.getLeading() - titleFM.getDescent() - titleFM.getLeading();
+        g2.setColor(announcementCard.getTitleColor());
+        g2.setFont(announcementCard.getTitleFont());
+        g2.drawString(announcementCard.getTitle(), (float)titleX, (float)titleY);
+        
+        //Now draw the seperator:
+        double splitY = titleY;
+        if(announcementCard.getSplitHeight() > 0)
+        {
+            splitY += titleFM.getDescent() + announcementCard.getSplitHeight();
+            Stroke oldStroke = g2.getStroke();
+            g2.setStroke(new BasicStroke((float)announcementCard.getSplitHeight()));
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(announcementCard.getX(), splitY);
+            path.lineTo(announcementCard.getX() + totalWidth, splitY);
+            path.closePath();
+            g2.setColor(announcementCard.getSplitColor());
+            g2.draw(path);
+            g2.setStroke(oldStroke);
+        }
+        
+        //Finish with the Subtitle:
+        double subTitleX = announcementCard.getX() + ((totalWidth - subTitleWidth) / 2);
+        double subTitleY = splitY + subTitleFM.getHeight();
+        g2.setFont(announcementCard.getSubTitleFont());
+        g2.setColor(announcementCard.getSubTitleColor());
+        g2.drawString(announcementCard.getSubTitle(), (float)subTitleX, (float)subTitleY);
     }
 }
