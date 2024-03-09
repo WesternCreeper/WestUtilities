@@ -268,7 +268,7 @@ public class AIMemoryHandler
                     }
                 }
                 //Now replace in the whole line with the proper definition.
-                System.out.println(allPartialKeys.get(closestMatch));
+                //System.out.println(allPartialKeys.get(closestMatch));
                 String value = finder.findValue("phrases", allPartialKeys.get(closestMatch), false);
                 wholeLine = wholeLine.replace(allPartialKeys.get(closestMatch), value);
                 result = wholeLine.split(" ");

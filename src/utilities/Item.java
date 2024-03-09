@@ -6,6 +6,7 @@ package utilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 /**
  *
  * @author Westley
@@ -183,58 +184,50 @@ public class Item
         return name + " " + number + " " + strength + " " + type + " " + subtype + " " + usage;
     }
     
-    public static ArrayList<Item> getItemList(String file, int start)
+    public static ArrayList<Item> getItemList(String file, int start) throws FileNotFoundException
     {
         ArrayList<Item> items = new ArrayList<Item>(0);
         File fl = new File(file);
-        try
+        int i = 0;
+        int itemSystem = 5; //Number of variables in each item for the overall file
+        if(!fl.exists())
         {
-            int i = 0;
-            int itemSystem = 5; //Number of variables in each item for the overall file
-            if(!fl.exists())
-            {
-                System.err.print("File doesn't exist!");
-                System.exit(1);
-            }
-            Scanner fileIn = new Scanner(fl);
-            while(i < start)
-            {
-                if(fileIn.hasNextLine())
-                {
-                    fileIn.nextLine();
-                }
-                else
-                {
-                    break;
-                }
-                i++;
-            }
+            FileNotFoundException error = new FileNotFoundException("Item File Doesn't Exist!!!");
+            throw(error);
+        }
+        Scanner fileIn = new Scanner(fl);
+        while(i < start)
+        {
             if(fileIn.hasNextLine())
             {
-                String str = fileIn.nextLine();
-                itemSystem = FileProcessor.toInt(str);
+                fileIn.nextLine();
             }
-            while(fileIn.hasNextLine())
+            else
             {
-                switch(itemSystem)
-                {
-                    default:
-                        items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine())));
-                        break;
-                    case 6:
-                        items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), ""));
-                        break;
-                    case 7:
-                        items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), fileIn.nextLine()));
-                        break;
-                }
-                i++;
+                break;
             }
+            i++;
         }
-        catch(Exception e)
+        if(fileIn.hasNextLine())
         {
-            e.printStackTrace();
-            System.exit(1);
+            String str = fileIn.nextLine();
+            itemSystem = FileProcessor.toInt(str);
+        }
+        while(fileIn.hasNextLine())
+        {
+            switch(itemSystem)
+            {
+                default:
+                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine())));
+                    break;
+                case 6:
+                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), ""));
+                    break;
+                case 7:
+                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), fileIn.nextLine()));
+                    break;
+            }
+            i++;
         }
         return items;
     }

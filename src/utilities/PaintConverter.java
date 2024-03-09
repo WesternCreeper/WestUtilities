@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -86,13 +87,13 @@ public class PaintConverter
     {
         parent = par;
     }
-    public PaintConverter(String fileName, Component par)
+    public PaintConverter(String fileName, Component par) throws FileNotFoundException
     {
         parent = par;
         readPaints(fileName, 0, 1, 1);
         alphabetizeJobsAndNames(names, jobs);
     }
-    public PaintConverter(String fileName, Component par, String section)
+    public PaintConverter(String fileName, Component par, String section) throws FileNotFoundException
     {
         parent = par;
         FileProcessor fil = new FileProcessor(fileName);
@@ -100,7 +101,7 @@ public class PaintConverter
         readPaints(fileName, index,1, 1);
         alphabetizeJobsAndNames(names, jobs);
     }
-    public PaintConverter(String fileName, Component par, String section, double xScale, double yScale)
+    public PaintConverter(String fileName, Component par, String section, double xScale, double yScale) throws FileNotFoundException
     {
         parent = par;
         FileProcessor fil = new FileProcessor(fileName);
@@ -108,7 +109,7 @@ public class PaintConverter
         readPaints(fileName, index, xScale, yScale);
         alphabetizeJobsAndNames(names, jobs);
     }
-    public PaintConverter(String fileName, Component par, String section, double xScale, double yScale, Color tint, double tintPercentage, String additionalInfo)
+    public PaintConverter(String fileName, Component par, String section, double xScale, double yScale, Color tint, double tintPercentage, String additionalInfo) throws FileNotFoundException
     {
         parent = par;
         FileProcessor fil = new FileProcessor(fileName);
@@ -121,7 +122,7 @@ public class PaintConverter
      * @param fileName The name of the file
      * @param startIndex The index to start the file reading
      */
-    private void readPaints(String fileName, int startIndex, double xScale, double yScale)
+    private void readPaints(String fileName, int startIndex, double xScale, double yScale) throws FileNotFoundException
     {
         readPaints(fileName, startIndex, xScale, yScale, null, 0, "");
     }
@@ -131,53 +132,45 @@ public class PaintConverter
      * @param startIndex The index to start the file reading
      * @param additionalInfo The information added at the end of the section to differentiate it from the other similar named ones:
      */
-    private void readPaints(String fileName, int startIndex, double xScale, double yScale, Color tint, double tintPercentage, String additionalInfo)
+    private void readPaints(String fileName, int startIndex, double xScale, double yScale, Color tint, double tintPercentage, String additionalInfo) throws FileNotFoundException
     {
         ArrayList<String> paints = new ArrayList<String>(1);
         File file = new File(fileName);
         if(!file.exists())
         {
-            System.err.print("Please supply a valid .txt file name!");
-            return;
+            FileNotFoundException error = new FileNotFoundException("Cannot convert information to paintjobs! Reason: File doesn't Exist");
+            throw(error);
         }
-        try
+        Scanner sc = new Scanner(file);
+        int index = -1;
+        while(index < startIndex)
         {
-            Scanner sc = new Scanner(file);
-            int index = -1;
-            while(index < startIndex)
+            if(sc.hasNextLine())
             {
-                if(sc.hasNextLine())
-                {
-                    sc.nextLine();
-                }
-                index++;
+                sc.nextLine();
             }
-            int i = 0;
-            while(sc.hasNextLine())
-            {
-                String str = sc.nextLine();
-                str = str.strip();
-                str = removeWhiteAndComments(str);
-                if(str.length() >= 1 && str.substring(0, 1).equals(FileProcessor.getHeaderString())) //A section header in the FileProcessor
-                {
-                    break;
-                }
-                if(isValid(str))
-                {
-                    str = str.toLowerCase();
-                    paints.add(str);
-                    if(str.length() >= 5 && str.substring(0, 5).equals("name:")) //Make sure that it is long enough
-                    {
-                        names.add(str.substring(5) + additionalInfo);
-                    }
-                    i++;
-                }
-            }
+            index++;
         }
-        catch(Exception e)
+        int i = 0;
+        while(sc.hasNextLine())
         {
-            e.printStackTrace();
-            System.exit(1);
+            String str = sc.nextLine();
+            str = str.strip();
+            str = removeWhiteAndComments(str);
+            if(str.length() >= 1 && str.substring(0, 1).equals(FileProcessor.getHeaderString())) //A section header in the FileProcessor
+            {
+                break;
+            }
+            if(isValid(str))
+            {
+                str = str.toLowerCase();
+                paints.add(str);
+                if(str.length() >= 5 && str.substring(0, 5).equals("name:")) //Make sure that it is long enough
+                {
+                    names.add(str.substring(5) + additionalInfo);
+                }
+                i++;
+            }
         }
         generatePaintJobs(xScale, yScale, paints, tint, tintPercentage);
     }
