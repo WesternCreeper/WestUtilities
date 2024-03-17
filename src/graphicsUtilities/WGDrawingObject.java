@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import java.awt.Component;
 import java.awt.Shape;
 
 /**
@@ -11,25 +12,43 @@ import java.awt.Shape;
  * @author Westley
  * This class defines the basic functions of a West Graphics object. Specifically it defines functions like: getBounds() and other important cross object functionalities
  */
-public abstract class WGDrawingObject 
+public abstract class WGDrawingObject
 {
     private double x = 0;
     private double y = 0;
     private double width;
     private double height;
+    private float borderSize = 1;
+    private Component parent;
     /**
-     * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, and Height of a drawable object
+     * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
      * @param x The X that starts the object
      * @param y The Y that starts the object
      * @param width The width of the object (In general this is the total width of the object because there may be other widths further defined inside the object)
      * @param height The height of the object (In general this is the total height of the object because there may be other heights further defined inside the object)
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      */
-    protected WGDrawingObject(double x, double y, double width, double height)
+    protected WGDrawingObject(double x, double y, double width, double height, float borderSize)
+    {
+        this(x, y, width, height, borderSize, null);
+    }
+    /**
+     * This defines a more advanced and capable WGDrawingObject. Specifically this defines the X, Y, Width, Height, Border Size, and the Parent Component of a drawable object
+     * @param x The X that starts the object
+     * @param y The Y that starts the object
+     * @param width The width of the object (In general this is the total width of the object because there may be other widths further defined inside the object)
+     * @param height The height of the object (In general this is the total height of the object because there may be other heights further defined inside the object)
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param parent The component that the object is on, and is used to determine how big this object is
+     */
+    protected WGDrawingObject(double x, double y, double width, double height, float borderSize, Component parent)
     {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.borderSize  = borderSize;
+        this.parent = parent;
     }
     
     //Methods:
@@ -52,6 +71,10 @@ public abstract class WGDrawingObject
     public void setHeight(double height) {
         this.height = height;
     }
+
+    public void setBorderSize(float borderSize) {
+        this.borderSize = borderSize;
+    }
     
     
     //Getters:
@@ -69,5 +92,13 @@ public abstract class WGDrawingObject
 
     public double getHeight() {
         return height;
+    }
+
+    public float getBorderSize() {
+        return borderSize;
+    }
+
+    public Component getParent() {
+        return parent;
     }
 }

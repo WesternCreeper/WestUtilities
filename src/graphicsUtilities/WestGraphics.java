@@ -35,6 +35,7 @@ public class WestGraphics
      * @param barY The Y for where the bar should be
      * @param barWidth The width of the bar
      * @param barHeight The height of the bar
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param title The text written on the bar
      * @param showPercentage The option for a percentage to be written after the title
      * @param titleFont The Font object for the title String, a FontMeterics is already supplied by the function based on the Font, no need to give such a thing here
@@ -45,9 +46,9 @@ public class WestGraphics
      * @param titleColor The color of the text that is written on the bar
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
      */
-    public void drawLoadingBar(double barX, double barY, double barWidth, double barHeight, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor)
+    public void drawLoadingBar(double barX, double barY, double barWidth, double barHeight, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor)
     {
-        WGLoadingBar bar = new WGLoadingBar(barX, barY, barWidth, barHeight, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor);
+        WGLoadingBar bar = new WGLoadingBar(barX, barY, barWidth, barHeight, borderSize, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor);
         drawLoadingBar(bar);
     }
     /**
@@ -56,11 +57,12 @@ public class WestGraphics
      */
     public void drawLoadingBar(WGLoadingBar loadingBar)
     {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
         FontMetrics titleFM = g2.getFontMetrics(loadingBar.getTitleFont());
-        g2.setFont( loadingBar.isHorizontal() ? loadingBar.getTitleFont() : loadingBar.getTitleFont().deriveFont(AffineTransform.getRotateInstance(Math.PI/2)) );
+        g2.setFont(loadingBar.getTitleFont());
         Rectangle2D.Double originalBarRect = loadingBar.getBounds();
-        g2.setColor(loadingBar.getBarBorderColor());
-        g2.draw(originalBarRect);
         g2.setColor(loadingBar.getBarBackgroundColor());
         g2.fill(originalBarRect);
         
@@ -70,21 +72,22 @@ public class WestGraphics
         g2.setColor(loadingBar.getBarColor());
         g2.fill(percentRect);
         
+        g2.setColor(loadingBar.getBarBorderColor());
+        g2.setStroke(new BasicStroke((float)loadingBar.getBorderSize()));
+        g2.draw(originalBarRect);
+        
         g2.setColor(loadingBar.getTitleColor());
         String text = loadingBar.getTitle() + (loadingBar.getShowPercentage() ? " " + (int)(loadingBar.getPercentFilled() * 100) + "%" : "");
-        if(loadingBar.isHorizontal())
-        {
-            g2.drawString(text, (float)(originalBarRect.getCenterX() - (titleFM.stringWidth(text) / 2D)), (float)(originalBarRect.getY() + titleFM.getHeight()));
-        }
-        else
-        {
-            g2.drawString(text, (float)(originalBarRect.getCenterX() - (titleFM.getDescent())), (float)(originalBarRect.getCenterY() - (titleFM.stringWidth(text) / 2D)));
-        }
+        g2.drawString(text, (float)(originalBarRect.getX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (float)(originalBarRect.getY() + ((titleFM.getAscent() - titleFM.getDescent() + originalBarRect.getHeight()) / 2)));
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
     }
     /**
      * This creates an announcement card, which just means a Title separated by a line and a subtitle. The separation line is option however. Also there can be an enclosing box if wanted
      * @param x The x that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
      * @param y The y that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param splitHeight The height of the split that goes between the two texts
      * @param title The Title for the announcement
      * @param titleFont The font of that title
@@ -96,9 +99,9 @@ public class WestGraphics
      * @param backgroundColor The color of the background of the box, can be null if the drawBackground boolean is false
      * @param borderColor The color of the border of the box, can be null if the drawBackground boolean is false
      */
-    public void drawAnouncementCard(double x, double y, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor)
+    public void drawAnouncementCard(double x, double y, float borderSize, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor)
     {
-        WGAnnouncementCard card = new WGAnnouncementCard(x, y, splitHeight, title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, backgroundColor, borderColor);
+        WGAnnouncementCard card = new WGAnnouncementCard(x, y, borderSize, splitHeight, title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, backgroundColor, borderColor);
         drawAnouncementCard(card);
     }
     /**
@@ -107,6 +110,9 @@ public class WestGraphics
      */ 
     public void drawAnouncementCard(WGAnnouncementCard announcementCard)
     {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
         //Find the width of the title and the subtitle, whichever is biggest is the total width of the card:
         FontMetrics titleFM = g2.getFontMetrics(announcementCard.getTitleFont());
         FontMetrics subTitleFM = g2.getFontMetrics(announcementCard.getSubTitleFont());
@@ -123,10 +129,11 @@ public class WestGraphics
                 totalHeight -= titleFM.getDescent();
             }
             Rectangle2D.Double backgroundRect = new Rectangle2D.Double(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
-            g2.setColor(announcementCard.getBorderColor());
-            g2.draw(backgroundRect);
             g2.setColor(announcementCard.getBackgroundColor());
             g2.fill(backgroundRect);
+            g2.setColor(announcementCard.getBorderColor());
+            g2.setStroke(new BasicStroke((float)announcementCard.getBorderSize()));
+            g2.draw(backgroundRect);
         }
         
         //Now draw the title:
@@ -141,7 +148,6 @@ public class WestGraphics
         if(announcementCard.getSplitHeight() > 0)
         {
             splitY += titleFM.getDescent() + announcementCard.getSplitHeight();
-            Stroke oldStroke = g2.getStroke();
             g2.setStroke(new BasicStroke((float)announcementCard.getSplitHeight()));
             Path2D.Double path = new Path2D.Double();
             path.moveTo(announcementCard.getX(), splitY);
@@ -149,7 +155,6 @@ public class WestGraphics
             path.closePath();
             g2.setColor(announcementCard.getSplitColor());
             g2.draw(path);
-            g2.setStroke(oldStroke);
         }
         
         //Finish with the Subtitle:
@@ -158,5 +163,54 @@ public class WestGraphics
         g2.setFont(announcementCard.getSubTitleFont());
         g2.setColor(announcementCard.getSubTitleColor());
         g2.drawString(announcementCard.getSubTitle(), (float)subTitleX, (float)subTitleY);
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    /**
+     * Draws a button on the screen with the given components
+     * @param x The X of the button
+     * @param y The Y of the button
+     * @param width The width of the button
+     * @param height The height of the button
+     * @param borderSize The size of the border of the button
+     * @param text The text on the button
+     * @param textFont The font for the text
+     * @param backgroundColor The color of the background
+     * @param borderColor The color of the border surrounding the button
+     * @param textColor The color of the text that is drawn on the button
+     */
+    public void drawButton(double x, double y, double width, double height, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor)
+    {
+        WGButton button = new WGButton(x, y, width, height, borderSize, text, textFont, backgroundColor, borderColor, textColor);
+        drawButton(button);
+    }
+    /**
+     * Creates a button based on the parameters given by the WGButton object
+     * @param button A WGButton object that defines everything needed to define a button
+     */
+    public void drawButton(WGButton button)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
+        //Draw the button
+        Rectangle2D.Double buttonRect = new Rectangle2D.Double(button.getX(), button.getY(), button.getWidth(), button.getHeight());
+        g2.setColor(button.getBackgroundColor());
+        g2.fill(buttonRect);
+        g2.setColor(button.getBorderColor());
+        g2.setStroke(new BasicStroke((float)button.getBorderSize()));
+        g2.draw(buttonRect);
+        
+        //Now the text:
+        g2.setColor(button.getTextColor());
+        FontMetrics textFM = g2.getFontMetrics(button.getTextFont());
+        double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
+        double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
+        g2.setFont(button.getTextFont());
+        g2.drawString(button.getText(), (float)textX, (float)textY);
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
     }
 }

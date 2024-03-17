@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.geom.Rectangle2D;
@@ -30,6 +31,7 @@ public class WGAnnouncementCard extends WGDrawingObject
      * This constructor assumes: no background, and title, split and subtitle all share the same color
      * @param x The x that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
      * @param y The y that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param splitHeight The height of the split that goes between the two texts
      * @param title The Title for the announcement
      * @param titleFont The font of that title
@@ -37,14 +39,15 @@ public class WGAnnouncementCard extends WGDrawingObject
      * @param subTitleFont The font of that Subtitle
      * @param color The color of the title, subtitle, and split
      */
-    public WGAnnouncementCard(double x, double y, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color color)
+    public WGAnnouncementCard(double x, double y, float borderSize, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color color)
     {
-        this(x, y, splitHeight, title, titleFont, subTitle, subTitleFont, color, color, color);
+        this(x, y, borderSize, splitHeight, title, titleFont, subTitle, subTitleFont, color, color, color);
     }
     /**
      * The second most complex constructor with a large set of options. Constructor assumes: no background
      * @param x The x that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
      * @param y The y that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param splitHeight The height of the split that goes between the two texts
      * @param title The Title for the announcement
      * @param titleFont The font of that title
@@ -54,14 +57,15 @@ public class WGAnnouncementCard extends WGDrawingObject
      * @param splitColor The color of the line that splits the title and the subtitle
      * @param subTitleColor The color of the subtitle
      */
-    public WGAnnouncementCard(double x, double y, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor)
+    public WGAnnouncementCard(double x, double y, float borderSize, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor)
     {
-        this(x, y, splitHeight, title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, null, null);
+        this(x, y, borderSize, splitHeight, title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, null, null);
     }
     /**
      * The most complex constructor with the largest set of options that allow a multitude of different combinations of announcement cards
      * @param x The x that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
      * @param y The y that starts the box, this may or may not be where the Title/Subtitle text starts due to the function packing and formatting the text
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param splitHeight The height of the split that goes between the two texts
      * @param title The Title for the announcement
      * @param titleFont The font of that title
@@ -73,9 +77,9 @@ public class WGAnnouncementCard extends WGDrawingObject
      * @param backgroundColor The color of the background of the box, if null then drawBackground is automatically set to false
      * @param borderColor The color of the border of the box, if null then drawBackground is automatically set to false
      */
-    public WGAnnouncementCard(double x, double y, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor)
+    public WGAnnouncementCard(double x, double y, float borderSize, double splitHeight, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor)
     {
-        super(x, y, 0, 0);
+        super(x, y, 0, 0, borderSize);
         this.splitHeight = splitHeight;
         this.title = title;
         this.titleFont = titleFont;
@@ -90,6 +94,52 @@ public class WGAnnouncementCard extends WGDrawingObject
         if(backgroundColor == null || borderColor == null)
         {
             drawBackground = false;
+        }
+    }
+    /**
+     * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths
+     * @param xCenter The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yCenter The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component. (Recommendation: to get the best results make sure that splitPercentage + titleHeight + subTitleHeight = 1)
+     * @param titleHeightPercentage The percentage of the parent's height that is used for the calculation of the size of the title font
+     * @param subTitleHeightPercentage The percentage of the parent's height that is used for the calculation of the size of the subtitle font
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param splitPercentage The percentage of the parent's height that is used for the calculation of the size of the split
+     * @param title The Title for the announcement
+     * @param titleFont The font of that title
+     * @param subTitle The Subtitle for the announcement
+     * @param subTitleFont The font of that Subtitle
+     * @param titleColor The color of the title
+     * @param splitColor The color of the line that splits the title and the subtitle
+     * @param subTitleColor The color of the subtitle
+     * @param backgroundColor The color of the background of the box, if null then drawBackground is automatically set to false
+     * @param borderColor The color of the border of the box, if null then drawBackground is automatically set to false
+     * @param parent The component that the object is on, and is used to determine how big this object is
+     */
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor, Component parent)
+    {
+        super(0, 0, 0, 0, borderSize, parent);
+        this.splitHeight = 0;
+        this.title = title;
+        this.titleFont = titleFont;
+        this.subTitle = subTitle;
+        this.subTitleFont = subTitleFont;
+        this.titleColor = titleColor;
+        this.splitColor = splitColor;
+        this.subTitleColor = subTitleColor;
+        this.backgroundColor = backgroundColor;
+        this.borderColor = borderColor;
+        drawBackground = true;
+        if(backgroundColor == null || borderColor == null)
+        {
+            drawBackground = false;
+        }
+        if(getParent() != null)
+        {
+            AnnouncementResizeListener resizer = new AnnouncementResizeListener(xCenter, yCenter, widthPercent, heightPercent, titleHeightPercentage, subTitleHeightPercentage, splitPercentage);
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
         }
     }
 
@@ -226,4 +276,45 @@ public class WGAnnouncementCard extends WGDrawingObject
         return borderColor;
     }
     
+    
+    //classes or Listeners:
+    private class AnnouncementResizeListener extends WGDrawingObjectResizeListener
+    {
+        private double titleHeightPercentage = 0;
+        private double subTitleHeightPercentage = 0;
+        private double splitPercentage = 0;
+        private AnnouncementResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage)
+        {
+            super(xPercent, yPercent, widthPercent, heightPercent);
+            this.titleHeightPercentage = titleHeightPercentage;
+            this.subTitleHeightPercentage = subTitleHeightPercentage;
+            this.splitPercentage = splitPercentage;
+        }
+        public void resizeComps()
+        {
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getSize().getWidth();
+            double parentHeight = getParent().getSize().getHeight();
+            double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            double titleHeight = titleHeightPercentage * getHeight();
+            double subTitleHeight = subTitleHeightPercentage * getHeight();
+            splitHeight = splitPercentage * getHeight();
+            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getWidth() - (borderPadding * 2), titleHeight - borderPadding, title.length());
+            subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, getWidth() - (borderPadding * 2), subTitleHeight - borderPadding, subTitle.length());
+            
+            //Now that the height, width, and fonts have been set, now use the xCenter and yCenter to make the component centered on that area:
+            double xTitlePlace = (getXPercent() * parentWidth) - (WGFontHelper.getFontWidthApproximation(titleFont.getSize(), title.length()) / 2);
+            double xSubTitlePlace = (getXPercent() * parentWidth) - (WGFontHelper.getFontWidthApproximation(subTitleFont.getSize(), subTitle.length()) / 2);
+            double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
+            setX(xPlace);
+            double yPlace = (getYPercent() * parentHeight) - ((WGFontHelper.getFontHeightApproximation(titleFont.getSize()) + WGFontHelper.getFontHeightApproximation(subTitleFont.getSize()) + splitHeight) / 2);
+            setY(yPlace);
+            
+            //Then repaint the parent to make sure the parent sees the change
+            getParent().repaint();
+        }
+    }
 }
