@@ -55,8 +55,9 @@ public class WGButton extends WGDrawingObject
      * @param borderColor The border color of the box
      * @param textColor The color of the text
      * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent)
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = text;
@@ -69,6 +70,40 @@ public class WGButton extends WGDrawingObject
             ButtonResizeListener resizer = new ButtonResizeListener(xPercent, yPercent, widthPercent, heightPercent);
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param text The text that goes on the button
+     * @param textFont The font that will draw the text
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGClickListener clickListener) throws WGNullParentException
+    {
+        this(xPercent, yPercent, widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
+        if(getParent() != null)
+        {
+            clickListener.setParentComponent(parent);
+            clickListener.setParentObject(this);
+            getParent().addMouseListener(clickListener);
+        }
+        else
+        {
+            throw new WGNullParentException();
         }
     }
     
