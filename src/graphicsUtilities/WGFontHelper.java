@@ -100,4 +100,5 @@ public class WGFontHelper
         Font newFont  = new Font(originalFont.getName(), originalFont.getStyle(), (int)fittedFontSize);
         return newFont;
     }
+    protected WGFontHelper(){}
 }

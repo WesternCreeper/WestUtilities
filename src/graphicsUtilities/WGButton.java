@@ -20,28 +20,7 @@ public class WGButton extends WGDrawingObject
     private Color backgroundColor;
     private Color borderColor;
     private Color textColor;
-    /**
-     * This creates a baseline button that cannot resize itself
-     * @param x The X of the button
-     * @param y The Y of the button
-     * @param width The Width of the button
-     * @param height The Height of the button
-     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
-     * @param text The text that goes on the button
-     * @param textFont The font that will draw the text
-     * @param backgroundColor The color of the background of the font
-     * @param borderColor The border color of the box
-     * @param textColor The color of the text
-     */
-    public WGButton(double x, double y, double width, double height, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor)
-    {
-        super(x, y, width, height, borderSize, null);
-        this.text = text;
-        this.textFont = textFont;
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
-        this.textColor = textColor;
-    }
+    private ButtonResizeListener resizer = new ButtonResizeListener(0, 0, 0, 0);
     /**
      * This creates a baseline button that can and WILL resize itself. This will fully integrate it's resizing
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
@@ -67,7 +46,7 @@ public class WGButton extends WGDrawingObject
         this.textColor = textColor;
         if(getParent() != null)
         {
-            ButtonResizeListener resizer = new ButtonResizeListener(xPercent, yPercent, widthPercent, heightPercent);
+            resizer = new ButtonResizeListener(xPercent, yPercent, widthPercent, heightPercent);
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
         }
@@ -118,10 +97,12 @@ public class WGButton extends WGDrawingObject
     //Setters
     public void setText(String text) {
         this.text = text;
+        resizer.resizeComps();
     }
 
     public void setTextFont(Font textFont) {
         this.textFont = textFont;
+        resizer.resizeComps();
     }
 
     public void setBackgroundColor(Color backgroundColor) {

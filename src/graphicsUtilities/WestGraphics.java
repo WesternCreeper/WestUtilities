@@ -168,24 +168,6 @@ public class WestGraphics
         g2.setStroke(oldStroke);
     }
     /**
-     * Draws a button on the screen with the given components
-     * @param x The X of the button
-     * @param y The Y of the button
-     * @param width The width of the button
-     * @param height The height of the button
-     * @param borderSize The size of the border of the button
-     * @param text The text on the button
-     * @param textFont The font for the text
-     * @param backgroundColor The color of the background
-     * @param borderColor The color of the border surrounding the button
-     * @param textColor The color of the text that is drawn on the button
-     */
-    public void drawButton(double x, double y, double width, double height, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor)
-    {
-        WGButton button = new WGButton(x, y, width, height, borderSize, text, textFont, backgroundColor, borderColor, textColor);
-        drawButton(button);
-    }
-    /**
      * Creates a button based on the parameters given by the WGButton object
      * @param button A WGButton object that defines everything needed to define a button
      */
