@@ -6,6 +6,7 @@ package graphicsUtilities.WGAnimation;
 
 import java.awt.Color;
 import graphicsUtilities.WGColorHelper;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,18 +14,28 @@ import graphicsUtilities.WGColorHelper;
  */
 public class WGAColorAnimator extends WGAAnimator
 {
-    private Color originalColor;
-    private Color color;
-    private boolean hasBounced = false;
+    private ArrayList<Color> colors = new ArrayList<Color>(1);
+    private ArrayList<Color> originalColors = new ArrayList<Color>(1);
+    private ArrayList<Boolean> hasBounced = new ArrayList<Boolean>(1);
     public WGAColorAnimator(int tickMax, int tick, Color color)
     {
         super(tickMax, tick);
-        this.color = color;
-        this.originalColor = color;
+        colors.add(color);
+        originalColors.add(color);
+        hasBounced.add(false);
+    }
+    public synchronized void addColor(Color color)
+    {
+        colors.add(color);
+        originalColors.add(color);
+        hasBounced.add(false);
     }
     public synchronized void animateColorInverse()
     {
-        color = WGColorHelper.getInverseColor(color);
+        for(int i = 0 ; i < colors.size() ; i++)
+        {
+            colors.set(i, WGColorHelper.getInverseColor(colors.get(i)));
+        }
         setTick(getTick()+1);
         if(getTick() == getTickMax()+1)
         {
@@ -33,7 +44,10 @@ public class WGAColorAnimator extends WGAAnimator
     }
     public synchronized void animateColorGrayOut()
     {
-        color = WGColorHelper.getGrayScaleColor(color);
+        for(int i = 0 ; i < colors.size() ; i++)
+        {
+            colors.set(i, WGColorHelper.getGrayScaleColor(colors.get(i)));
+        }
         setTick(getTick()+1);
         if(getTick() == getTickMax()+1)
         {
@@ -42,27 +56,30 @@ public class WGAColorAnimator extends WGAAnimator
     }
     public synchronized void animateColorAdd(int redAdd, int greenAdd, int blueAdd, int alphaAdd, int overflowColorBehavior)
     {
-        //So that the animation also bounces:
-        boolean willBounce = false;
-        if(!hasBounced && WGColorHelper.willBounce(color, redAdd, greenAdd, blueAdd, alphaAdd))
+        for(int i = 0 ; i < colors.size() ; i++)
         {
-            willBounce = true;
-        }
-        else if(hasBounced && WGColorHelper.willBounce(color, redAdd * -1, greenAdd * -1, blueAdd * -1, alphaAdd * -1))
-        {
-            willBounce = true;
-        }
-        if(hasBounced)
-        {
-            color = WGColorHelper.addToColor(color, redAdd * -1, greenAdd * -1, blueAdd * -1, alphaAdd * -1, overflowColorBehavior);
-        }
-        else
-        {
-            color = WGColorHelper.addToColor(color, redAdd, greenAdd, blueAdd, alphaAdd, overflowColorBehavior);
-        }
-        if(willBounce)
-        {
-            hasBounced = !hasBounced;
+            colors.set(i, WGColorHelper.getGrayScaleColor(colors.get(i)));//So that the animation also bounces:
+            boolean willBounce = false;
+            if(!hasBounced.get(i) && WGColorHelper.willBounce(colors.get(i), redAdd, greenAdd, blueAdd, alphaAdd))
+            {
+                willBounce = true;
+            }
+            else if(hasBounced.get(i) && WGColorHelper.willBounce(colors.get(i), redAdd * -1, greenAdd * -1, blueAdd * -1, alphaAdd * -1))
+            {
+                willBounce = true;
+            }
+            if(hasBounced.get(i))
+            {
+                colors.set(i, WGColorHelper.addToColor(colors.get(i), redAdd * -1, greenAdd * -1, blueAdd * -1, alphaAdd * -1, overflowColorBehavior));
+            }
+            else
+            {
+                colors.set(i, WGColorHelper.addToColor(colors.get(i), redAdd, greenAdd, blueAdd, alphaAdd, overflowColorBehavior));
+            }
+            if(willBounce)
+            {
+                hasBounced.set(i, !hasBounced.get(i));
+            }
         }
         setTick(getTick()+1);
         if(getTick() == getTickMax()+1)
@@ -83,7 +100,10 @@ public class WGAColorAnimator extends WGAAnimator
      */
     public synchronized void fadeTo(Color fadeColor)
     {
-        color = WGColorHelper.combineTwoColors(originalColor, 1 - ((double)getTick() / getTickMax()), fadeColor, ((double)getTick() / getTickMax()));
+        for(int i = 0 ; i < colors.size() ; i++)
+        {
+            colors.set(i, WGColorHelper.combineTwoColors(originalColors.get(i), 1 - ((double)getTick() / getTickMax()), fadeColor, ((double)getTick() / getTickMax())));
+        }
         setTick(getTick()+1);
         if(getTick() == getTickMax()+1)
         {
@@ -103,7 +123,10 @@ public class WGAColorAnimator extends WGAAnimator
      */
     public synchronized void fadeFrom(Color fadeColor)
     {
-        color = WGColorHelper.combineTwoColors(originalColor, ((double)getTick() / getTickMax()), fadeColor, 1 - ((double)getTick() / getTickMax()));
+        for(int i = 0 ; i < colors.size() ; i++)
+        {
+            colors.set(i, WGColorHelper.combineTwoColors(originalColors.get(i), ((double)getTick() / getTickMax()), fadeColor, 1 - ((double)getTick() / getTickMax())));
+        }
         setTick(getTick()+1);
         if(getTick() == getTickMax()+1)
         {
@@ -113,8 +136,20 @@ public class WGAColorAnimator extends WGAAnimator
     
     
     //Getters:
-    public Color getColor() {
-        return color;
+    public Color getColor(int index) throws ArrayIndexOutOfBoundsException
+    {
+        if(index >= 0 && index < colors.size())
+        {
+            return colors.get(index);
+        }
+        else
+        {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+    }
+    public int getColorSize()
+    {
+        return colors.size();
     }
 
     
@@ -122,12 +157,22 @@ public class WGAColorAnimator extends WGAAnimator
     /**
      * This will set the color to whatever you want, however this will reset its animation
      * @param color The color to set
+     * @param index The index of the color
+     * @throws ArrayIndexOutOfBoundsException When the index is not within the Colors araylist bounds
      */
-    public void setColor(Color color) 
+    public void setColor(Color color, int index) throws ArrayIndexOutOfBoundsException
     {
-        this.color = color;
-        this.originalColor = color;
-        resetAnimation();
+        if(index >= 0 && index < colors.size())
+        {
+            colors.set(index, color);
+            originalColors.set(index, color);
+            hasBounced.set(index, false);
+            resetAnimation();
+        }
+        else
+        {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
     }
     
     /**
@@ -137,7 +182,10 @@ public class WGAColorAnimator extends WGAAnimator
     public void resetAnimation() 
     {
         setTick(0);
-        color = originalColor;
-        hasBounced = false;
+        for(int i = 0 ; i < originalColors.size() ; i++)
+        {
+            colors.set(i, originalColors.get(i));
+            hasBounced.set(i, false);
+        }
     }
 }

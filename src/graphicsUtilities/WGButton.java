@@ -4,6 +4,9 @@
  */
 package graphicsUtilities;
 
+import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import graphicsUtilities.WGAnimation.WGAColorAnimator;
+import graphicsUtilities.WGAnimation.WGAPopupAnimationListener;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -20,7 +23,11 @@ public class WGButton extends WGDrawingObject
     private Color backgroundColor;
     private Color borderColor;
     private Color textColor;
-    private ButtonResizeListener resizer = new ButtonResizeListener(0, 0, 0, 0);
+    private ButtonResizeListener resizer;
+    private WGButtonListener clickListener;
+    private WGAColorAnimator animator;
+    private WGAPopupAnimationListener popper;
+    private WGAAnimationManager parentAnimationManager;
     /**
      * This creates a baseline button that can and WILL resize itself. This will fully integrate it's resizing
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
@@ -71,14 +78,17 @@ public class WGButton extends WGDrawingObject
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGClickListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(xPercent, yPercent, widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
         {
-            clickListener.setParentComponent(parent);
-            clickListener.setParentObject(this);
-            getParent().addMouseListener(clickListener);
+            this.clickListener = clickListener;
+            this.clickListener.setParentComponent(parent);
+            this.clickListener.setParentObject(this);
+            this.clickListener.setOriginalBackgroundColor(backgroundColor);
+            getParent().addMouseListener(this.clickListener);
+            getParent().addMouseMotionListener(this.clickListener);
         }
         else
         {
@@ -93,6 +103,58 @@ public class WGButton extends WGDrawingObject
        return bounds;
     }
     
+    /**
+     * Use this function to setup any internal animation functions and the animator if one wants to use that as a shortcut way to get a color animator for all of the colors
+     * @param tickMax The maximum tick, sets the length of the animation
+     * @param startingTick The starting tick, tells where in the animation to start. Some functions don't work properly if this is not 0
+     * @param manager The AnimationManager that the parent component uses. This is only to make sure that the animations are set up and ready to roll. This will NEVER be used to stop all timers, but MAY be used to start all timers
+     */
+    public void setUpColorAnimator(int tickMax, int startingTick, WGAAnimationManager manager)
+    {
+        parentAnimationManager = manager;
+        animator = new WGAColorAnimator(tickMax, startingTick, backgroundColor);
+        animator.addColor(textColor);
+        animator.addColor(borderColor);
+        popper = new WGAPopupAnimationListener(animator, getParent(), this);
+        parentAnimationManager.addTimer(30, popper);
+    }
+    
+    /**
+     * This pops the component out of existance. Starts all timers on the parent AnimationManager
+     * @throws WGNotSetUpException 
+     */
+    public void popOutOfExistance() throws WGNotSetUpException
+    {
+        if(popper != null)
+        {
+            popper.reset();
+            popper.setPopOut(true);
+            parentAnimationManager.startAllTimers();
+        }
+        else
+        {
+            throw new WGNotSetUpException();
+        }
+    }
+    
+    /**
+     * This pops the component into existence.  Starts all timers on the parent AnimationManager
+     * @throws WGNotSetUpException 
+     */
+    public void popIntoExistance() throws WGNotSetUpException
+    {
+        if(popper != null)
+        {
+            popper.reset();
+            popper.setPopOut(false);
+            parentAnimationManager.startAllTimers();
+        }
+        else
+        {
+            throw new WGNotSetUpException();
+        }
+    }
+    
 
     //Setters
     public void setText(String text) {
@@ -105,7 +167,18 @@ public class WGButton extends WGDrawingObject
         resizer.resizeComps();
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
+    public void setBackgroundColor(Color backgroundColor) 
+    {
+        this.backgroundColor = backgroundColor;
+        if(clickListener != null)
+        {
+            clickListener.setOriginalBackgroundColor(backgroundColor);
+        }
+        
+    }
+
+    public void setBackgroundColorNotClickListener(Color backgroundColor) 
+    {
         this.backgroundColor = backgroundColor;
     }
 
@@ -137,6 +210,10 @@ public class WGButton extends WGDrawingObject
 
     public Color getTextColor() {
         return textColor;
+    }
+
+    public WGAColorAnimator getAnimator() {
+        return animator;
     }
     
     

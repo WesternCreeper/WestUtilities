@@ -14,12 +14,13 @@ import java.awt.Shape;
  */
 public abstract class WGDrawingObject
 {
+    private Component parent;
     private double x = 0;
     private double y = 0;
     private double width;
     private double height;
     private float borderSize = 1;
-    private Component parent;
+    private boolean isShown = true;
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
      * @param x The X that starts the object
@@ -56,6 +57,10 @@ public abstract class WGDrawingObject
     
     
     //Setters:
+    public void setIsShown(boolean isShown) {
+        this.isShown = isShown;
+    }
+
     public void setX(double x) {
         this.x = x;
     }
@@ -78,6 +83,10 @@ public abstract class WGDrawingObject
     
     
     //Getters:
+    public boolean isIsShown() {
+        return isShown;
+    }
+
     public double getX() {
         return x;
     }

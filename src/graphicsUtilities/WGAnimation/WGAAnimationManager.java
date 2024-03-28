@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import javax.swing.Timer;
 
 /**
- *
- * @author Westley
  * This is a robust class that allows for multiple higher level animations to be done with different options.
  * Also, allows for making different simultaneous animations easier
+ * @author Westley
  */
 public class WGAAnimationManager 
 {

@@ -64,6 +64,25 @@ public class WGColorHelper
         combinedColor = new Color(colorRed, colorGreen, colorBlue, alpha);
         return combinedColor;
     }
+    /**
+     * This will return the most sensible of the two options, for instance when given black this function is most definitely not going to give the darker version of that, because that is the same as the original color given
+     * @param color The Color to be darkened or lightened based on the characteristics of the color
+     * @return 
+     */
+    public static Color getDarkerOrLighter(Color color)
+    {
+        int darkerCutOff = 25;
+        //Assume darker is ok
+        Color newColor = color.darker();
+        int red = color.getRed();
+        int green = color.getGreen();
+        int blue = color.getBlue();
+        if(red < darkerCutOff && green < darkerCutOff && blue < darkerCutOff) //Test for if it is not
+        {
+            newColor = color.brighter();
+        }
+        return newColor;
+    }
     public static int fixOutOfBoundColor(int colorInt, int behavior)
     {
         switch(behavior)

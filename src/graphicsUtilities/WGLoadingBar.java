@@ -16,6 +16,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class WGLoadingBar extends WGDrawingObject
 {
+    private String originalTitle;
     private String title;
     private boolean showPercentage; 
     private Font titleFont;
@@ -25,83 +26,7 @@ public class WGLoadingBar extends WGDrawingObject
     private Color barBorderColor;
     private Color titleColor;
     private Color barColor;
-    /**
-     * The most basic version of the constructor, with the least amount of information to construct a LoadingBar Object. This constructor assumes a horizontal bar, the percentage should not be shown, default colors (White, Gray, Red, and Black), and No title
-     * @param barX The X for where the bar should be
-     * @param barY The Y for where the bar should be
-     * @param barWidth The width of the bar
-     * @param barHeight The height of the bar
-     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
-     * @param percentFilled The percent the bar should be filled
-     */
-    public WGLoadingBar(double barX, double barY, double barWidth, double barHeight, float borderSize, double percentFilled)
-    {
-        this(barX, barY, barWidth, barHeight, borderSize, "", new Font("Sanserif", Font.BOLD, 10), percentFilled);
-    }
-    /**
-     * This constructor assumes a horizontal bar, the percentage should not be shown, and default colors (White, Gray, Red, and Black)
-     * @param barX The X for where the bar should be
-     * @param barY The Y for where the bar should be
-     * @param barWidth The width of the bar
-     * @param barHeight The height of the bar
-     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
-     * @param title The text written on the bar
-     * @param titleFont The Font object for the title String, a FontMeterics is already supplied by the function based on the Font, no need to give such a thing here
-     * @param percentFilled The percent the bar should be filled
-     */
-    public WGLoadingBar(double barX, double barY, double barWidth, double barHeight, float borderSize, String title, Font titleFont, double percentFilled)
-    {
-        this(barX, barY, barWidth, barHeight, borderSize, title, titleFont, percentFilled, new Color(255, 255, 255), new Color(127, 127, 127), new Color(255, 0, 0), new Color(0, 0, 0));
-    }
-    /**
-     * The constructor with the second most amount of options, which assumes that this is a horizontal bar and that the percentage should not be shown
-     * @param barX The X for where the bar should be
-     * @param barY The Y for where the bar should be
-     * @param barWidth The width of the bar
-     * @param barHeight The height of the bar
-     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
-     * @param title The text written on the bar
-     * @param titleFont The Font object for the title String, a FontMeterics is already supplied by the function based on the Font, no need to give such a thing here
-     * @param percentFilled The percent the bar should be filled
-     * @param barBackgroundColor The background Color of the bar. This is the back of the bar, thus this is the color that represents the percent incomplete.
-     * @param barBorderColor The color of the borders around the bar
-     * @param titleColor The color of the text that is written on the bar
-     * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
-     */
-    public WGLoadingBar(double barX, double barY, double barWidth, double barHeight, float borderSize, String title, Font titleFont, double percentFilled, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor)
-    {
-        this(barX, barY, barWidth, barHeight, borderSize, title, false, titleFont, percentFilled, true, barBackgroundColor, barBorderColor, titleColor, barColor);
-    }
-    /**
-     * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
-     * @param barX The X for where the bar should be
-     * @param barY The Y for where the bar should be
-     * @param barWidth The width of the bar
-     * @param barHeight The height of the bar
-     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
-     * @param title The text written on the bar
-     * @param showPercentage The option for a percentage to be written after the title
-     * @param titleFont The Font object for the title String, a FontMeterics is already supplied by the function based on the Font, no need to give such a thing here
-     * @param percentFilled The percent the bar should be filled
-     * @param isHorizontal The option to make the bar display everything horizontal or vertical. The bounds are NOT changed based on this option, so make sure the bar can fit the text!
-     * @param barBackgroundColor The background Color of the bar. This is the back of the bar, thus this is the color that represents the percent incomplete.
-     * @param barBorderColor The color of the borders around the bar
-     * @param titleColor The color of the text that is written on the bar
-     * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
-     */
-    public WGLoadingBar(double barX, double barY, double barWidth, double barHeight, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor)
-    {
-        super(barX, barY, barWidth, barHeight, borderSize);
-        this.title = title;
-        this.showPercentage = showPercentage;
-        this.titleFont = titleFont;
-        this.percentFilled = percentFilled;
-        this.isHorizontal = isHorizontal;
-        this.barBackgroundColor = barBackgroundColor;
-        this.barBorderColor = barBorderColor;
-        this.titleColor = titleColor;
-        this.barColor = barColor;
-    }
+    private BarResizeListener resizer;
     /**
      * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
@@ -118,11 +43,13 @@ public class WGLoadingBar extends WGDrawingObject
      * @param barBorderColor The color of the borders around the bar
      * @param titleColor The color of the text that is written on the bar
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
+     * @param parent The parent component upon which this object is being drawn on
      */
     public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor, Component parent)
     {
         super(0, 0, 0, 0, borderSize, parent);
-        this.title = title;
+        originalTitle = title;
+        this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
         this.showPercentage = showPercentage;
         this.titleFont = titleFont;
         this.percentFilled = percentFilled;
@@ -133,7 +60,7 @@ public class WGLoadingBar extends WGDrawingObject
         this.barColor = barColor;
         if(getParent() != null)
         {
-            BarResizeListener resizer = new BarResizeListener(xPercent, yPercent, widthPercent, heightPercent);
+            resizer = new BarResizeListener(xPercent, yPercent, widthPercent, heightPercent);
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
         }
@@ -149,20 +76,25 @@ public class WGLoadingBar extends WGDrawingObject
     
     
     //Setters:
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String title) 
+    {
+        originalTitle = title;
+        this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
     }
 
     public void setShowPercentage(boolean showPercentage) {
         this.showPercentage = showPercentage;
+        resizer.resizeComps();
     }
 
     public void setTitleFont(Font titleFont) {
         this.titleFont = titleFont;
+        resizer.resizeComps();
     }
 
     public void setPercentFilled(double percentFilled) {
         this.percentFilled = percentFilled;
+        resizer.resizeComps();
     }
 
     public void setHorizontal(boolean isHorizontal) {
@@ -233,6 +165,7 @@ public class WGLoadingBar extends WGDrawingObject
         }
         public void resizeComps()
         {
+            title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getSize().getWidth();
             double parentHeight = getParent().getSize().getHeight();
@@ -243,12 +176,7 @@ public class WGLoadingBar extends WGDrawingObject
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             //This is to make sure that the font is the correct size for the width
-            int extraSpacing = 2;
-            if(showPercentage)
-            {
-                extraSpacing += 4;
-            }
-            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getWidth() - borderPadding, getHeight() - borderPadding, title.length() + extraSpacing);
+            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getWidth() - borderPadding, getHeight() - borderPadding, title.length());
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }
