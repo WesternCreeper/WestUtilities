@@ -55,6 +55,8 @@ public abstract class WGDrawingObject
     //Methods:
     public abstract Shape getBounds();
     
+    public abstract void setUpBounds();
+    
     
     //Setters:
     public void setIsShown(boolean isShown) {

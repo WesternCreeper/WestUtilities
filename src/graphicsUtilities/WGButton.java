@@ -102,6 +102,10 @@ public class WGButton extends WGDrawingObject
        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
+    public void setUpBounds()
+    {
+        resizer.resizeComps();
+    }
     
     /**
      * Use this function to setup any internal animation functions and the animator if one wants to use that as a shortcut way to get a color animator for all of the colors

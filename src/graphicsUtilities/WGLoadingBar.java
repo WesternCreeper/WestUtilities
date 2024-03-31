@@ -73,6 +73,10 @@ public class WGLoadingBar extends WGDrawingObject
        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
+    public void setUpBounds()
+    {
+        resizer.resizeComps();
+    }
     
     
     //Setters:

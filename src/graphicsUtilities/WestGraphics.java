@@ -7,9 +7,8 @@ package graphicsUtilities;
 import java.awt.Graphics2D;
 import java.awt.geom.*;
 import java.awt.FontMetrics;
-import java.awt.Font;
-import java.awt.Color;
 import java.awt.BasicStroke;
+import java.awt.Shape;
 import java.awt.Stroke;
 
 /**
@@ -52,6 +51,14 @@ public class WestGraphics
             else if(obj instanceof WGToolTip)
             {
                 drawToolTip((WGToolTip)obj);
+            }
+            else if(obj instanceof WGPane)
+            {
+                drawPane((WGPane)obj);
+            }
+            else if(obj instanceof WGLabel)
+            {
+                drawLabel((WGLabel)obj);
             }
         }
     }
@@ -179,6 +186,10 @@ public class WestGraphics
         //And reload it at the end
         g2.setStroke(oldStroke);
     }
+    /**
+     * The drawing method for a tooltip all it requires is the tooltip object then it can draw it from there
+     * @param toolTip The tooltip object that tells the graphics how to draw it
+     */
     private void drawToolTip(WGToolTip toolTip)
     {
         //Save the original stroke in case the user wanted that one
@@ -216,6 +227,99 @@ public class WestGraphics
             textY += textFM.getHeight();
             g2.drawString(text[i], (float)textX, (float)textY);
         }
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    /**
+     * The drawing method for a pane that will draw the pane and all subsequent objects attached to the pane
+     * @param pane The pane to be drawn and the components added to it that also draw
+     */
+    private void drawPane(WGPane pane)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+        
+        //Save the original clip in case the user wanted that one:
+        Shape oldClip = g2.getClip();
+            
+        //To make sure nothing goes off the pane:
+        g2.setClip(pane.getBounds());
+        
+        //Draw the background:
+        Rectangle2D.Double buttonRect = new Rectangle2D.Double(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
+        g2.setColor(pane.getBackgroundColor());
+        g2.fill(buttonRect);
+        
+        //Find the scrollBar offset:
+        double scrollBarX = pane.getX();
+        double scrollBarY = pane.getY();
+        double scrollBarWidth = pane.getBorderSize();
+        double scrollBarHeight = scrollBarWidth;
+        WGScrollableListener scrollBar = pane.getVerticalScroll();
+        if(scrollBar.isVertical())
+        {
+            scrollBarY += scrollBar.getScrollBarY();
+            scrollBarHeight = scrollBar.getScrollBarHeight();
+            scrollBarX += pane.getWidth() - scrollBarWidth - pane.getBorderSize();
+        }
+        else
+        {
+            scrollBarX += scrollBar.getScrollBarY();
+            scrollBarWidth = scrollBar.getScrollBarHeight();
+            scrollBarY += pane.getHeight() - scrollBarHeight - pane.getBorderSize();
+        }
+        
+        //Now the internal components:
+        for(int i = 0 ; i < pane.getComponentNumber() ; i++)
+        {
+            draw(pane.getComponent(i));
+        }
+        
+        //Then draw in the scrollBar:
+        g2.setColor(pane.getScrollBarColor());
+        Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
+        g2.fill(scrollBarRect);
+        
+        //Then draw in the border:
+        g2.setColor(pane.getBorderColor());
+        g2.setStroke(new BasicStroke((float)pane.getBorderSize()));
+        g2.draw(buttonRect);
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+        g2.setClip(oldClip);
+    }
+    /**
+     * The drawing method for a label that will draw the text inside a box according to the methods given by the WGLabel
+     * @param pane The label to be drawn
+     */
+    private void drawLabel(WGLabel label)
+    {
+        
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+        
+        //Draw the text:
+        g2.setColor(label.getTextColor());
+        FontMetrics textFM = g2.getFontMetrics(label.getTextFont());
+        double textX = label.getX();
+        if(label.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
+        {
+            textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
+        }
+        double textY = label.getY() - textFM.getDescent() + label.getBorderSize();
+        g2.setFont(label.getTextFont());
+        if(label.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+        {
+            textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
+        }
+        else if(label.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+        {
+            textX = label.getX() + label.getWidth() - ((label.getWidth() - textFM.stringWidth(label.getText())) / 2) - textFM.stringWidth(label.getText());
+        }
+        textY += textFM.getHeight();
+        g2.drawString(label.getText(), (float)textX, (float)textY);
         
         //And reload it at the end
         g2.setStroke(oldStroke);
