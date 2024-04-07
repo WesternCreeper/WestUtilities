@@ -125,7 +125,7 @@ public class WGLabel extends WGDrawingObject
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
-            textFont = WGFontHelper.getFittedFontForBox(textFont, getWidth() - borderPadding, getHeight() - borderPadding, text.length());
+            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

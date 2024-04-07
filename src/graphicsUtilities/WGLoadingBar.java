@@ -180,7 +180,7 @@ public class WGLoadingBar extends WGDrawingObject
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             //This is to make sure that the font is the correct size for the width
-            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getWidth() - borderPadding, getHeight() - borderPadding, title.length());
+            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, title, 100);
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

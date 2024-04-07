@@ -15,12 +15,14 @@ import java.util.ArrayList;
  */
 public class WGPane extends WGDrawingObject
 {
+    private final boolean scrollable;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
     private Color backgroundColor;
     private Color borderColor;
     private Color scrollBarColor;
     private PaneResizeListener resizer;
     private WGScrollableListener verticalScroll;
+    private WGScrollableListener horizontalScroll;
     
     /**
      * 
@@ -29,25 +31,36 @@ public class WGPane extends WGDrawingObject
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
      * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
      * @param backgroundColor The color of the background of the pane
      * @param borderColor The border color of the pane
      * @param scrollBarColor The color of the scrollBar
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.backgroundColor = backgroundColor;
         this.borderColor = borderColor;
         this.scrollBarColor = scrollBarColor;
+        this.scrollable = scrollable;
         if(getParent() != null)
         {
             resizer = new PaneResizeListener(xPercent, yPercent, widthPercent, heightPercent);
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
-            verticalScroll = new WGScrollableListener(this);
-            getParent().addMouseWheelListener(verticalScroll);
+            if(scrollable)
+            {
+                verticalScroll = new WGScrollableListener(this);
+                getParent().addMouseWheelListener(verticalScroll);
+                getParent().addMouseListener(verticalScroll);
+                getParent().addMouseMotionListener(verticalScroll);
+                horizontalScroll = new WGScrollableListener(this);
+                getParent().addMouseWheelListener(horizontalScroll);
+                getParent().addMouseListener(horizontalScroll);
+                getParent().addMouseMotionListener(horizontalScroll);
+            }
         }
         else
         {
@@ -86,6 +99,13 @@ public class WGPane extends WGDrawingObject
         return containedObjects.remove(index);
     }
     /**
+     * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects
+     */
+    public void removeAllDrawableObjects()
+    {
+        containedObjects.removeAll(containedObjects);
+    }
+    /**
      * This function will go through every single component added to it and make the stroke size be the newStrokeSize and itself
      * @param newStrokeSize The stroke size that every component in the ArrayList will become
      */
@@ -100,9 +120,22 @@ public class WGPane extends WGDrawingObject
     
     public void setUpScroll()
     {
-        if(verticalScroll != null)
+        if(scrollable && verticalScroll != null && horizontalScroll != null)
         {
             verticalScroll.setUpScroll(true, containedObjects);
+            horizontalScroll.setUpScroll(false, containedObjects);
+        }
+    }
+    /**
+     * This sets the preference of the scrollbars. Either true or false based on the preference
+     * @param preferred The preferred scrollbar. True is the vertical one, while false is the horizontal one
+     */
+    public void setScrollBarPreferrance(boolean preferred)
+    {
+        if(scrollable && verticalScroll != null && horizontalScroll != null)
+        {
+            verticalScroll.setPreference(preferred);
+            verticalScroll.setPreference(!preferred);
         }
     }
     
@@ -125,6 +158,10 @@ public class WGPane extends WGDrawingObject
     public WGScrollableListener getVerticalScroll() {
         return verticalScroll;
     }
+
+    public WGScrollableListener getHorizontalScroll() {
+        return horizontalScroll;
+    }
     
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -136,6 +173,10 @@ public class WGPane extends WGDrawingObject
 
     public Color getScrollBarColor() {
         return scrollBarColor;
+    }
+
+    public boolean isScrollable() {
+        return scrollable;
     }
     
     /**

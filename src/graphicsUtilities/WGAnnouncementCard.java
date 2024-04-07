@@ -219,8 +219,8 @@ public class WGAnnouncementCard extends WGDrawingObject
             double titleHeight = titleHeightPercentage * optimalHeight;
             double subTitleHeight = subTitleHeightPercentage * optimalHeight;
             splitHeight = splitPercentage * optimalHeight;
-            titleFont = WGFontHelper.getFittedFontForBox(titleFont, optimalWidth - (borderPadding * 2), titleHeight - borderPadding, title.length());
-            subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, optimalWidth - (borderPadding * 2), subTitleHeight - borderPadding, subTitle.length());
+            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getParent(), optimalWidth - (borderPadding * 2), titleHeight - borderPadding, title, 100);
+            subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, getParent(), optimalWidth - (borderPadding * 2), subTitleHeight - borderPadding, subTitle, 100);
             
             //Now that the height, width, and fonts have been set, now use the xCenter and yCenter to make the component centered on that area:
             FontMetrics titleFM = getParent().getFontMetrics(titleFont);
@@ -229,7 +229,7 @@ public class WGAnnouncementCard extends WGDrawingObject
             double xSubTitlePlace = (getXPercent() * parentWidth) - (subTitleFM.stringWidth(subTitle)/ 2);
             double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
             setX(xPlace);
-            double yPlace = (getYPercent() * parentHeight) - ((WGFontHelper.getFontHeightApproximation(titleFont.getSize()) + WGFontHelper.getFontHeightApproximation(subTitleFont.getSize()) + splitHeight) / 2);
+            double yPlace = (getYPercent() * parentHeight) - (((titleFM.getHeight() + subTitleFM.getHeight()) + splitHeight) / 2);
             setY(yPlace);
             double titleWidth = titleFM.stringWidth(title);
             double subTitleWidth = subTitleFM.stringWidth(subTitle) + borderPadding * 2;

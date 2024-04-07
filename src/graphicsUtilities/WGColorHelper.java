@@ -18,6 +18,8 @@ public class WGColorHelper
     public static final int PREVENT_COLOR_OVERFLOW = 0;
     public static final int FLIP_ON_COLOR_OVERFLOW = 1;
     public static final int BOUNCE_ON_COLOR_OVERFLOW = 2;
+    public static final boolean PREFERRANCE_COLOR_LIGHTER = true;
+    public static final boolean PREFERRANCE_COLOR_DARKER = false;
     public static Color getInverseColor(Color originalColor)
     {
         Color newColor = new Color(RGBAMAX - originalColor.getRed(), RGBAMAX - originalColor.getGreen(), RGBAMAX - originalColor.getBlue());
@@ -80,6 +82,58 @@ public class WGColorHelper
         if(red < darkerCutOff && green < darkerCutOff && blue < darkerCutOff) //Test for if it is not
         {
             newColor = color.brighter();
+        }
+        return newColor;
+    }
+    /**
+     * This is the same as the one parameter version, just with a number of times application
+     * @param color The Color to be darkened or lightened based on the characteristics of the color
+     * @param numTimes The number of times the darkening or lightening will occur
+     * @param preferance The preferred action. Lighter or Darker
+     * @return 
+     */
+    public static Color getDarkerOrLighter(Color color, int numTimes, boolean preferance)
+    {
+        Color newColor = color;
+        if(!preferance)
+        {
+            int darkerCutOff = 25 * numTimes;
+            //Assume darker is ok
+            for(int i = 0 ; i < numTimes ; i++)
+            {
+                newColor = newColor.darker();
+            }
+            int red = color.getRed();
+            int green = color.getGreen();
+            int blue = color.getBlue();
+            if(red < darkerCutOff && green < darkerCutOff && blue < darkerCutOff) //Test for if it is not
+            {
+                newColor = color;
+                for(int i = 0 ; i < numTimes ; i++)
+                {
+                    newColor = newColor.brighter();
+                }
+            }
+        }
+        else
+        {
+            int lighterCutOff = 255 - (25 * numTimes);
+            //Assume darker is ok
+            for(int i = 0 ; i < numTimes ; i++)
+            {
+                newColor = newColor.brighter();
+            }
+            int red = color.getRed();
+            int green = color.getGreen();
+            int blue = color.getBlue();
+            if(red > lighterCutOff && green > lighterCutOff && blue > lighterCutOff) //Test for if it is not
+            {
+                newColor = color;
+                for(int i = 0 ; i < numTimes ; i++)
+                {
+                    newColor = newColor.darker();
+                }
+            }
         }
         return newColor;
     }

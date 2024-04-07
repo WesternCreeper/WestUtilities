@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Stroke;
 
@@ -59,6 +60,10 @@ public class WestGraphics
             else if(obj instanceof WGLabel)
             {
                 drawLabel((WGLabel)obj);
+            }
+            else if(obj instanceof WGTextInput)
+            {
+                drawTextInput((WGTextInput)obj);
             }
         }
     }
@@ -242,33 +247,15 @@ public class WestGraphics
         
         //Save the original clip in case the user wanted that one:
         Shape oldClip = g2.getClip();
-            
-        //To make sure nothing goes off the pane:
-        g2.setClip(pane.getBounds());
         
         //Draw the background:
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
         g2.setColor(pane.getBackgroundColor());
         g2.fill(buttonRect);
         
-        //Find the scrollBar offset:
-        double scrollBarX = pane.getX();
-        double scrollBarY = pane.getY();
-        double scrollBarWidth = pane.getBorderSize();
-        double scrollBarHeight = scrollBarWidth;
-        WGScrollableListener scrollBar = pane.getVerticalScroll();
-        if(scrollBar.isVertical())
-        {
-            scrollBarY += scrollBar.getScrollBarY();
-            scrollBarHeight = scrollBar.getScrollBarHeight();
-            scrollBarX += pane.getWidth() - scrollBarWidth - pane.getBorderSize();
-        }
-        else
-        {
-            scrollBarX += scrollBar.getScrollBarY();
-            scrollBarWidth = scrollBar.getScrollBarHeight();
-            scrollBarY += pane.getHeight() - scrollBarHeight - pane.getBorderSize();
-        }
+        
+        //To make sure nothing goes off the pane:
+        g2.setClip(pane.getBounds());
         
         //Now the internal components:
         for(int i = 0 ; i < pane.getComponentNumber() ; i++)
@@ -276,10 +263,14 @@ public class WestGraphics
             draw(pane.getComponent(i));
         }
         
-        //Then draw in the scrollBar:
-        g2.setColor(pane.getScrollBarColor());
-        Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
-        g2.fill(scrollBarRect);
+        //Draw the scrollBars
+        drawScrollBar(pane.getVerticalScroll(), pane);
+        drawScrollBar(pane.getHorizontalScroll(), pane);
+        
+        
+        //Reload the old clip, as it is no longer useful:
+        g2.setClip(oldClip);
+        
         
         //Then draw in the border:
         g2.setColor(pane.getBorderColor());
@@ -288,7 +279,41 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setStroke(oldStroke);
-        g2.setClip(oldClip);
+    }
+    private void drawScrollBar(WGScrollableListener scrollBar, WGPane pane)
+    {
+        //Find the scrollBar offset:
+        double scrollBarX = 0;
+        double scrollBarY = 0;
+        double scrollBarWidth = 0;
+        double scrollBarHeight = 0;
+        if(pane.isScrollable() && scrollBar != null && scrollBar.isShown())
+        {
+            scrollBarX = pane.getX();
+            scrollBarY = pane.getY();
+            scrollBarWidth = pane.getBorderSize();
+            scrollBarHeight = scrollBarWidth;
+            if(scrollBar.isVertical())
+            {
+                scrollBarY += scrollBar.getScrollBarY();
+                scrollBarHeight = scrollBar.getScrollBarHeight();
+                scrollBarX += pane.getWidth() - scrollBarWidth - pane.getBorderSize();
+            }
+            else
+            {
+                scrollBarX += scrollBar.getScrollBarY();
+                scrollBarWidth = scrollBar.getScrollBarHeight();
+                scrollBarY += pane.getHeight() - scrollBarHeight - pane.getBorderSize();
+            }
+        }
+        
+        //Then draw in the scrollBar:
+        if(pane.isScrollable() && scrollBar != null && scrollBar.isShown())
+        {
+            g2.setColor(pane.getScrollBarColor());
+            Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
+            g2.fill(scrollBarRect);
+        }
     }
     /**
      * The drawing method for a label that will draw the text inside a box according to the methods given by the WGLabel
@@ -320,6 +345,43 @@ public class WestGraphics
         }
         textY += textFM.getHeight();
         g2.drawString(label.getText(), (float)textX, (float)textY);
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    /**
+     * Creates a textInput based on the information given by the object
+     * @param textInput The object that gives information about how a text input is supposed to be drawn
+     */
+    private void drawTextInput(WGTextInput textInput)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
+        //Draw the Box
+        Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
+        Color backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
+        g2.setColor(backgroundColor);
+        g2.fill(buttonRect);
+        Color borderColor = textInput.getBorderColor();
+        g2.setColor(borderColor);
+        g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
+        g2.draw(buttonRect);
+            
+        //Draw the cursor
+        if(textInput.isCusorShown())
+        {
+            g2.setColor(textInput.getCursorColor());
+            //g2.fill(textInput.getCursorBounds());
+        }
+        
+        //Now the text:
+        g2.setColor(textInput.getTextColor());
+        FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
+        double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
+        double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
+        g2.setFont(textInput.getTextFont());
+        g2.drawString(textInput.getText(), (float)textX, (float)textY);
         
         //And reload it at the end
         g2.setStroke(oldStroke);

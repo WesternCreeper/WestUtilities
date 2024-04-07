@@ -179,7 +179,7 @@ public class WGToolTip extends WGDrawingObject
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             String longestString = getLongestString();
-            toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString.length());
+            toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getParent(), getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString, 100);
             
             //Then Find the best X place so the drawing is faster and smoother:
             FontMetrics textFM = getParent().getFontMetrics(toolTipFont);

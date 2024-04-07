@@ -90,7 +90,7 @@ public class WGClickListener implements MouseListener
         Rectangle2D.Double objectBounds = (Rectangle2D.Double)parentObject.getBounds();
         return objectBounds.contains(clickLoaction);
     }
-
+    
     public Component getParentComponent() {
         return parentComponent;
     }
