@@ -13,10 +13,15 @@ import java.awt.event.KeyListener;
  */
 public class WGTextInputKeyListener implements KeyListener
 {
-    private static final int ENTER_KEY = 10;
-    private static final int DELETE_KEY = 127;
     private static final int BACKSPACE_KEY = 8;
+    private static final int ENTER_KEY = 10;
+    private static final int SHIFT_KEY = 16;
     private static final int CLEAR_KEY = 27;
+    private static final int LEFT_ARROW_KEY = 37;
+    private static final int UP_ARROW_KEY = 38;
+    private static final int RIGHT_ARROW_KEY = 39;
+    private static final int DOWN_ARROW_KEY = 40;
+    private static final int DELETE_KEY = 127;
     private WGTextInput parent;
     
     /**
@@ -29,43 +34,283 @@ public class WGTextInputKeyListener implements KeyListener
     }
     
     @Override
-    public synchronized void keyTyped(KeyEvent e) 
+    public synchronized final void keyTyped(KeyEvent e) 
     {
         if(parent.isFocused())
         {
             int keyCode = (e.getKeyChar() + "").codePointAt(0);
-            if(keyCode == BACKSPACE_KEY || keyCode == DELETE_KEY)
+            switch(keyCode)
             {
-                //Deletes characters as needed:
-                String str = parent.getText();
-                if(str.length() >= 1)
-                {
-                    str = str.substring(0, str.length()-1);
-                    parent.setText(str);
-                    e.consume();
-                }
+                case BACKSPACE_KEY:
+                    backspaceEvent(e);
+                    break;
+                case DELETE_KEY:
+                    deleteEvent(e);
+                    break;
+                case CLEAR_KEY:
+                    clearEvent(e);
+                    break;
+                case ENTER_KEY:
+                    enterEvent(e);
+                    break;
+                default:
+                    standardEvent(e);
+                    break;
             }
-            else if(keyCode == CLEAR_KEY)
-            {
-                parent.setText("");
-            }
-            else if(keyCode == ENTER_KEY)
-            {
-                
-            }
-            else
-            {
-                //Add the char to the current text
-                String str = parent.getText() + e.getKeyChar();
-                parent.setText(str);
-            }
+            e.consume();
         }
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) 
+    {
+        if(parent.isFocused())
+        {
+            switch(e.getExtendedKeyCode())
+            {
+                case SHIFT_KEY:
+                    shiftEvent(e, true);
+                    break;
+            }
+            e.consume();
+        }
+    }
 
     @Override
-    public synchronized void keyReleased(KeyEvent e) {}
-    
+    public synchronized final void keyReleased(KeyEvent e) 
+    {
+        if(parent.isFocused())
+        {
+            switch(e.getExtendedKeyCode())
+            {
+                case LEFT_ARROW_KEY:
+                    leftArrowEvent(e);
+                    break;
+                case RIGHT_ARROW_KEY:
+                    rightArrowEvent(e);
+                    break;
+                case UP_ARROW_KEY:
+                    upArrowEvent(e);
+                    break;
+                case DOWN_ARROW_KEY:
+                    downArrowEvent(e);
+                    break;
+                case SHIFT_KEY:
+                    shiftEvent(e, false);
+                    break;
+            }
+            e.consume();
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the enter key is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected void enterEvent(KeyEvent e)
+    {
+        parent.setHighlightShown(false);
+        parent.setFocused(false);
+    }
+    /**
+     * This is an override-able function that gets called when the shift key is pressed
+     * @param e The key event called from the keyTyped function
+     * @param state The state of the button press, either true(pressed) or false(released)
+     */
+    protected void shiftEvent(KeyEvent e, boolean state)
+    {
+        parent.setShiftHeld(state);
+    }
+    /**
+     * This is an override-able function that gets called when the delete key is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected void deleteEvent(KeyEvent e)
+    {
+        String text = parent.getText();
+        String str = text;
+        //Delete the text in highlight:
+        if(parent.isHighlightShown())
+        {
+            highlightDelete();
+            return;
+        }
+        //Deletes characters on the forward side
+        text = parent.getText();
+        int place = parent.getCursorPosition();
+        if(str.length() >= 1 && place < str.length())
+        {
+            str = text.substring(0, place);
+            str += text.substring(place+1);
+            parent.setText(str);
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the backspace key is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected void backspaceEvent(KeyEvent e)
+    {
+        String text = parent.getText();
+        String str = text;
+        //Delete the text in highlight:
+        if(parent.isHighlightShown())
+        {
+            highlightDelete();
+            return;
+        }
+        //Deletes characters as needed:
+        text = parent.getText();
+        int place = parent.getCursorPosition();
+        if(str.length() >= 1 && place > 0)
+        {
+            str = str.substring(0, place-1);
+            str += text.substring(place);
+            parent.setText(str);
+            parent.setCursorPosition(parent.getCursorPosition() - 1);
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the clear key is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected void clearEvent(KeyEvent e)
+    {
+        //Delete the text in highlight:
+        if(parent.isHighlightShown())
+        {
+            highlightDelete();
+            return;
+        }
+        parent.setHighlightShown(false);
+        parent.setText("");
+    }
+    /**
+     * This is an override-able function that gets called when any other key is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected void standardEvent(KeyEvent e)
+    {
+        String text = parent.getText();
+        String str = text;
+        //Delete the text in highlight:
+        if(parent.isHighlightShown())
+        {
+            highlightDelete();
+        }
+        text = parent.getText();
+        //Add the char to the current text
+        int place = parent.getCursorPosition();
+        str = text.substring(0, place);
+        str += e.getKeyChar() + parent.getText().substring(place);
+        parent.setText(str);
+        parent.setCursorPosition(parent.getCursorPosition() + 1);
+    }
+    /**
+     * This is an override-able function that gets called when the left arrow key is pressed
+     * @param e The key event called from the keyReleased function
+     */
+    protected void leftArrowEvent(KeyEvent e)
+    {
+        if(parent.getCursorPosition() >= 1)
+        {
+            parent.setCursorPosition(parent.getCursorPosition() - 1);
+            if(e.isShiftDown())
+            {
+                highlightMove(parent.getCursorPosition(), parent.getCursorPosition()+1);
+            }
+        }
+        if(!e.isShiftDown())
+        {
+            parent.setHighlightShown(false);
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the right arrow key is pressed
+     * @param e The key event called from the keyReleased function
+     */
+    protected void rightArrowEvent(KeyEvent e)
+    {
+        int parentStringSize = parent.getText().length();
+        if(parent.getCursorPosition() < parentStringSize)
+        {
+            parent.setCursorPosition(parent.getCursorPosition() + 1);
+            if(e.isShiftDown())
+            {
+                highlightMove(parent.getCursorPosition(), parent.getCursorPosition()-1);
+            }
+        }
+        if(!e.isShiftDown())
+        {
+            parent.setHighlightShown(false);
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the up arrow key is pressed
+     * @param e The key event called from the keyReleased function
+     */
+    protected void upArrowEvent(KeyEvent e)
+    {
+        int beforePos = parent.getCursorPosition();
+        int parentStringSize = parent.getText().length();
+        parent.setCursorPosition(parentStringSize);
+        if(e.isShiftDown())
+        {
+            highlightMove(parentStringSize, beforePos);
+        }
+        else
+        {
+            parent.setHighlightShown(false);
+        }
+    }
+    /**
+     * This is an override-able function that gets called when the down arrow key is pressed
+     * @param e The key event called from the keyReleased function
+     */
+    protected void downArrowEvent(KeyEvent e)
+    {
+        int beforePos = parent.getCursorPosition();
+        parent.setCursorPosition(0);
+        if(e.isShiftDown())
+        {
+            highlightMove(0, beforePos);
+        }
+        else
+        {
+            parent.setHighlightShown(false);
+        }
+    }
+    private void highlightDelete()
+    {
+        String text = parent.getText();
+        String str = text;
+        int highlightStart = parent.getHighlightStart();
+        int highlightEnd = parent.getHighlightEnd();
+        if(highlightStart > highlightEnd)
+        {
+            int temp = highlightStart;
+            highlightStart = highlightEnd;
+            highlightEnd = temp;
+        }
+        str = text.substring(0, highlightStart);
+        if(highlightEnd < text.length())
+        {
+            str += text.substring(highlightEnd);
+        }
+        parent.setText(str);
+        parent.setHighlightShown(false);
+        parent.setCursorPosition(highlightStart);
+        if(parent.getCursorPosition() > str.length())
+        {
+            parent.setCursorPosition(str.length());
+        }
+    }
+    private void highlightMove(int newX, int startX)
+    {
+        if(!parent.isHighlightShown())
+        {
+            parent.setHighlightStart(startX);
+        }
+        parent.setHighlightEnd(newX);
+        parent.setHighlightShown(true);
+    }
 }

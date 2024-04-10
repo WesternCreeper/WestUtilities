@@ -9,6 +9,9 @@ import graphicsUtilities.WGAnimation.WGAStringAnimator;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -17,22 +20,30 @@ import java.awt.geom.Rectangle2D;
  */
 public class WGTextInput extends WGDrawingObject
 {
+    private static final double CURSOR_WIDTH = 2.5;
     private String text;
     private Font textFont;
     private Color backgroundColor;
     private Color borderColor;
     private Color textColor;
     private Color cursorColor;
+    private Color highlightColor;
     private Color BackgroundOnFocusColor;
     private TextResizeListener resizer;
     private WGTextInputClickListener clickListener;
     private WGTextInputKeyListener keyListener;
-    private WGAStringAnimator animator;
+    private CursorAnimator cursorAnimator = new CursorAnimator();
     private WGAAnimationManager parentAnimationManager;
     private Rectangle2D.Double cursorBounds;
+    private Rectangle2D.Double highlightBounds;
     private int cursorPosition = 0;
+    private int highlightStart = 0;
+    private int highlightEnd = 0;
     private boolean focused = false;
-    private boolean cusorShown = false;
+    private boolean cursorShown = false;
+    private boolean highlightShown = false;
+    private boolean beingTypedOn = false;
+    private boolean shiftHeld = false;
     
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -45,17 +56,21 @@ public class WGTextInput extends WGDrawingObject
      * @param backgroundColor The color of the background of the font
      * @param borderColor The border color of the box
      * @param textColor The color of the text
+     * @param cursorColor The color of the cursor
+     * @param highlightColor The color of the highlight
      * @param parent The component that the text input is on, and is used to determine how big this object is
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = "";
         this.textFont = textFont;
         this.borderColor = borderColor;
         this.textColor = textColor;
+        this.cursorColor = cursorColor;
+        this.highlightColor = highlightColor;
         setBackgroundColor(backgroundColor);
         if(getParent() != null)
         {
@@ -74,7 +89,8 @@ public class WGTextInput extends WGDrawingObject
             throw new WGNullParentException();
         }
         this.parentAnimationManager = parentAnimationManager;
-        //this.parentAnimationManager.addTimer(500, null);
+        this.parentAnimationManager.addTimer(600, cursorAnimator);
+        setUpCursorBounds();
     }
     
     
@@ -95,6 +111,8 @@ public class WGTextInput extends WGDrawingObject
     //Setters
     public void setText(String text) {
         this.text = text;
+        beingTypedOn = true;
+        cursorAnimator.reset();
         resizer.resizeComps();
     }
 
@@ -113,6 +131,62 @@ public class WGTextInput extends WGDrawingObject
         }
         
     }
+    public void setUpCursorBounds()
+    {
+        FontMetrics textFM = getParent().getFontMetrics(textFont);
+        double totalStringWidth = textFM.stringWidth(text.substring(0, text.length()));
+        double cursorX = getX() + (getWidth() - totalStringWidth) / 2.0;
+        if(cursorPosition > text.length())
+        {
+            cursorX += totalStringWidth;
+        }
+        else
+        {
+            cursorX += textFM.stringWidth(text.substring(0, cursorPosition));
+        }
+        double cursorWidth = CURSOR_WIDTH;
+        double cursorHeight = textFM.getHeight();
+        double cursorY = getY() + (getHeight() - cursorHeight) / 2;
+                                
+        cursorBounds = new Rectangle2D.Double(cursorX, cursorY, cursorWidth, cursorHeight);
+    }
+    public void setUpHighlightBounds()
+    {
+        //Basics
+        FontMetrics textFM = getParent().getFontMetrics(textFont);
+        double totalStringWidth = textFM.stringWidth(text.substring(0, text.length()));
+        
+        //Find the start X
+        double highlightStartX = getX() + (getWidth() - totalStringWidth) / 2.0;
+        if(highlightStart > text.length())
+        {
+            highlightStartX += totalStringWidth;
+        }
+        else
+        {
+            highlightStartX += textFM.stringWidth(text.substring(0, highlightStart));
+        }
+        
+        //The end X
+        double highlightEndX = getX() + (getWidth() - totalStringWidth) / 2.0;
+        if(highlightEnd > text.length())
+        {
+            highlightEndX += totalStringWidth;
+        }
+        else
+        {
+            highlightEndX += textFM.stringWidth(text.substring(0, highlightEnd));
+        }
+        
+        //The width, height, and Y
+        double highlightWidth = Math.abs(highlightEndX - highlightStartX);
+        double highlightHeight = textFM.getHeight();
+        double highlightY = getY() + (getHeight() - highlightHeight) / 2;
+        double highlightX = (highlightStartX < highlightEndX) ? highlightStartX : highlightEndX;
+                    
+        //Set it up:
+        highlightBounds = new Rectangle2D.Double(highlightX, highlightY, highlightWidth, highlightHeight);
+    }
 
     //Setters:
     public void setBackgroundColorNotClickListener(Color backgroundColor) 
@@ -128,13 +202,41 @@ public class WGTextInput extends WGDrawingObject
         this.textColor = textColor;
     }
 
+    public void setHighlightColor(Color highlightColor) {
+        this.highlightColor = highlightColor;
+    }
+
     public void setFocused(boolean focused) {
         this.focused = focused;
-        this.cusorShown = focused;
+        this.cursorShown = focused;
     }
 
     public void setCursorColor(Color cursorColor) {
         this.cursorColor = cursorColor;
+    }
+
+    public void setCursorPosition(int cursorPosition) {
+        this.cursorPosition = cursorPosition;
+        beingTypedOn = true;
+        cursorAnimator.reset();
+        setUpCursorBounds();
+    }
+
+    public void setHighlightShown(boolean highlightShown) {
+        this.highlightShown = highlightShown;
+        setUpHighlightBounds();
+    }
+
+    public void setHighlightStart(int highlightStart) {
+        this.highlightStart = highlightStart;
+    }
+
+    public void setHighlightEnd(int highlightEnd) {
+        this.highlightEnd = highlightEnd;
+    }
+
+    public void setShiftHeld(boolean shiftHeld) {
+        this.shiftHeld = shiftHeld;
     }
     
     
@@ -163,12 +265,12 @@ public class WGTextInput extends WGDrawingObject
         return cursorColor;
     }
 
-    public Color getBackgroundOnFocusColor() {
-        return BackgroundOnFocusColor;
+    public Color getHighlightColor() {
+        return highlightColor;
     }
 
-    public WGAStringAnimator getAnimator() {
-        return animator;
+    public Color getBackgroundOnFocusColor() {
+        return BackgroundOnFocusColor;
     }
 
     public boolean isFocused() {
@@ -179,8 +281,32 @@ public class WGTextInput extends WGDrawingObject
         return cursorBounds;
     }
 
-    public boolean isCusorShown() {
-        return cusorShown;
+    public Rectangle2D.Double getHighlightBounds() {
+        return highlightBounds;
+    }
+
+    public boolean isCursorShown() {
+        return cursorShown;
+    }
+
+    public int getCursorPosition() {
+        return cursorPosition;
+    }
+
+    public int getHighlightStart() {
+        return highlightStart;
+    }
+
+    public int getHighlightEnd() {
+        return highlightEnd;
+    }
+
+    public boolean isHighlightShown() {
+        return highlightShown;
+    }
+
+    public boolean isShiftHeld() {
+        return shiftHeld;
     }
     
     
@@ -203,8 +329,36 @@ public class WGTextInput extends WGDrawingObject
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+            setUpCursorBounds();
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
+        }
+    }
+    private class CursorAnimator implements ActionListener
+    {
+        private final int tickMax = 0;
+        private int tick = 0;
+        public void actionPerformed(ActionEvent e) 
+        {
+            if(beingTypedOn)
+            {
+                if(tick == tickMax)
+                {
+                    beingTypedOn = false;
+                    tick = 0;
+                    return;
+                }
+                tick++;
+            }
+            else
+            {
+                cursorShown = !cursorShown;
+            }
+        }
+        public void reset()
+        {
+            cursorShown = true;
+            tick = 0;
         }
     }
 }

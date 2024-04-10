@@ -368,11 +368,11 @@ public class WestGraphics
         g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
         g2.draw(buttonRect);
             
-        //Draw the cursor
-        if(textInput.isCusorShown())
+        //Draw the highlight:
+        if(textInput.isHighlightShown() && textInput.isFocused())
         {
-            g2.setColor(textInput.getCursorColor());
-            //g2.fill(textInput.getCursorBounds());
+            g2.setColor(textInput.getHighlightColor());
+            g2.fill(textInput.getHighlightBounds());
         }
         
         //Now the text:
@@ -382,6 +382,13 @@ public class WestGraphics
         double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
         g2.setFont(textInput.getTextFont());
         g2.drawString(textInput.getText(), (float)textX, (float)textY);
+            
+        //Draw the cursor
+        if(textInput.isCursorShown() && textInput.isFocused())
+        {
+            g2.setColor(textInput.getCursorColor());
+            g2.fill(textInput.getCursorBounds());
+        }
         
         //And reload it at the end
         g2.setStroke(oldStroke);
