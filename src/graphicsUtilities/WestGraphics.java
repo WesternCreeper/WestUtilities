@@ -11,6 +11,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.util.ArrayList;
 
 /**
  *
@@ -64,6 +65,10 @@ public class WestGraphics
             else if(obj instanceof WGTextInput)
             {
                 drawTextInput((WGTextInput)obj);
+            }
+            else if(obj instanceof WGTextArea)
+            {
+                drawTextArea((WGTextArea)obj);
             }
         }
     }
@@ -173,7 +178,7 @@ public class WestGraphics
         Stroke oldStroke = g2.getStroke();
             
         //Draw the button
-        Rectangle2D.Double buttonRect = new Rectangle2D.Double(button.getX(), button.getY(), button.getWidth(), button.getHeight());
+        Rectangle2D.Double buttonRect = button.getBounds();
         g2.setColor(button.getBackgroundColor());
         g2.fill(buttonRect);
         g2.setColor(button.getBorderColor());
@@ -315,6 +320,33 @@ public class WestGraphics
             g2.fill(scrollBarRect);
         }
     }
+    private void drawScrollBar(WGTextScrollableListener scrollBar, WGTextArea textArea)
+    {
+        //Find the scrollBar offset:
+        double scrollBarX = 0;
+        double scrollBarY = 0;
+        double scrollBarWidth = 0;
+        double scrollBarHeight = 0;
+        if(scrollBar != null && scrollBar.isShown())
+        {
+            scrollBarX = textArea.getX();
+            scrollBarY = textArea.getY();
+            scrollBarWidth = textArea.getBorderSize();
+            scrollBarHeight = scrollBarWidth;
+            
+            scrollBarY += scrollBar.getScrollBarY();
+            scrollBarHeight = scrollBar.getScrollBarHeight();
+            scrollBarX += textArea.getWidth() - scrollBarWidth - textArea.getBorderSize();
+        }
+        
+        //Then draw in the scrollBar:
+        if(scrollBar != null && scrollBar.isShown())
+        {
+            g2.setColor(textArea.getScrollBarColor());
+            Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
+            g2.fill(scrollBarRect);
+        }
+    }
     /**
      * The drawing method for a label that will draw the text inside a box according to the methods given by the WGLabel
      * @param pane The label to be drawn
@@ -329,12 +361,14 @@ public class WestGraphics
         g2.setColor(label.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(label.getTextFont());
         double textX = label.getX();
+        
         if(label.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
         {
             textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
         }
         double textY = label.getY() - textFM.getDescent() + label.getBorderSize();
         g2.setFont(label.getTextFont());
+        
         if(label.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
         {
             textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
@@ -343,6 +377,7 @@ public class WestGraphics
         {
             textX = label.getX() + label.getWidth() - ((label.getWidth() - textFM.stringWidth(label.getText())) / 2) - textFM.stringWidth(label.getText());
         }
+        
         textY += textFM.getHeight();
         g2.drawString(label.getText(), (float)textX, (float)textY);
         
@@ -389,6 +424,62 @@ public class WestGraphics
             g2.setColor(textInput.getCursorColor());
             g2.fill(textInput.getCursorBounds());
         }
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    /**
+     * The drawing method for a label that will draw the text inside a box according to the methods given by the WGLabel
+     * @param pane The label to be drawn
+     */
+    private void drawTextArea(WGTextArea textArea)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+        
+        //Save the original clip in case the user wanted that one:
+        Shape oldClip = g2.getClip();
+        
+        //To make sure nothing goes off the pane:
+        g2.setClip(textArea.getBounds());
+        
+        //Draw the text:
+        g2.setColor(textArea.getTextColor());
+        FontMetrics textFM = g2.getFontMetrics(textArea.getTextFont());
+        double textX = textArea.getX();
+        double textY = textArea.getY() - textFM.getDescent() + textArea.getBorderSize();
+        
+        double longestStringWidth = textFM.stringWidth(textArea.getLongestString());
+        
+        if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
+        {
+            textX = textArea.getX() + ((textArea.getWidth() - longestStringWidth) / 2);
+        }
+        
+        g2.setFont(textArea.getTextFont());
+        textY += textFM.getHeight() - textArea.getStringYOffset();
+        ArrayList<String> allText = textArea.getText();
+        for(int i = 0 ; i < allText.size() ; i++)
+        {
+            if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+            {
+                textX = textArea.getX() + ((textArea.getWidth() - textFM.stringWidth(allText.get(i))) / 2);
+            }
+            else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+            {
+                int stringWidth = textFM.stringWidth(allText.get(i));
+                textX = textArea.getX() + textArea.getWidth() - ((textArea.getWidth() - longestStringWidth) / 2) - stringWidth;
+            }
+            g2.drawString(allText.get(i), (float)textX, (float)textY);
+            textY += textFM.getHeight();
+        }
+        
+        //Draw the scrollBars
+        drawScrollBar(textArea.getVerticalScroll(), textArea);
+        
+        
+        //Reload the old clip, as it is no longer useful:
+        g2.setClip(oldClip);
         
         //And reload it at the end
         g2.setStroke(oldStroke);

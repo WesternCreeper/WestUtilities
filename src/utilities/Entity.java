@@ -45,6 +45,12 @@ public abstract class Entity
     {
         return y;
     }
+    
+    public void setLocation(double xCord, double yCord)
+    {
+        x = xCord;
+        y = yCord;
+    }
     public void setX(double num)
     {
         x = num;

@@ -24,7 +24,6 @@ public class WGButton extends WGDrawingObject
     private Color borderColor;
     private Color textColor;
     private ButtonResizeListener resizer;
-    private WGButtonListener clickListener;
     private WGAColorAnimator animator;
     private WGAPopupAnimationListener popper;
     private WGAAnimationManager parentAnimationManager;
@@ -83,12 +82,12 @@ public class WGButton extends WGDrawingObject
         this(xPercent, yPercent, widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
         {
-            this.clickListener = clickListener;
-            this.clickListener.setParentComponent(parent);
-            this.clickListener.setParentObject(this);
-            this.clickListener.setOriginalBackgroundColor(backgroundColor);
-            getParent().addMouseListener(this.clickListener);
-            getParent().addMouseMotionListener(this.clickListener);
+            setClickListener(clickListener);
+            getClickListener().setParentComponent(parent);
+            getClickListener().setParentObject(this);
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
+            getParent().addMouseListener(getClickListener());
+            getParent().addMouseMotionListener((WGButtonListener)getClickListener());
         }
         else
         {
@@ -99,8 +98,8 @@ public class WGButton extends WGDrawingObject
     @Override
     public Rectangle2D.Double getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
-       return bounds;
+        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        return bounds;
     }
     public void setUpBounds()
     {
@@ -174,9 +173,9 @@ public class WGButton extends WGDrawingObject
     public void setBackgroundColor(Color backgroundColor) 
     {
         this.backgroundColor = backgroundColor;
-        if(clickListener != null)
+        if(getClickListener() != null)
         {
-            clickListener.setOriginalBackgroundColor(backgroundColor);
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
         }
         
     }

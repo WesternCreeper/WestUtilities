@@ -18,6 +18,7 @@ public class WGColorHelper
     public static final int PREVENT_COLOR_OVERFLOW = 0;
     public static final int FLIP_ON_COLOR_OVERFLOW = 1;
     public static final int BOUNCE_ON_COLOR_OVERFLOW = 2;
+    public static final int LINEAR_SEARCH_COLOR_OVERFLOW = 3;
     public static final boolean PREFERRANCE_COLOR_LIGHTER = true;
     public static final boolean PREFERRANCE_COLOR_DARKER = false;
     public static Color getInverseColor(Color originalColor)
@@ -33,7 +34,35 @@ public class WGColorHelper
     }
     public static Color addToColor(Color originalColor, int red, int green, int blue, int alpha, int overflowColorBehavior)
     {
-        Color newColor = new Color(fixOutOfBoundColor(originalColor.getRed() + red, overflowColorBehavior), fixOutOfBoundColor(originalColor.getGreen() + green, overflowColorBehavior), fixOutOfBoundColor(originalColor.getBlue() + blue, overflowColorBehavior), fixOutOfBoundColor(originalColor.getAlpha() + alpha, overflowColorBehavior));
+        Color newColor;
+        if(overflowColorBehavior != LINEAR_SEARCH_COLOR_OVERFLOW)
+        {
+            newColor = new Color(fixOutOfBoundColor(originalColor.getRed() + red, overflowColorBehavior), fixOutOfBoundColor(originalColor.getGreen() + green, overflowColorBehavior), fixOutOfBoundColor(originalColor.getBlue() + blue, overflowColorBehavior), fixOutOfBoundColor(originalColor.getAlpha() + alpha, overflowColorBehavior));
+        }
+        else
+        {
+            int currentAlpha = originalColor.getAlpha();
+            int currentBlue = originalColor.getBlue();
+            int currentGreen = originalColor.getGreen();
+            int currentRed = originalColor.getRed();
+            if(currentAlpha + alpha > 255)
+            {
+                currentAlpha = (currentAlpha + alpha) - 255;
+                currentBlue++;
+            }
+            if(currentBlue + blue > 255)
+            {
+                currentBlue = (currentBlue + blue) - 255;
+                currentGreen++;
+            }
+            if(currentGreen + green > 255)
+            {
+                currentGreen = (currentGreen + green) - 255;
+                currentRed++;
+            }
+            newColor = new Color(fixOutOfBoundColor(currentRed + red, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentGreen, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentBlue, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentAlpha, PREVENT_COLOR_OVERFLOW));
+        }
+        
         return newColor;
     }
     public static Color createColor(String colorData)
@@ -214,6 +243,48 @@ public class WGColorHelper
             return true;
         }
         return false;
+    }
+    /**
+     * Compares two colors based on their RGBA sequence
+     * @param firstColor The first Color
+     * @param secondColor The second Color
+     * @return True if the firstColor is larger than the secondColor. Essentially, compares the red, then the green, then the blue, then the alpha. At each comparison if one is larger than the other, then it returns the larger one
+     */
+    public static boolean isColorGreaterThanColor(Color firstColor, Color secondColor)
+    {
+        int[] color1 = {firstColor.getRed(), firstColor.getGreen(), firstColor.getBlue(), firstColor.getAlpha()};
+        int[] color2 = {secondColor.getRed(), secondColor.getGreen(), secondColor.getBlue(), secondColor.getAlpha()};
+        for(int i = 0 ; i < color1.length ; i++)
+        {
+            if(color1[i] > color2[i])
+            {
+                return true;
+            }
+            else if(color1[i] < color2[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Compares two colors based on their RGBA sequence
+     * @param firstColor The first Color
+     * @param secondColor The second Color
+     * @return True if these two colors are equivalent
+     */
+    public static boolean isColorEqualToColor(Color firstColor, Color secondColor)
+    {
+        int[] color1 = {firstColor.getRed(), firstColor.getGreen(), firstColor.getBlue(), firstColor.getAlpha()};
+        int[] color2 = {secondColor.getRed(), secondColor.getGreen(), secondColor.getBlue(), secondColor.getAlpha()};
+        for(int i = 0 ; i < color1.length ; i++)
+        {
+            if(color1[i] != color2[i])
+            {
+                return false;
+            }
+        }
+        return true;
     }
     protected WGColorHelper(){}
 }

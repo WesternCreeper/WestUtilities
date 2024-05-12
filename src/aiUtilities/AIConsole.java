@@ -41,6 +41,7 @@ public final class AIConsole
         consoleFrame.setLayout(new GridLayout());
         consoleOutput.setBounds(10, 10, 580, 400);
         consoleOutput.setEditable(false);
+        consoleOutput.setLineWrap(true);
         consoleInput.setBounds(10, 420, 580, 80);
         consoleInput.addKeyListener(new consoleTextReturn());
         consoleReturnButton.setBounds(10, 510, 580, 80);

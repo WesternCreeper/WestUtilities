@@ -70,14 +70,6 @@ public class AIStandardFunctions extends AIFunctions
                         break;
                     case "org":
                         functionOwner.getUserConsole().addToOutput("\nORGANIZING THE CURRENT LANGUAGE FILE...");
-                        try
-                        {
-                            functionOwner.getMemory().organizeLangaugeFile(functionOwner.getLanguageFile());
-                        }
-                        catch(IOException e)
-                        {
-                            functionOwner.getUserConsole().addToOutput("\nERROR ERROR! CANNOT ORGANIZE THE FILE!");
-                        }
                         break;
                     case "store":
                         String commandParts = str.substring(commandEnd);
@@ -128,6 +120,7 @@ public class AIStandardFunctions extends AIFunctions
      */
     public void read(String line)
     {
+        /*
         String eachWord[] = line.split(" ");
         //Before anything see if any questions got answered:
         boolean questionWasAnswered = false; 
@@ -154,77 +147,6 @@ public class AIStandardFunctions extends AIFunctions
                 }
             }
         }
-        //No need to read it again if it was an answer to a question!
-        if(!questionWasAnswered)
-        {
-            //First is it a fetch question?
-            boolean fetched = false;
-            try
-            {
-                FetchQuestion fetcher = new FetchQuestion(line);
-                Object result = fetcher.questionAnswered(functionOwner.getMemory());
-                if(result instanceof String)
-                {
-                    fetched = true;
-                    say((String)result);
-                }
-            }
-            catch(IOException e){} //If this is not a fetch question then just read it like normal
-            
-            if(fetched)
-            {
-                return;
-            }
-            
-            //Then replace all phrases with their definitions:
-            //Search and find all partal matches, then replace with the one that matches the most words:
-            eachWord = functionOwner.getMemory().phraseReplace(eachWord, functionOwner.getLanguageFile());
-            
-            //Now retrieve all of the definitions of the words:
-            int i = 0;
-            while(i < eachWord.length)
-            {
-                //Check to make sure the signle word isn't a command:
-                if(i == 0)
-                {
-                    boolean isCommand = command(eachWord[i]);
-                    if(isCommand)
-                    {
-                        break;
-                    }
-                }
-                
-                String pseudonym = functionOwner.getMemory().retrieve(functionOwner.getLanguageFile(), "words", eachWord[i]);
-
-                //Recomple the whole thing:
-                String fullSentance = "";
-                for(int a = 0 ; a < eachWord.length ; a++)
-                {
-                    if(a != i)
-                    {
-                        fullSentance += eachWord[a];
-                    }
-                    else
-                    {
-                        fullSentance += pseudonym;
-                    }
-                }
-
-                //Now if it is a command:
-                if(i == 0)
-                {
-                    boolean isCommand = command(fullSentance);
-                    if(isCommand)
-                    {
-                        break;
-                    }
-                }
-
-                //If the psedonym could not be found then ask about it:
-                askDefinition(eachWord[i] + "?", eachWord[i]);
-
-                i++;
-            }
-        }
+        */
     }
 }

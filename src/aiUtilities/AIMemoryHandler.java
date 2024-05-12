@@ -136,6 +136,37 @@ public class AIMemoryHandler
         }
         return result;
     }
+    public File getFile(String fileName)
+    {
+        return getFile(aiMemoryDirectory, fileName);
+    }
+    public File getFile(File currentFolder, String fileName)
+    {
+        File[] allFilesInFolder = currentFolder.listFiles();
+        if(allFilesInFolder == null)
+        {
+            return null;
+        }
+        //Now search for the folder that is wanted:
+        File searchResult = null;
+        for(int i = 0 ; i < allFilesInFolder.length ; i++)
+        {
+            if(searchResult != null)
+            {
+                break;
+            }
+            if(allFilesInFolder[i].getName().equals(fileName))
+            {
+                searchResult = allFilesInFolder[i];
+                break;
+            }
+            else if(allFilesInFolder[i].isDirectory()) //If it is a folder then go into it
+            {
+                searchResult = getFile(allFilesInFolder[i], fileName);
+            }
+        }
+        return searchResult;
+    }
     /**
      * This does a very good job at reorganizing the language file of an AI. It may be CPU and RAM intensive if done too often but it does do its job.
      * @param langFile The language file to be sorted

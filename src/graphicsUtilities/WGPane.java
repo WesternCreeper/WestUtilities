@@ -87,6 +87,11 @@ public class WGPane extends WGDrawingObject
     public void addDrawableObject(WGDrawingObject obj)
     {
         containedObjects.add(obj);
+        WGClickListener objListener = obj.getClickListener();
+        if(objListener != null)
+        {
+            objListener.setParentOwningPane(this);
+        }
     }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.remove(int index), only these "Objects" are WGDrawingObjects
@@ -118,6 +123,9 @@ public class WGPane extends WGDrawingObject
         }
     }
     
+    /**
+     * This sets up the scroll so that the current area can scroll properly
+     */
     public void setUpScroll()
     {
         if(scrollable && verticalScroll != null && horizontalScroll != null)

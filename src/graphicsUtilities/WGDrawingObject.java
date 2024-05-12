@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import java.awt.Component;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -15,6 +16,7 @@ import java.awt.Shape;
 public abstract class WGDrawingObject
 {
     private Component parent;
+    private WGClickListener clickListener;
     private double x = 0;
     private double y = 0;
     private double width;
@@ -53,7 +55,7 @@ public abstract class WGDrawingObject
     }
     
     //Methods:
-    public abstract Shape getBounds();
+    public abstract Rectangle2D.Double getBounds();
     
     public abstract void setUpBounds();
     
@@ -81,6 +83,10 @@ public abstract class WGDrawingObject
 
     public void setBorderSize(float borderSize) {
         this.borderSize = borderSize;
+    }
+
+    public void setClickListener(WGClickListener clickListener) {
+        this.clickListener = clickListener;
     }
     
     
@@ -111,5 +117,9 @@ public abstract class WGDrawingObject
 
     public Component getParent() {
         return parent;
+    }
+    
+    public WGClickListener getClickListener() {
+        return clickListener;
     }
 }

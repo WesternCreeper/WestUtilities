@@ -44,17 +44,6 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     public void setOriginalBackgroundColor(Color originalBackgroundColor) {
         this.originalBackgroundColor = originalBackgroundColor;
     }
-    @Override
-    /**
-     * This will only set the parent object if the WGDrawingObject given is a WGButton, else it will do nothing
-     */
-    public void setParentObject(WGDrawingObject parentObject)
-    {
-        if(parentObject instanceof WGButton)
-        {
-            super.setParentObject(parentObject);
-        }
-    }
     
     //Getters:
     public Color getOriginalBackgroundColor() {

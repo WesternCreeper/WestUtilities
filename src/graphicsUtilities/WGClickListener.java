@@ -18,6 +18,7 @@ import java.awt.geom.Rectangle2D;
 public class WGClickListener implements MouseListener
 {
     private WGDrawingObject parentObject;
+    private WGPane parentOwningPane;
     private Component parentComponent;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
@@ -87,7 +88,11 @@ public class WGClickListener implements MouseListener
     protected boolean isWithinBounds(MouseEvent e)
     {
         Point2D clickLoaction = e.getPoint();
-        Rectangle2D.Double objectBounds = (Rectangle2D.Double)parentObject.getBounds();
+        Rectangle2D.Double objectBounds = parentObject.getBounds();
+        if(parentOwningPane != null) //If there is a pane then mkae sure it is within both bounds!
+        {
+            return objectBounds.contains(clickLoaction) && parentOwningPane.getBounds().contains(clickLoaction);
+        }
         return objectBounds.contains(clickLoaction);
     }
     
@@ -105,6 +110,10 @@ public class WGClickListener implements MouseListener
 
     public void setParentObject(WGDrawingObject parentObject) {
         this.parentObject = parentObject;
+    }
+
+    public void setParentOwningPane(WGPane parentOwningPane) {
+        this.parentOwningPane = parentOwningPane;
     }
     
 }
