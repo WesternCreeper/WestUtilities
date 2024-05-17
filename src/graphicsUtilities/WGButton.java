@@ -44,6 +44,22 @@ public class WGButton extends WGDrawingObject
      */
     public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent) throws WGNullParentException
     {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
+    }
+    /**
+     * This creates a baseline button that can and WILL resize itself. This will fully integrate it's resizing
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param text The text that goes on the button
+     * @param textFont The font that will draw the text
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent) throws WGNullParentException
+    {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = text;
         this.textFont = textFont;
@@ -52,7 +68,7 @@ public class WGButton extends WGDrawingObject
         this.textColor = textColor;
         if(getParent() != null)
         {
-            resizer = new ButtonResizeListener(xPercent, yPercent, widthPercent, heightPercent);
+            resizer = new ButtonResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
         }
@@ -79,7 +95,24 @@ public class WGButton extends WGDrawingObject
      */
     public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
-        this(xPercent, yPercent, widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, clickListener);
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param text The text that goes on the button
+     * @param textFont The font that will draw the text
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    {
+        this(bounds, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
         {
             setClickListener(clickListener);

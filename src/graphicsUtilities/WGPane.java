@@ -20,16 +20,13 @@ public class WGPane extends WGDrawingObject
     private Color backgroundColor;
     private Color borderColor;
     private Color scrollBarColor;
-    private PaneResizeListener resizer;
+    protected PaneResizeListener resizer;
     private WGScrollableListener verticalScroll;
     private WGScrollableListener horizontalScroll;
     
     /**
      * 
-     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
-     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
-     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
-     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param bounds The percentage of the parent component, in a rectangle form
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
      * @param backgroundColor The color of the background of the pane
@@ -38,7 +35,7 @@ public class WGPane extends WGDrawingObject
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.backgroundColor = backgroundColor;
@@ -47,7 +44,7 @@ public class WGPane extends WGDrawingObject
         this.scrollable = scrollable;
         if(getParent() != null)
         {
-            resizer = new PaneResizeListener(xPercent, yPercent, widthPercent, heightPercent);
+            resizer = new PaneResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
             if(scrollable)
@@ -66,6 +63,25 @@ public class WGPane extends WGDrawingObject
         {
             throw new WGNullParentException();
         }
+    }
+    
+    /**
+     * 
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
+     * @param backgroundColor The color of the background of the pane
+     * @param borderColor The border color of the pane
+     * @param scrollBarColor The color of the scrollBar
+     * @param parent The component that the pane is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
     }
     
     
@@ -209,9 +225,9 @@ public class WGPane extends WGDrawingObject
     
     
     //classes or Listeners:
-    private class PaneResizeListener extends WGDrawingObjectResizeListener
+    protected class PaneResizeListener extends WGDrawingObjectResizeListener
     {
-        private PaneResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent)
+        protected PaneResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent)
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }

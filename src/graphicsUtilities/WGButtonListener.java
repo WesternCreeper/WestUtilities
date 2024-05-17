@@ -60,11 +60,13 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
         {
             WGButton button = (WGButton)getParentObject();
             button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor));
+            button.getParent().repaint();
         }
         else
         {
             WGButton button = (WGButton)getParentObject();
             button.setBackgroundColorNotClickListener(originalBackgroundColor);
+            button.getParent().repaint();
         }
     }
 }

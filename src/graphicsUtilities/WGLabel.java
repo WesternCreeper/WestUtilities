@@ -23,6 +23,36 @@ public class WGLabel extends WGDrawingObject
     private Color textColor;
     private int textStyle = 0;
     private LabelResizeListener resizer;
+    
+    /**
+     * This sets up a label, which resets its font size to fit the box created by the percents given
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param textStyle the style of the text that determines how the text is drawn
+     * @param text The text that is the label
+     * @param textFont The font that will draw the text
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGLabel(Rectangle2D.Double bounds, float borderSize, int textStyle, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    {
+        super(0, 0, 0, 0, borderSize, parent);
+        this.text = text;
+        this.textFont = textFont;
+        this.textColor = textColor;
+        this.textStyle = textStyle;
+        if(getParent() != null)
+        {
+            resizer = new LabelResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
 
     /**
      * This sets up a label, which resets its font size to fit the box created by the percents given
@@ -40,21 +70,7 @@ public class WGLabel extends WGDrawingObject
      */
     public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
     {
-        super(0, 0, 0, 0, borderSize, parent);
-        this.text = text;
-        this.textFont = textFont;
-        this.textColor = textColor;
-        this.textStyle = textStyle;
-        if(getParent() != null)
-        {
-            resizer = new LabelResizeListener(xPercent, yPercent, widthPercent, heightPercent);
-            getParent().addComponentListener(resizer);
-            resizer.resizeComps();
-        }
-        else
-        {
-            throw new WGNullParentException();
-        }
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
     }
     
     

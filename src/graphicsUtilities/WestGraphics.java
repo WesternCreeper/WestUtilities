@@ -9,6 +9,7 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.util.ArrayList;
@@ -362,10 +363,6 @@ public class WestGraphics
         FontMetrics textFM = g2.getFontMetrics(label.getTextFont());
         double textX = label.getX();
         
-        if(label.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
-        {
-            textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
-        }
         double textY = label.getY() - textFM.getDescent() + label.getBorderSize();
         g2.setFont(label.getTextFont());
         
@@ -375,7 +372,7 @@ public class WestGraphics
         }
         else if(label.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
         {
-            textX = label.getX() + label.getWidth() - ((label.getWidth() - textFM.stringWidth(label.getText())) / 2) - textFM.stringWidth(label.getText());
+            textX = label.getX() + label.getWidth() - textFM.stringWidth(label.getText());
         }
         
         textY += textFM.getHeight();
@@ -429,8 +426,8 @@ public class WestGraphics
         g2.setStroke(oldStroke);
     }
     /**
-     * The drawing method for a label that will draw the text inside a box according to the methods given by the WGLabel
-     * @param pane The label to be drawn
+     * 
+     * @param textArea 
      */
     private void drawTextArea(WGTextArea textArea)
     {
@@ -444,7 +441,6 @@ public class WestGraphics
         g2.setClip(textArea.getBounds());
         
         //Draw the text:
-        g2.setColor(textArea.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(textArea.getTextFont());
         double textX = textArea.getX();
         double textY = textArea.getY() - textFM.getDescent() + textArea.getBorderSize();
@@ -459,6 +455,7 @@ public class WestGraphics
         g2.setFont(textArea.getTextFont());
         textY += textFM.getHeight() - textArea.getStringYOffset();
         ArrayList<String> allText = textArea.getText();
+        ArrayList<Color> allTextColors = textArea.getTextColors();
         for(int i = 0 ; i < allText.size() ; i++)
         {
             if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
@@ -470,6 +467,7 @@ public class WestGraphics
                 int stringWidth = textFM.stringWidth(allText.get(i));
                 textX = textArea.getX() + textArea.getWidth() - ((textArea.getWidth() - longestStringWidth) / 2) - stringWidth;
             }
+            g2.setColor(allTextColors.get(i));
             g2.drawString(allText.get(i), (float)textX, (float)textY);
             textY += textFM.getHeight();
         }

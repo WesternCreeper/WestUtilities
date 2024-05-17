@@ -154,6 +154,10 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
     
     private void doScroll(double mouseMovement, boolean useScrollSpeed)
     {
+        if(!shown)
+        {
+            return;
+        }
         Component parent = parentTextArea.getParent();
         double movement = mouseMovement;
         if(useScrollSpeed)
