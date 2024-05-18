@@ -10,16 +10,12 @@ import java.io.IOException;
  * These are the recommended functions to be in an AI. However a person can completely bi-pass this if they wish to.
  * @author Westley
  */
-public class AIStandardFunctions extends AIFunctions
+public class AIStandardFunctions
 {
+    private AICore functionOwner;
     public AIStandardFunctions(AICore core)
     {
-        super(core);
-    }
-    @Deprecated
-    public Object runCurrentFunction(Object args)
-    {
-        return args;
+        functionOwner = core;
     }
     public boolean command(String str)
     {
@@ -58,15 +54,8 @@ public class AIStandardFunctions extends AIFunctions
                     case "say":
                         say(str.substring(4).strip());
                         break;
-                    case "clear":
-                        functionOwner.getUserConsole().resetOutput();
-                        break;
                     case "get":
                         functionOwner.getUserConsole().addToOutput("\nRETREIVING INFORMATION...");
-                        break;
-                    case "run":
-                        functionOwner.getUserConsole().addToOutput("\nRUNNING THAT FUNCTION...");
-                        functionOwner.runFunction(str.substring(4).strip());
                         break;
                     case "org":
                         functionOwner.getUserConsole().addToOutput("\nORGANIZING THE CURRENT LANGUAGE FILE...");
@@ -101,7 +90,7 @@ public class AIStandardFunctions extends AIFunctions
      */
     public void say(String speechString)
     {
-        functionOwner.getUserConsole().addToOutput("\n" + speechString);
+        functionOwner.getUserConsole().addToOutput(speechString);
     }
     /**
      * This adds to the output stream in the console and adds the question to the questions ArrayList

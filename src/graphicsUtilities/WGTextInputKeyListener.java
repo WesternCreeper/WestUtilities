@@ -25,6 +25,10 @@ public class WGTextInputKeyListener implements KeyListener
     private WGTextInput parent;
     
     /**
+     * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
+     */
+    public WGTextInputKeyListener() {}
+    /**
      * This sets up a way for the text input to work on the WGTextInput object
      * @param parent The WGTextInput object that is using this to be able to get text
      */
@@ -59,10 +63,11 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
+        parent.getParent().repaint();
     }
 
     @Override
-    public void keyPressed(KeyEvent e) 
+    public synchronized void keyPressed(KeyEvent e) 
     {
         if(parent.isFocused())
         {
@@ -74,6 +79,7 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
+        parent.getParent().repaint();
     }
 
     @Override
@@ -101,12 +107,13 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
+        parent.getParent().repaint();
     }
     /**
      * This is an override-able function that gets called when the enter key is pressed
      * @param e The key event called from the keyTyped function
      */
-    protected void enterEvent(KeyEvent e)
+    protected synchronized void enterEvent(KeyEvent e)
     {
         parent.setHighlightShown(false);
         parent.setFocused(false);
@@ -116,7 +123,7 @@ public class WGTextInputKeyListener implements KeyListener
      * @param e The key event called from the keyTyped function
      * @param state The state of the button press, either true(pressed) or false(released)
      */
-    protected void shiftEvent(KeyEvent e, boolean state)
+    protected synchronized void shiftEvent(KeyEvent e, boolean state)
     {
         parent.setShiftHeld(state);
     }
@@ -124,7 +131,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the delete key is pressed
      * @param e The key event called from the keyTyped function
      */
-    protected void deleteEvent(KeyEvent e)
+    protected synchronized void deleteEvent(KeyEvent e)
     {
         String text = parent.getText();
         String str = text;
@@ -148,7 +155,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the backspace key is pressed
      * @param e The key event called from the keyTyped function
      */
-    protected void backspaceEvent(KeyEvent e)
+    protected synchronized void backspaceEvent(KeyEvent e)
     {
         String text = parent.getText();
         String str = text;
@@ -165,15 +172,15 @@ public class WGTextInputKeyListener implements KeyListener
         {
             str = str.substring(0, place-1);
             str += text.substring(place);
-            parent.setText(str);
             parent.setCursorPosition(parent.getCursorPosition() - 1);
+            parent.setText(str);
         }
     }
     /**
      * This is an override-able function that gets called when the clear key is pressed
      * @param e The key event called from the keyTyped function
      */
-    protected void clearEvent(KeyEvent e)
+    protected synchronized void clearEvent(KeyEvent e)
     {
         //Delete the text in highlight:
         if(parent.isHighlightShown())
@@ -188,7 +195,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when any other key is pressed
      * @param e The key event called from the keyTyped function
      */
-    protected void standardEvent(KeyEvent e)
+    protected synchronized void standardEvent(KeyEvent e)
     {
         String text = parent.getText();
         String str = text;
@@ -209,7 +216,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the left arrow key is pressed
      * @param e The key event called from the keyReleased function
      */
-    protected void leftArrowEvent(KeyEvent e)
+    protected synchronized void leftArrowEvent(KeyEvent e)
     {
         if(parent.getCursorPosition() >= 1)
         {
@@ -228,7 +235,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the right arrow key is pressed
      * @param e The key event called from the keyReleased function
      */
-    protected void rightArrowEvent(KeyEvent e)
+    protected synchronized void rightArrowEvent(KeyEvent e)
     {
         int parentStringSize = parent.getText().length();
         if(parent.getCursorPosition() < parentStringSize)
@@ -248,7 +255,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the up arrow key is pressed
      * @param e The key event called from the keyReleased function
      */
-    protected void upArrowEvent(KeyEvent e)
+    protected synchronized void upArrowEvent(KeyEvent e)
     {
         int beforePos = parent.getCursorPosition();
         int parentStringSize = parent.getText().length();
@@ -266,7 +273,7 @@ public class WGTextInputKeyListener implements KeyListener
      * This is an override-able function that gets called when the down arrow key is pressed
      * @param e The key event called from the keyReleased function
      */
-    protected void downArrowEvent(KeyEvent e)
+    protected synchronized void downArrowEvent(KeyEvent e)
     {
         int beforePos = parent.getCursorPosition();
         parent.setCursorPosition(0);
@@ -279,7 +286,7 @@ public class WGTextInputKeyListener implements KeyListener
             parent.setHighlightShown(false);
         }
     }
-    private void highlightDelete()
+    private synchronized void highlightDelete()
     {
         String text = parent.getText();
         String str = text;
@@ -304,7 +311,7 @@ public class WGTextInputKeyListener implements KeyListener
             parent.setCursorPosition(str.length());
         }
     }
-    private void highlightMove(int newX, int startX)
+    private synchronized void highlightMove(int newX, int startX)
     {
         if(!parent.isHighlightShown())
         {
@@ -313,4 +320,10 @@ public class WGTextInputKeyListener implements KeyListener
         parent.setHighlightEnd(newX);
         parent.setHighlightShown(true);
     }
+    
+    //Setter:
+    public void setParent(WGTextInput parent) {
+        this.parent = parent;
+    }
+    
 }

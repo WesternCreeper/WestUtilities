@@ -4,27 +4,51 @@
  */
 package aiUtilities;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.GridLayout;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyListener;
+import graphicsUtilities.Console;
+import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import graphicsUtilities.WGButton;
+import graphicsUtilities.WGButtonListener;
+import graphicsUtilities.WGNullParentException;
+import graphicsUtilities.WGTextArea;
+import graphicsUtilities.WGTextInput;
+import graphicsUtilities.WGTextInputClickListener;
+import graphicsUtilities.WGTextInputKeyListener;
+import graphicsUtilities.WestGraphics;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 /**
  * This is a standardized communication device with an AI and translates your messages into AI language rather than teaching it a language.
  * @author Westley
  */
-public final class AIConsole 
+public class AIConsole extends Console
 {
-    private JFrame consoleFrame = new JFrame();
-    private JPanel consolePane = new JPanel(null);
-    private JTextArea consoleOutput = new JTextArea();
-    private JTextArea consoleInput = new JTextArea();
-    private JButton consoleReturnButton = new JButton();
+    private WGTextArea consoleOutput;
+    private WGTextInput consoleInput;
+    private WGButton consoleReturnButton;
+    private WGAAnimationManager animationManager;
     private AICore consoleOwner;
+    
+    //Graphics variables:
+    private final double slotSize = 50;
+    private final float standardBorderSize = 5;
+    private final Color backgroundColor = new Color(209, 211, 255);
+    private final Color scrollbarColor = new Color(149, 151, 201);
+    private final Color highlightColor = new Color(195, 219, 191);
+    private final Color borderColor = new Color(186, 189, 245);
+    private final Color cursorColor = new Color(149, 151, 201);
+    private final Color textColor = new Color(196, 175, 16);
+    private final Font outputFont = new Font("Monospaced", Font.BOLD, 23);
+    private final Font inputFont = new Font("Monospaced", Font.ITALIC, 23);
+    private final Font returnButtonFont = new Font("Serif", Font.BOLD, 23);
+    private final Rectangle2D.Double consoleOutputBounds = new Rectangle2D.Double(1 / slotSize, 1/ slotSize, 48/slotSize, 42 / slotSize);
+    private final Rectangle2D.Double consoleInputBounds = new Rectangle2D.Double(6 / slotSize, 43/ slotSize, 43/slotSize, 6 / slotSize);
+    private final Rectangle2D.Double consoleReturnButtonBounds = new Rectangle2D.Double(1 / slotSize, 43/ slotSize, 5/slotSize, 6 / slotSize);
+    
     /**
      * The standard way to communicate with the user
      * @param core This is the owner of the console. Allows for communication between the user and the AI. Otherwise it would be impossible to communicate
@@ -32,30 +56,29 @@ public final class AIConsole
     public AIConsole(AICore core)
     {
         consoleOwner = core;
-        setUp();
+        try
+        {
+            animationManager = new WGAAnimationManager();
+            consoleOutput = new WGTextArea(consoleOutputBounds, standardBorderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, textColor, backgroundColor, borderColor, scrollbarColor, this);
+            consoleInput = new WGTextInput(consoleInputBounds, standardBorderSize, inputFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, this, animationManager, new WGTextInputClickListener(), new consoleTextReturn());
+            consoleReturnButton = new WGButton(consoleReturnButtonBounds, standardBorderSize, "Return", returnButtonFont, backgroundColor, borderColor, textColor, this, new consoleReturn());
+        }
+        catch(WGNullParentException e){System.exit(-1);}
+        
+        this.setFocusable(true);
+        this.requestFocus();
     }
-    private void setUp()
+    public void paintComponent(Graphics g) 
     {
-        consoleFrame.setTitle(consoleOwner.getIdentificationName() + "'s Console");
-        consoleFrame.setSize(620, 640);
-        consoleFrame.setLayout(new GridLayout());
-        consoleOutput.setBounds(10, 10, 580, 400);
-        consoleOutput.setEditable(false);
-        consoleOutput.setLineWrap(true);
-        consoleInput.setBounds(10, 420, 580, 80);
-        consoleInput.addKeyListener(new consoleTextReturn());
-        consoleReturnButton.setBounds(10, 510, 580, 80);
-        consoleReturnButton.setText("Return");
-        consoleReturnButton.addActionListener(new consoleReturn());
-        consolePane.add(consoleOutput);
-        consolePane.add(consoleInput);
-        consolePane.add(consoleReturnButton);
-        consoleFrame.add(consolePane);
-    }
-    public void launch()
-    {
-        consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        consoleFrame.setVisible(true);
+        Graphics2D g2 = (Graphics2D)g;
+        WestGraphics g3 = new WestGraphics(g2);
+        
+        g2.setColor(backgroundColor);
+        g2.fill(new Rectangle2D.Double(0, 0, getSize().width, getSize().height));
+        
+        g3.draw(consoleOutput);
+        g3.draw(consoleInput);
+        g3.draw(consoleReturnButton);
     }
     public void readInputToOutput(String transferData)
     {
@@ -68,7 +91,7 @@ public final class AIConsole
             //Not wasting time reading an empty string:
             if(!inputData[i].isEmpty())
             {
-                consoleOutput.setText(consoleOutput.getText() + "\n" + inputData[i]);
+                consoleOutput.addTextLine(inputData[i]);
                 //AI reads the input:
                 //For commands:
                 String firstCharacter = inputData[i].substring(0,1);
@@ -85,31 +108,25 @@ public final class AIConsole
     }
     public void addToOutput(String string)
     {
-        consoleOutput.setText(consoleOutput.getText() + string);
+        consoleOutput.addTextLine(string);
     }
-    public void resetOutput()
+    private class consoleTextReturn extends WGTextInputKeyListener
     {
-        consoleOutput.setText("");
-    }
-    private class consoleTextReturn implements KeyListener
-    {
-        public void keyPressed(KeyEvent e){}
-        public void keyReleased(KeyEvent e){}
-        public void keyTyped(KeyEvent e)
+        public synchronized void enterEvent(KeyEvent e)
         {
-            if(e.getKeyChar() == '\n')
-            {
-                readInputToOutput(consoleInput.getText());
-            }
+            readInputToOutput(consoleInput.getText());
         }
     }
-    private class consoleReturn implements ActionListener
+    private class consoleReturn extends WGButtonListener
     {
-        public void actionPerformed(ActionEvent e)
+        public void mouseClicked(MouseEvent e)
         {
-            String transferText = consoleInput.getText();
-            consoleInput.setText("");
-            consoleOutput.setText(consoleOutput.getText() + "\n" + transferText);
+            if(isWithinBounds(e) && !e.isConsumed())
+            {
+                String transferText = consoleInput.getText();
+                consoleInput.setText("");
+                consoleOutput.addTextLine(transferText);
+            }
         }
     }
 }

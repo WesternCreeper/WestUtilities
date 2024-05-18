@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.io.File;
 import java.net.URI;
+import javax.swing.JFrame;
 
 /**
  * This class embodies the AI. It allows for writing in and out of it's memory files, talking to the user, and rewriting its own code.
  * It is the fundamental building block to all life
  * @author Westley
  */
-public abstract class AICore 
+public class AICore 
 {
     protected int identificationNumber = 0;
     protected String identificationName = "Bot #" + identificationNumber;
@@ -34,6 +35,8 @@ public abstract class AICore
      */
     public AICore(String memoryDir, String name, int id, String langFileDir)
     {
+        identificationNumber = id;
+        identificationName = name + " ID: " + id;
         functions.say("Core constructing...");
         memory = new AIMemoryHandler(memoryDir);
         functions.say("Memory loaded...");
@@ -47,10 +50,9 @@ public abstract class AICore
     public void launchUserConsole()
     {
         functions.say("Console launch requested...");
-        userConsole.launch();
+        userConsole.launchConsole(identificationName, 600, 600, JFrame.EXIT_ON_CLOSE);
         functions.say("Console Launched!");
     }
-    public abstract Object runFunction(Object args);
     
     //Getters/Setters:
     public int getIdentificationNumber()

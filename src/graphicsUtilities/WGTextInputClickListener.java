@@ -17,6 +17,10 @@ import java.awt.event.MouseMotionListener;
 public class WGTextInputClickListener extends WGClickListener implements MouseMotionListener
 {
     private Color originalBackgroundColor;
+    /**
+     * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
+     */
+    public WGTextInputClickListener() {}
     public WGTextInputClickListener (WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
@@ -58,6 +62,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
         {
             parent.setFocused(false);
         }
+        parent.getParent().repaint();
     }
 
     @Override
@@ -73,6 +78,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             parent.setHighlightEnd(getCursorPosition(e));
             parent.setHighlightShown(true);
         }
+        parent.getParent().repaint();
     }
 
     @Override
@@ -88,6 +94,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             WGTextInput textInput = (WGTextInput)getParentObject();
             textInput.setBackgroundColorNotClickListener(originalBackgroundColor);
         }
+        getParentObject().getParent().repaint();
     }
     
     @Override
@@ -107,6 +114,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             int cursorPos = getCursorPosition(e);
             parent.setHighlightStart(cursorPos);
         }
+        parent.getParent().repaint();
     }
     
     @Override
