@@ -70,7 +70,7 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
     
     public void mouseOps(MouseEvent e)
     {
-        if(isWithinBounds(e))
+        if(isWithinBounds(e) && !toolTipObject.getLongestString().isEmpty())
         {
             if(!entered)
             {
@@ -94,6 +94,7 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
     //Setter:
     public void setToolTipObject(WGToolTip toolTipObject) {
         this.toolTipObject = toolTipObject;
+        toolTipObject.setIsShown(false);
     }
     
     

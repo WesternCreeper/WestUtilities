@@ -5,7 +5,6 @@
 package graphicsUtilities;
 
 import java.awt.Component;
-import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -59,25 +58,27 @@ public abstract class WGDrawingObject
     
     public abstract void setUpBounds();
     
+    public abstract void setBounds(Rectangle2D.Double newBounds);
+    
     
     //Setters:
     public void setIsShown(boolean isShown) {
         this.isShown = isShown;
     }
 
-    public void setX(double x) {
+    protected void setX(double x) {
         this.x = x;
     }
 
-    public void setY(double y) {
+    protected void setY(double y) {
         this.y = y;
     }
 
-    public void setWidth(double width) {
+    protected void setWidth(double width) {
         this.width = width;
     }
 
-    public void setHeight(double height) {
+    protected void setHeight(double height) {
         this.height = height;
     }
 
@@ -88,7 +89,6 @@ public abstract class WGDrawingObject
     public void setClickListener(WGClickListener clickListener) {
         this.clickListener = clickListener;
     }
-    
     
     //Getters:
     public boolean isIsShown() {

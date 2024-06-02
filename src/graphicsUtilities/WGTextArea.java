@@ -162,6 +162,10 @@ public class WGTextArea extends WGDrawingObject
     public void setUpBounds() {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
     
     public void setTextLine(int index, String information) throws IndexOutOfBoundsException
     {

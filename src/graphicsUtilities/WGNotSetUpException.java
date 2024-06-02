@@ -8,7 +8,7 @@ package graphicsUtilities;
  *
  * @author Westley
  */
-public class WGNotSetUpException extends Exception
+public class WGNotSetUpException extends WGException
 {
 
     /**

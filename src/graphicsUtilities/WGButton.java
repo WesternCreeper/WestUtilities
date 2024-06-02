@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
 import java.awt.Component;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -18,11 +19,18 @@ import java.awt.Component;
  */
 public class WGButton extends WGDrawingObject
 {
+    public final static int IMAGE_CENTER_PLACEMENT = 0;
+    public final static int IMAGE_UPPER_LEFT_CORNER_PLACEMENT = 1;
+    public final static int IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT = 4;
+    private double imageX;
+    private double imageY;
+    private int imagePlacementPeference;
     private String text;
     private Font textFont;
     private Color backgroundColor;
     private Color borderColor;
     private Color textColor;
+    private BufferedImage displayedImage;
     private ButtonResizeListener resizer;
     private WGAColorAnimator animator;
     private WGAPopupAnimationListener popper;
@@ -127,6 +135,43 @@ public class WGButton extends WGDrawingObject
             throw new WGNullParentException();
         }
     }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param buttonImage The image that will be displayed on the button
+     * @param imagePlacementPeference The preferred location of the image
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, buttonImage, imagePlacementPeference, backgroundColor, borderColor, parent, clickListener);
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param buttonImage The image that will be displayed on the button
+     * @param imagePlacementPeference The preferred location of the image
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    {
+        this(bounds, borderSize, null, null, backgroundColor, borderColor, null, parent, clickListener);
+        this.imagePlacementPeference = imagePlacementPeference;
+        displayedImage = buttonImage;
+    }
     
     @Override
     public Rectangle2D.Double getBounds() 
@@ -137,6 +182,10 @@ public class WGButton extends WGDrawingObject
     public void setUpBounds()
     {
         resizer.resizeComps();
+    }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
     }
     
     /**
@@ -163,8 +212,8 @@ public class WGButton extends WGDrawingObject
     {
         if(popper != null)
         {
-            popper.reset();
             popper.setPopOut(true);
+            popper.reset();
             parentAnimationManager.startAllTimers();
         }
         else
@@ -181,8 +230,8 @@ public class WGButton extends WGDrawingObject
     {
         if(popper != null)
         {
-            popper.reset();
             popper.setPopOut(false);
+            popper.reset();
             parentAnimationManager.startAllTimers();
         }
         else
@@ -194,11 +243,19 @@ public class WGButton extends WGDrawingObject
 
     //Setters
     public void setText(String text) {
+        if(text == null)
+        {
+            return;
+        }
         this.text = text;
         resizer.resizeComps();
     }
 
     public void setTextFont(Font textFont) {
+        if(textFont == null)
+        {
+            return;
+        }
         this.textFont = textFont;
         resizer.resizeComps();
     }
@@ -223,7 +280,16 @@ public class WGButton extends WGDrawingObject
     }
 
     public void setTextColor(Color textColor) {
+        if(textColor == null)
+        {
+            return;
+        }
         this.textColor = textColor;
+    }
+
+    public void setDisplayedImage(BufferedImage displayedImage) {
+        this.displayedImage = displayedImage;
+        resizer.resizeComps();
     }
     
     
@@ -251,6 +317,18 @@ public class WGButton extends WGDrawingObject
     public WGAColorAnimator getAnimator() {
         return animator;
     }
+
+    public double getImageX() {
+        return imageX;
+    }
+
+    public double getImageY() {
+        return imageY;
+    }
+
+    public BufferedImage getDisplayedImage() {
+        return displayedImage;
+    }
     
     
     //classes or Listeners:
@@ -271,7 +349,29 @@ public class WGButton extends WGDrawingObject
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
-            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+            if(displayedImage != null) //If there is an image on the button instead of text:
+            {
+                //Set up the x and y of the image, based on preferance:
+                switch(imagePlacementPeference)
+                {
+                    case IMAGE_CENTER_PLACEMENT:
+                        imageX = getX() + 0.5 * (getWidth() - displayedImage.getWidth()); //X + 1/2(width - imageWidth)
+                        imageY = getY() + 0.5 * (getHeight() - displayedImage.getHeight()); //Y + 1/2(height - imageHeight)
+                        break;
+                    case IMAGE_UPPER_LEFT_CORNER_PLACEMENT:
+                        imageX = getX();
+                        imageY = getY();
+                        break;
+                    case IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT:
+                        imageX = getX() + getWidth() - displayedImage.getWidth(); //X + Width - imageWidth
+                        imageY = getY() + getHeight() - displayedImage.getHeight(); //Y + Height - imageHeight
+                        break;
+                }
+            }
+            else if(textFont != null) 
+            {
+                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+            }
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

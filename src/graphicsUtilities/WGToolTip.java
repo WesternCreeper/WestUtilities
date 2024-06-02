@@ -103,6 +103,23 @@ public class WGToolTip extends WGDrawingObject
     {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
+    public String getLongestString()
+    {
+        FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
+        int longest = 0;
+        for(int i = 1 ; i < toolTipText.length ; i++)
+        {
+            if(textFM.stringWidth(toolTipText[i]) > textFM.stringWidth(toolTipText[longest]))
+            {
+                longest = i;
+            }
+        }
+        return toolTipText[longest];
+    }
     
     
     //Setters:
@@ -199,19 +216,6 @@ public class WGToolTip extends WGDrawingObject
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
-        }
-        public String getLongestString()
-        {
-            FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
-            int longest = 0;
-            for(int i = 1 ; i < toolTipText.length ; i++)
-            {
-                if(textFM.stringWidth(toolTipText[i]) > textFM.stringWidth(toolTipText[longest]))
-                {
-                    longest = i;
-                }
-            }
-            return toolTipText[longest];
         }
     }
 }

@@ -96,6 +96,10 @@ public class WGPane extends WGDrawingObject
     {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.add(Object e), only these "Objects" are WGDrawingObjects. Also keep in mind that the order this draws in is the same as the order that the components are added to the object so add tooltips to the end of the list
      * @param obj The component that groups with this one, preferably smaller that this object, however that is not a requirement

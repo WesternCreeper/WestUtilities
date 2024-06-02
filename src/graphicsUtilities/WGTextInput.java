@@ -196,6 +196,10 @@ public class WGTextInput extends WGDrawingObject
     {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
     
     
 

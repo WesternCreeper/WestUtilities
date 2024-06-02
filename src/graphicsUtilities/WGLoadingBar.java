@@ -7,6 +7,7 @@ package graphicsUtilities;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -47,6 +48,25 @@ public class WGLoadingBar extends WGDrawingObject
      */
     public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor, Component parent)
     {
+        this(new Rectangle.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor, parent);
+    }
+    /**
+     * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param title The text written on the bar
+     * @param showPercentage The option for a percentage to be written after the title
+     * @param titleFont The Font object for the title String, a FontMeterics is already supplied by the function based on the Font, no need to give such a thing here
+     * @param percentFilled The percent the bar should be filled
+     * @param isHorizontal The option to make the bar display everything horizontal or vertical. The bounds are NOT changed based on this option, so make sure the bar can fit the text!
+     * @param barBackgroundColor The background Color of the bar. This is the back of the bar, thus this is the color that represents the percent incomplete.
+     * @param barBorderColor The color of the borders around the bar
+     * @param titleColor The color of the text that is written on the bar
+     * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
+     * @param parent The parent component upon which this object is being drawn on
+     */
+    public WGLoadingBar(Rectangle.Double bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor, Component parent)
+    {
         super(0, 0, 0, 0, borderSize, parent);
         originalTitle = title;
         this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
@@ -60,7 +80,7 @@ public class WGLoadingBar extends WGDrawingObject
         this.barColor = barColor;
         if(getParent() != null)
         {
-            resizer = new BarResizeListener(xPercent, yPercent, widthPercent, heightPercent);
+            resizer = new BarResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
         }
@@ -77,6 +97,10 @@ public class WGLoadingBar extends WGDrawingObject
     {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
     
     
     //Setters:
@@ -84,6 +108,7 @@ public class WGLoadingBar extends WGDrawingObject
     {
         originalTitle = title;
         this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
+        resizer.resizeComps();
     }
 
     public void setShowPercentage(boolean showPercentage) {
@@ -107,18 +132,22 @@ public class WGLoadingBar extends WGDrawingObject
 
     public void setBarBackgroundColor(Color barBackgroundColor) {
         this.barBackgroundColor = barBackgroundColor;
+        getParent().repaint();
     }
 
     public void setBarBorderColor(Color barBorderColor) {
         this.barBorderColor = barBorderColor;
+        getParent().repaint();
     }
 
     public void setTitleColor(Color titleColor) {
         this.titleColor = titleColor;
+        getParent().repaint();
     }
 
     public void setBarColor(Color barColor) {
         this.barColor = barColor;
+        getParent().repaint();
     }
     
     

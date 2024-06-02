@@ -9,7 +9,7 @@ package graphicsUtilities;
  * @author Westley
  * Defines a 
  */
-public class WGNullParentException extends Exception
+public class WGNullParentException extends WGException
 {
 
     /**

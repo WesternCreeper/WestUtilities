@@ -186,13 +186,22 @@ public class WestGraphics
         g2.setStroke(new BasicStroke((float)button.getBorderSize()));
         g2.draw(buttonRect);
         
-        //Now the text:
-        g2.setColor(button.getTextColor());
-        FontMetrics textFM = g2.getFontMetrics(button.getTextFont());
-        double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
-        double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
-        g2.setFont(button.getTextFont());
-        g2.drawString(button.getText(), (float)textX, (float)textY);
+        //Draw the contents:
+        if(button.getDisplayedImage() != null)
+        {
+            //The image:
+            g2.drawImage(button.getDisplayedImage(), (int)button.getImageX(), (int)button.getImageY(), null);
+        }
+        else if(button.getTextColor() != null && button.getTextFont() != null && button.getText() != null)
+        {
+            //The text:
+            g2.setColor(button.getTextColor());
+            FontMetrics textFM = g2.getFontMetrics(button.getTextFont());
+            double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
+            double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
+            g2.setFont(button.getTextFont());
+            g2.drawString(button.getText(), (float)textX, (float)textY);
+        }
         
         //And reload it at the end
         g2.setStroke(oldStroke);

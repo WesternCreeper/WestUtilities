@@ -22,6 +22,10 @@ public class WGTextInputKeyListener implements KeyListener
     private static final int RIGHT_ARROW_KEY = 39;
     private static final int DOWN_ARROW_KEY = 40;
     private static final int DELETE_KEY = 127;
+    private boolean alphabeticalAllowed = false;
+    private boolean numericAllowed = false;
+    private boolean whitespaceAllowed = false;
+    private boolean allAllowed = true;
     private WGTextInput parent;
     
     /**
@@ -205,12 +209,32 @@ public class WGTextInputKeyListener implements KeyListener
             highlightDelete();
         }
         text = parent.getText();
+        
+        //Check that the character can be added to the text based on the masks.
+        boolean allowed = allAllowed;
+        char addedChar = e.getKeyChar();
+        if(alphabeticalAllowed && Character.isAlphabetic(addedChar))
+        {
+            allowed = true;
+        }
+        else if(numericAllowed && Character.isDigit(addedChar))
+        {
+            allowed = true;
+        }
+        else if(whitespaceAllowed  && Character.isWhitespace(addedChar))
+        {
+            allowed = true;
+        }
+        
         //Add the char to the current text
-        int place = parent.getCursorPosition();
-        str = text.substring(0, place);
-        str += e.getKeyChar() + parent.getText().substring(place);
-        parent.setText(str);
-        parent.setCursorPosition(parent.getCursorPosition() + 1);
+        if(allowed)
+        {
+            int place = parent.getCursorPosition();
+            str = text.substring(0, place);
+            str += addedChar + parent.getText().substring(place);
+            parent.setText(str);
+            parent.setCursorPosition(parent.getCursorPosition() + 1);
+        }
     }
     /**
      * This is an override-able function that gets called when the left arrow key is pressed
@@ -319,6 +343,44 @@ public class WGTextInputKeyListener implements KeyListener
         }
         parent.setHighlightEnd(newX);
         parent.setHighlightShown(true);
+    }
+    
+    //Mask Methods:
+    /**
+     * This makes all of the characters allowed to be inputted to the standardEvent() function, by resetting all of the masks and allowing all
+     */
+    public synchronized void resetAllCharacterMasks()
+    {
+        alphabeticalAllowed = false;
+        numericAllowed = false;
+        allAllowed = true;
+    }
+    /**
+     * Allows all alphabetical characters. Removes allowing all
+     * @param state The state (False = not allowed)
+     */
+    public synchronized void setAlphaMask(boolean state)
+    {
+        alphabeticalAllowed = state;
+        allAllowed = false;
+    }
+    /**
+     * Allows all numeric characters. Removes allowing all
+     * @param state The state (False = not allowed)
+     */
+    public synchronized void setNumericMask(boolean state)
+    {
+        numericAllowed = state;
+        allAllowed = false;
+    }
+    /**
+     * Allows white space characters. Removes allowing all
+     * @param state The state (False = not allowed)
+     */
+    public synchronized void setWhitespaceMask(boolean state)
+    {
+        whitespaceAllowed = state;
+        allAllowed = false;
     }
     
     //Setter:

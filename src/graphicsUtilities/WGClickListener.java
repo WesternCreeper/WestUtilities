@@ -49,12 +49,18 @@ public class WGClickListener implements MouseListener
         this.parentObject = parentObject;
         this.parentComponent = parentComponent;
     }
-    @Override
     /**
      * When you make a sub-class of this object make sure to use the "isWithinBounds" function with the MouseEvent e being the parameter so that this function can verify that it is within the bounds of the WGDrawingObject and not any part of the parent object.
      * Also to be able to provide function to this class make sure to sub-class this object, otherwise it don't work. This is just like it's superclass, but has additional WG specific functions
      */
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) 
+    {
+        if(isWithinBounds(e) && !e.isConsumed())
+        {
+            clickEvent(e);
+            e.consume();
+        }
+    }
 
     @Override
     /**
@@ -115,5 +121,7 @@ public class WGClickListener implements MouseListener
     public void setParentOwningPane(WGPane parentOwningPane) {
         this.parentOwningPane = parentOwningPane;
     }
+    
+    public void clickEvent(MouseEvent e) {}
     
 }

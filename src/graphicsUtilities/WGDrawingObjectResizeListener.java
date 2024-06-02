@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -34,6 +35,15 @@ public abstract class WGDrawingObjectResizeListener implements ComponentListener
     {
         resizeComps();
     }
+    
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        xPercent = newBounds.getX();
+        yPercent = newBounds.getY();
+        widthPercent = newBounds.getWidth();
+        heightPercent = newBounds.getHeight();
+    }
+    
     public abstract void resizeComps();
 
     //Getters:

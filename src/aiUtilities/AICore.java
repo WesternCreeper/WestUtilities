@@ -3,13 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package aiUtilities;
-import javax.tools.*;
-import java.util.Arrays;
+import java.awt.Color;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.io.File;
-import java.net.URI;
 import javax.swing.JFrame;
+import utilities.Logger;
 
 /**
  * This class embodies the AI. It allows for writing in and out of it's memory files, talking to the user, and rewriting its own code.
@@ -20,7 +17,7 @@ public class AICore
 {
     protected int identificationNumber = 0;
     protected String identificationName = "Bot #" + identificationNumber;
-    //protected String languageFile;
+    protected Logger logger;
     protected AIConsole userConsole = new AIConsole(this);
     protected AIMemoryHandler memory;
     protected ArrayList<Question> allUnansweredQuestions = new ArrayList<Question>(5);
@@ -37,11 +34,18 @@ public class AICore
     {
         identificationNumber = id;
         identificationName = name + " ID: " + id;
+        
         functions.say("Core constructing...");
+        
         memory = new AIMemoryHandler(memoryDir);
         functions.say("Memory loaded...");
+        
         langaugeCore = new AILanguageCore(this, memoryDir + "\\" + langFileDir);
         functions.say("Langauge Core loaded...");
+        
+        logger = new Logger(new Color(67, 107, 171), new Color(51, 87, 145), new Color(255, 180, 115), new Color(39, 63, 102), new Color(59, 255, 78), new Color(0, 0, 0));
+        logger.launchConsole("Logger Console", 600, 600, JFrame.EXIT_ON_CLOSE);
+        functions.say("Launched the logger...");
         
         functions.say("Core construction completed!");
     }

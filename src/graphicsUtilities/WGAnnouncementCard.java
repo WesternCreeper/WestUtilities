@@ -91,6 +91,10 @@ public class WGAnnouncementCard extends WGDrawingObject
     {
         resizer.resizeComps();
     }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
 
     
     //Setters:
