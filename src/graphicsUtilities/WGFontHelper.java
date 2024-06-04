@@ -37,7 +37,7 @@ public class WGFontHelper
             currentSize = (int)((minimumSize + maximumSize) /2.0);
             newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
             FontMetrics testFM = parent.getFontMetrics(newFont);
-            if(testFM.getHeight() > boxHeight || testFM.stringWidth(text) > boxWidth)
+            if(testFM.getHeight() >= boxHeight || testFM.stringWidth(text) >= boxWidth)
             {
                 maximumSize = currentSize;
             }
@@ -79,7 +79,7 @@ public class WGFontHelper
             currentSize = (int)((minimumSize + maximumSize) /2.0);
             newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
             FontMetrics testFM = parent.getFontMetrics(newFont);
-            if(testFM.stringWidth(text) > boxWidth)
+            if(testFM.stringWidth(text) >= boxWidth)
             {
                 maximumSize = currentSize;
             }
@@ -121,7 +121,7 @@ public class WGFontHelper
             currentSize = (int)((minimumSize + maximumSize) /2.0);
             newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
             FontMetrics testFM = parent.getFontMetrics(newFont);
-            if(testFM.getHeight() > boxHeight)
+            if(testFM.getHeight() >= boxHeight)
             {
                 maximumSize = currentSize;
             }

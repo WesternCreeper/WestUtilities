@@ -15,12 +15,14 @@ import java.util.ArrayList;
  */
 public class WGPane extends WGDrawingObject
 {
+    public final static boolean VERTICAL_SCROLL_PREFERED = true;
+    public final static boolean HORIZONTAL_SCROLL_PREFERED = false;
     private final boolean scrollable;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
     private Color backgroundColor;
     private Color borderColor;
     private Color scrollBarColor;
-    protected PaneResizeListener resizer;
+    private PaneResizeListener resizer;
     private WGScrollableListener verticalScroll;
     private WGScrollableListener horizontalScroll;
     
@@ -112,6 +114,7 @@ public class WGPane extends WGDrawingObject
         {
             objListener.setParentOwningPane(this);
         }
+        setUpScroll();
     }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.remove(int index), only these "Objects" are WGDrawingObjects
@@ -163,7 +166,7 @@ public class WGPane extends WGDrawingObject
         if(scrollable && verticalScroll != null && horizontalScroll != null)
         {
             verticalScroll.setPreference(preferred);
-            verticalScroll.setPreference(!preferred);
+            horizontalScroll.setPreference(preferred);
         }
     }
     
@@ -229,7 +232,7 @@ public class WGPane extends WGDrawingObject
     
     
     //classes or Listeners:
-    protected class PaneResizeListener extends WGDrawingObjectResizeListener
+    private class PaneResizeListener extends WGDrawingObjectResizeListener
     {
         protected PaneResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent)
         {

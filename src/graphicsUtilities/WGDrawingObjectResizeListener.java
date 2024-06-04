@@ -42,6 +42,7 @@ public abstract class WGDrawingObjectResizeListener implements ComponentListener
         yPercent = newBounds.getY();
         widthPercent = newBounds.getWidth();
         heightPercent = newBounds.getHeight();
+        resizeComps();
     }
     
     public abstract void resizeComps();

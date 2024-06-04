@@ -55,7 +55,7 @@ public class WGClickListener implements MouseListener
      */
     public void mouseClicked(MouseEvent e) 
     {
-        if(isWithinBounds(e) && !e.isConsumed())
+        if(isWithinBounds(e) && !e.isConsumed() && parentObject.isIsShown())
         {
             clickEvent(e);
             e.consume();

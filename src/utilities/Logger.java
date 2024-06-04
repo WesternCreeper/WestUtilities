@@ -217,6 +217,7 @@ public class Logger extends Console
                 System.exit(-1);
             }
         }
+        this.requestFocus();
     }
     
     public final void logOutput(String message)
@@ -248,6 +249,7 @@ public class Logger extends Console
                 logError(e);
             }
         }
+        this.requestFocus();
     }
     
     public final void testUnitTest(UnitTest test)

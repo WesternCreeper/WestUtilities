@@ -187,6 +187,13 @@ public class WGTextArea extends WGDrawingObject
         resizer.resizeComps();
     }
     
+    public void removeAllText()
+    {
+        text.removeAll(text);
+        textColors.removeAll(textColors);
+        resizer.resizeComps();
+    }
+    
     public String getLongestString()
     {
         int large = 0;
