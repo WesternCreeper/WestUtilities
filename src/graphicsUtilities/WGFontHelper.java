@@ -7,6 +7,7 @@ package graphicsUtilities;
 import java.awt.Font;
 import java.awt.Component;
 import java.awt.FontMetrics;
+import java.util.ArrayList;
 
 /**
  *
@@ -140,6 +141,77 @@ public class WGFontHelper
             }
         }
         return newFont;
+    }
+    public static ArrayList<String> wrapText(ArrayList<String> currentList, double objectWidth, Font usedFont, Component parent)
+    {
+        ArrayList<String> newList = new ArrayList<String>(currentList.size());
+        FontMetrics textFM = parent.getFontMetrics(usedFont);
+        //First copy over the strings:
+        for(int i = 0 ; i < currentList.size() ; i++)
+        {
+            newList.add(currentList.get(i));
+        }
+        //This requires that each line is split if too long:
+        for(int i = 0 ; i < newList.size() ; i++)
+        {
+            String str = newList.get(i);
+            double textLength = textFM.stringWidth(str);
+            if(textLength > objectWidth) //There is a problem, the string is too long, now wrap it!
+            {
+                //Now determine where in the string is the best location to split:
+                //Search Binarially:
+                int minimumSize = 0;
+                int maximumSize = str.length();
+                int sizeSplit = str.length();
+                while(true)
+                {
+                    int currentSize = (int)((minimumSize + maximumSize) /2.0);
+                    String test = str.substring(0, currentSize);
+                    double testLength = textFM.stringWidth(test);
+                    if(testLength >= objectWidth)
+                    {
+                        maximumSize = currentSize;
+                    }
+                    else if(testLength < objectWidth)
+                    {
+                        minimumSize = currentSize;
+                    }
+                    if(minimumSize == maximumSize)
+                    {
+                        sizeSplit = minimumSize;
+                        break;
+                    }
+                    else if(minimumSize+1 == maximumSize) //Make sure to use the correct one:
+                    {
+                        test = str.substring(0, maximumSize);
+                        testLength = textFM.stringWidth(test);
+                        if(testLength >= objectWidth)
+                        {
+                            sizeSplit = minimumSize;
+                        }
+                        if(testLength < objectWidth)
+                        {
+                            sizeSplit = maximumSize;
+                        }
+                        break;
+                    }
+                }
+                //Now Do stuff:
+                String thisLine = str.substring(0, sizeSplit+1);
+                String newLine = str.substring(sizeSplit+1);
+                //Now try to keep words together:
+                if(thisLine.contains(" "))
+                {
+                    //Split at the space instead if can:
+                    sizeSplit = thisLine.lastIndexOf(" ");
+                    thisLine = str.substring(0, sizeSplit+1);
+                    newLine = str.substring(sizeSplit+1);
+                }
+                newList.set(i, thisLine);
+                newList.add(i+1, newLine.strip());
+            }
+        }
+        return newList;
     }
     protected WGFontHelper(){}
 }

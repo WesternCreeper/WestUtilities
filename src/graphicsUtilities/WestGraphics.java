@@ -229,7 +229,7 @@ public class WestGraphics
         double textX = toolTip.getX();
         if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
         {
-            textX = toolTip.getX() + ((toolTip.getWidth() - toolTip.getLongestStringWidth()) / 2);
+            textX = toolTip.getX() + toolTip.getBorderSize();
         }
         double textY = toolTip.getY() - textFM.getDescent() + toolTip.getBorderSize();
         g2.setFont(toolTip.getToolTipFont());
@@ -242,7 +242,7 @@ public class WestGraphics
             }
             else if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
             {
-                textX = toolTip.getX() + toolTip.getWidth() - ((toolTip.getWidth() - toolTip.getLongestStringWidth()) / 2) - textFM.stringWidth(text[i]);
+                textX = toolTip.getX() + toolTip.getWidth() - toolTip.getBorderSize() - textFM.stringWidth(text[i]);
             }
             textY += textFM.getHeight();
             g2.drawString(text[i], (float)textX, (float)textY);
@@ -454,17 +454,25 @@ public class WestGraphics
         double textX = textArea.getX();
         double textY = textArea.getY() - textFM.getDescent() + textArea.getBorderSize();
         
-        double longestStringWidth = textFM.stringWidth(textArea.getLongestString());
-        
         if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
         {
-            textX = textArea.getX() + ((textArea.getWidth() - longestStringWidth) / 2);
+            textX = textArea.getX() + textArea.getBorderSize();
         }
         
         g2.setFont(textArea.getTextFont());
         textY += textFM.getHeight() - textArea.getStringYOffset();
-        ArrayList<String> allText = textArea.getText();
-        ArrayList<Color> allTextColors = textArea.getTextColors();
+        ArrayList<String> allText;
+        ArrayList<Color> allTextColors;
+        if(textArea.isTextWrapped())
+        {
+            allText = textArea.getFormatedText();
+            allTextColors = textArea.getFormatedColors();
+        }
+        else
+        {
+            allText = textArea.getText();
+            allTextColors = textArea.getTextColors();
+        }
         for(int i = 0 ; i < allText.size() ; i++)
         {
             if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
@@ -474,7 +482,7 @@ public class WestGraphics
             else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
             {
                 int stringWidth = textFM.stringWidth(allText.get(i));
-                textX = textArea.getX() + textArea.getWidth() - ((textArea.getWidth() - longestStringWidth) / 2) - stringWidth;
+                textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
             }
             g2.setColor(allTextColors.get(i));
             g2.drawString(allText.get(i), (float)textX, (float)textY);

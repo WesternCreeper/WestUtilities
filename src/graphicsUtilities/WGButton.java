@@ -129,6 +129,7 @@ public class WGButton extends WGDrawingObject
             ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
+            getParent().addMouseWheelListener((WGButtonListener)getClickListener());
         }
         else
         {

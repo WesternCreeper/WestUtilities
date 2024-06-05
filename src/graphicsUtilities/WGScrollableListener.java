@@ -324,6 +324,36 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
         }
         shown = totalArea > seeableArea;
     }
+    public void resetScroll()
+    {
+        if(vertical)
+        {
+            //Now set all of the components to the correct location:
+            int iEnd = parentPane.getComponentNumber();
+            for(int i = 0 ; i < iEnd ; i++)
+            {
+                WGDrawingObject obj = parentPane.getComponent(i);
+                obj.setY(obj.getY() + Math.abs(scrollY));
+            }
+            scrollY = 0;
+            scrollBarY = 0;
+            return;
+        }
+        else
+        {
+            //Now set all of the components to the correct location:
+            int iEnd = parentPane.getComponentNumber();
+            for(int i = 0 ; i < iEnd ; i++)
+            {
+                WGDrawingObject obj = parentPane.getComponent(i);
+                obj.setX(obj.getX() + Math.abs(scrollY));
+            }
+            scrollY = 0;
+            scrollBarY = 0;
+            return;
+        }
+    }
+    
     
     //Getters:
     public double getScrollY() {

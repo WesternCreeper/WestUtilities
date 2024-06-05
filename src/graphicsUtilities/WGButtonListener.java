@@ -8,12 +8,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 /**
  *
  * @author Westley
  */
-public class WGButtonListener extends WGClickListener implements MouseMotionListener
+public class WGButtonListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
     private Color originalBackgroundColor;
     /**
@@ -55,6 +57,17 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
 
     @Override
     public void mouseMoved(MouseEvent e)
+    {
+        hoverEvent(e);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) 
+    {
+        hoverEvent(e);
+    }
+    
+    public void hoverEvent(MouseEvent e)
     {
         if(isWithinBounds(e))
         {

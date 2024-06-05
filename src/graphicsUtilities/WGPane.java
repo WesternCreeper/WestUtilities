@@ -131,6 +131,8 @@ public class WGPane extends WGDrawingObject
      */
     public void removeAllDrawableObjects()
     {
+        verticalScroll.resetScroll();
+        horizontalScroll.resetScroll();
         containedObjects.removeAll(containedObjects);
     }
     /**
