@@ -13,14 +13,12 @@ import java.util.ArrayList;
  * This serves as a grouping tool, with a cool rectangle surrounding it. By no means is this a JPanel or Window or other actual heavy-weight components. All this is, is a way to easily group WGDrawingObjects together, such as in menuing.
  * @author Westley
  */
-public class WGPane extends WGDrawingObject
+public class WGPane extends WGBox
 {
     public final static boolean VERTICAL_SCROLL_PREFERED = true;
     public final static boolean HORIZONTAL_SCROLL_PREFERED = false;
     private final boolean scrollable;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
-    private Color backgroundColor;
-    private Color borderColor;
     private Color scrollBarColor;
     private PaneResizeListener resizer;
     private WGScrollableListener verticalScroll;
@@ -39,9 +37,7 @@ public class WGPane extends WGDrawingObject
      */
     public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
-        super(0, 0, 0, 0, borderSize, parent);
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
+        super(borderSize, backgroundColor, borderColor, parent);
         this.scrollBarColor = scrollBarColor;
         this.scrollable = scrollable;
         if(getParent() != null)
@@ -174,13 +170,6 @@ public class WGPane extends WGDrawingObject
     
     
     //Setters:
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
 
     public void setScrollBarColor(Color scrollBarColor) {
         this.scrollBarColor = scrollBarColor;
@@ -194,14 +183,6 @@ public class WGPane extends WGDrawingObject
 
     public WGScrollableListener getHorizontalScroll() {
         return horizontalScroll;
-    }
-    
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
     }
 
     public Color getScrollBarColor() {

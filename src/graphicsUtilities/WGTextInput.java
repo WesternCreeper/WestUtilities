@@ -18,13 +18,11 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Westley
  */
-public class WGTextInput extends WGDrawingObject
+public class WGTextInput extends WGBox
 {
     private static final double CURSOR_WIDTH = 2.5;
     private String text;
     private Font textFont;
-    private Color backgroundColor;
-    private Color borderColor;
     private Color textColor;
     private Color cursorColor;
     private Color highlightColor;
@@ -61,14 +59,12 @@ public class WGTextInput extends WGDrawingObject
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
-        super(0, 0, 0, 0, borderSize, parent);
+        super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
         this.textFont = textFont;
-        this.borderColor = borderColor;
         this.textColor = textColor;
         this.cursorColor = cursorColor;
         this.highlightColor = highlightColor;
-        setBackgroundColor(backgroundColor);
         if(getParent() != null)
         {
             resizer = new TextResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
@@ -130,14 +126,12 @@ public class WGTextInput extends WGDrawingObject
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
-        super(0, 0, 0, 0, borderSize, parent);
+        super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
         this.textFont = textFont;
-        this.borderColor = borderColor;
         this.textColor = textColor;
         this.cursorColor = cursorColor;
         this.highlightColor = highlightColor;
-        setBackgroundColor(backgroundColor);
         if(getParent() != null)
         {
             resizer = new TextResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
@@ -208,7 +202,7 @@ public class WGTextInput extends WGDrawingObject
         this.text = text;
         beingTypedOn = true;
         cursorAnimator.reset();
-        resizer.resizeComps();
+        resizer.setUpFont();
         if(cursorPosition > text.length()) //Reset the cursor postion when invalid
         {
             cursorPosition = 0;
@@ -217,12 +211,12 @@ public class WGTextInput extends WGDrawingObject
 
     public void setTextFont(Font textFont) {
         this.textFont = textFont;
-        resizer.resizeComps();
+        resizer.setUpFont();
     }
 
     public void setBackgroundColor(Color backgroundColor) 
     {
-        this.backgroundColor = backgroundColor;
+        super.setBackgroundColor(backgroundColor);
         BackgroundOnFocusColor = WGColorHelper.getDarkerOrLighter(backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
         if(clickListener != null)
         {
@@ -290,11 +284,7 @@ public class WGTextInput extends WGDrawingObject
     //Setters:
     public void setBackgroundColorNotClickListener(Color backgroundColor) 
     {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
+        super.setBackgroundColor(backgroundColor);
     }
 
     public void setTextColor(Color textColor) {
@@ -346,14 +336,6 @@ public class WGTextInput extends WGDrawingObject
 
     public Font getTextFont() {
         return textFont;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
     }
 
     public Color getTextColor() {
@@ -421,16 +403,20 @@ public class WGTextInput extends WGDrawingObject
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getSize().getWidth();
             double parentHeight = getParent().getSize().getHeight();
-            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
-            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+            setUpFont();
             setUpCursorBounds();
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
+        }
+        public void setUpFont()
+        {
+            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
+            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
         }
     }
     private class CursorAnimator implements ActionListener

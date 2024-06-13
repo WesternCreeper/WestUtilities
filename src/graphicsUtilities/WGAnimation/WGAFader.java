@@ -51,6 +51,7 @@ public abstract class WGAFader implements ActionListener
     {
         colorAnimator.resetAnimation();
         isDone = false;
+        fadeOverlay = colorAnimator.getColor(0);
     }
     public abstract void onCompletion();
     

@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Westley
  */
-public class WGButton extends WGDrawingObject
+public class WGButton extends WGBox
 {
     public final static int IMAGE_CENTER_PLACEMENT = 0;
     public final static int IMAGE_UPPER_LEFT_CORNER_PLACEMENT = 1;
@@ -26,12 +26,9 @@ public class WGButton extends WGDrawingObject
     private double imageY;
     private int imagePlacementPeference;
     private String text;
-    private Font textFont;
-    private Color backgroundColor;
-    private Color borderColor;
     private Color textColor;
+    private Font textFont;
     private BufferedImage displayedImage;
-    private ButtonResizeListener resizer;
     private WGAColorAnimator animator;
     private WGAPopupAnimationListener popper;
     private WGAAnimationManager parentAnimationManager;
@@ -68,11 +65,9 @@ public class WGButton extends WGDrawingObject
      */
     public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent) throws WGNullParentException
     {
-        super(0, 0, 0, 0, borderSize, parent);
+        super(borderSize, backgroundColor, borderColor, parent);
         this.text = text;
         this.textFont = textFont;
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
         this.textColor = textColor;
         if(getParent() != null)
         {
@@ -198,9 +193,9 @@ public class WGButton extends WGDrawingObject
     public void setUpColorAnimator(int tickMax, int startingTick, WGAAnimationManager manager)
     {
         parentAnimationManager = manager;
-        animator = new WGAColorAnimator(tickMax, startingTick, backgroundColor);
+        animator = new WGAColorAnimator(tickMax, startingTick, getBackgroundColor());
         animator.addColor(textColor);
-        animator.addColor(borderColor);
+        animator.addColor(getBorderColor());
         popper = new WGAPopupAnimationListener(animator, getParent(), this);
         parentAnimationManager.addTimer(30, popper);
     }
@@ -263,34 +258,25 @@ public class WGButton extends WGDrawingObject
 
     public void setBackgroundColor(Color backgroundColor) 
     {
-        this.backgroundColor = backgroundColor;
+        super.setBackgroundColor(backgroundColor);
         if(getClickListener() != null)
         {
             ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
         }
-        
     }
 
     public void setBackgroundColorNotClickListener(Color backgroundColor) 
     {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    public void setTextColor(Color textColor) {
-        if(textColor == null)
-        {
-            return;
-        }
-        this.textColor = textColor;
+        super.setBackgroundColor(backgroundColor);
     }
 
     public void setDisplayedImage(BufferedImage displayedImage) {
         this.displayedImage = displayedImage;
         resizer.resizeComps();
+    }
+
+    public void setTextColor(Color textColor) {
+        this.textColor = textColor;
     }
     
     
@@ -301,14 +287,6 @@ public class WGButton extends WGDrawingObject
 
     public Font getTextFont() {
         return textFont;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
     }
 
     public Color getTextColor() {

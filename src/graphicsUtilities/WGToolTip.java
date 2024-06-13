@@ -14,7 +14,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Westley
  */
-public class WGToolTip extends WGDrawingObject
+public class WGToolTip extends WGBox
 {
     public static final int TEXT_STYLE_LEFT = 0;
     public static final int TEXT_STYLE_MIDDLE = 1;
@@ -22,8 +22,6 @@ public class WGToolTip extends WGDrawingObject
     private String[] toolTipText;
     private Font toolTipFont;
     private ToolTipResizeListener resizer;
-    private Color backgroundColor;
-    private Color borderColor;
     private Color textColor;
     private double longestStringWidth = 0;
     private int textStyle = 0;
@@ -44,11 +42,9 @@ public class WGToolTip extends WGDrawingObject
      */
     public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
-        super(0,0,0,0, borderSize, parent);
+        super(borderSize, backgroundColor, borderColor, parent);
         toolTipText = text.split("\n");
         toolTipFont = textFont;
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
         this.textColor = textColor;
         if(getParent() != null)
         {
@@ -131,14 +127,6 @@ public class WGToolTip extends WGDrawingObject
         this.toolTipFont = toolTipFont;
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
     }
@@ -155,14 +143,6 @@ public class WGToolTip extends WGDrawingObject
 
     public Font getToolTipFont() {
         return toolTipFont;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
     }
 
     public Color getTextColor() {

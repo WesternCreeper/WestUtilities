@@ -91,6 +91,7 @@ public class WGTextInputKeyListener implements KeyListener
     {
         if(parent.isFocused())
         {
+            keyCodeEvent(e);
             switch(e.getExtendedKeyCode())
             {
                 case LEFT_ARROW_KEY:
@@ -113,6 +114,11 @@ public class WGTextInputKeyListener implements KeyListener
         }
         parent.getParent().repaint();
     }
+    /**
+     * This is an override-able function that gets called whenever ANY KEY is pressed
+     * @param e The key event called from the keyTyped function
+     */
+    protected synchronized void keyCodeEvent(KeyEvent e) {}
     /**
      * This is an override-able function that gets called when the enter key is pressed
      * @param e The key event called from the keyTyped function
@@ -387,5 +393,8 @@ public class WGTextInputKeyListener implements KeyListener
     public void setParent(WGTextInput parent) {
         this.parent = parent;
     }
-    
+    //Getter:
+    public WGTextInput getParent() {
+        return parent;
+    }
 }

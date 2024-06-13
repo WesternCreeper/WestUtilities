@@ -222,6 +222,10 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
     
     private void doScroll(double mouseMovement, boolean useScrollSpeed)
     {
+        if(!shown)
+        {
+            return;
+        }
         if(vertical)
         {
             double movement = mouseMovement;

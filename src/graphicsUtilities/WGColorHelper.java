@@ -69,17 +69,28 @@ public class WGColorHelper
     {
         Color newColor = Color.black;
         String temp[] = colorData.split(",");
-        if(temp.length == 3)
+        if(temp.length >= 3)
         {
             int red = FileProcessor.toInt(temp[0]);
-            int blue = FileProcessor.toInt(temp[1]);
-            int green = FileProcessor.toInt(temp[2]);
-            if(red >= 0 && red <= 255 && blue >= 0 && blue <= 255 && green >= 0 && green <= 255)
+            int green = FileProcessor.toInt(temp[1]);
+            int blue = FileProcessor.toInt(temp[2]);
+            int alpha = 255;
+            if(temp.length >= 4)
             {
-                newColor = new Color(red, blue, green);
+                alpha = FileProcessor.toInt(temp[3]);
             }
+            newColor = new Color(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), putColorIntInRange(alpha));
         }
         return newColor;
+    }
+    public static String colorToString(Color color)
+    {
+        String text = "0, 0, 0";
+        if(color != null)
+        {
+            text = color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + ", " + color.getAlpha();
+        }
+        return text;
     }
     public static Color combineTwoColors(Color color1, double c1Percentage, Color color2, double c2Percentage)
     {

@@ -14,7 +14,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Westley
  */
-public class WGAnnouncementCard extends WGDrawingObject
+public class WGAnnouncementCard extends WGBox
 {
     private double splitHeight;
     private boolean drawBackground;
@@ -25,8 +25,6 @@ public class WGAnnouncementCard extends WGDrawingObject
     private Color titleColor;
     private Color splitColor;
     private Color subTitleColor;
-    private Color backgroundColor;
-    private Color borderColor;
     private AnnouncementResizeListener resizer;
     /**
      * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths
@@ -51,7 +49,7 @@ public class WGAnnouncementCard extends WGDrawingObject
      */
     public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor, Component parent)
     {
-        super(0, 0, 0, 0, borderSize, parent);
+        super(borderSize, backgroundColor, borderColor, parent);
         this.splitHeight = 0;
         this.title = title;
         this.titleFont = titleFont;
@@ -60,8 +58,6 @@ public class WGAnnouncementCard extends WGDrawingObject
         this.titleColor = titleColor;
         this.splitColor = splitColor;
         this.subTitleColor = subTitleColor;
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
         drawBackground = true;
         if(backgroundColor == null || borderColor == null)
         {
@@ -104,7 +100,7 @@ public class WGAnnouncementCard extends WGDrawingObject
      */
     public synchronized void setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
-        if(backgroundColor == null || borderColor == null)
+        if(getBackgroundColor() == null || getBorderColor() == null)
         {
             this.drawBackground = false;
             resizer.resizeComps();
@@ -141,14 +137,6 @@ public class WGAnnouncementCard extends WGDrawingObject
 
     public void setSubTitleColor(Color subTitleColor) {
         this.subTitleColor = subTitleColor;
-    }
-
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
     }
     
     
@@ -187,14 +175,6 @@ public class WGAnnouncementCard extends WGDrawingObject
 
     public Color getSubTitleColor() {
         return subTitleColor;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
     }
     
     

@@ -9,7 +9,6 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.util.ArrayList;
@@ -71,6 +70,10 @@ public class WestGraphics
             {
                 drawTextArea((WGTextArea)obj);
             }
+            else if(obj instanceof WGCheckBox)
+            {
+                drawCheckBox((WGCheckBox)obj);
+            }
         }
     }
     
@@ -86,7 +89,7 @@ public class WestGraphics
         FontMetrics titleFM = g2.getFontMetrics(loadingBar.getTitleFont());
         g2.setFont(loadingBar.getTitleFont());
         Rectangle2D.Double originalBarRect = loadingBar.getBounds();
-        g2.setColor(loadingBar.getBarBackgroundColor());
+        g2.setColor(loadingBar.getBackgroundColor());
         g2.fill(originalBarRect);
         
         double percentWidth = originalBarRect.getWidth() * (loadingBar.isHorizontal() ? loadingBar.getPercentFilled() : 1);
@@ -95,7 +98,7 @@ public class WestGraphics
         g2.setColor(loadingBar.getBarColor());
         g2.fill(percentRect);
         
-        g2.setColor(loadingBar.getBarBorderColor());
+        g2.setColor(loadingBar.getBorderColor());
         g2.setStroke(new BasicStroke((float)loadingBar.getBorderSize()));
         g2.draw(originalBarRect);
         
@@ -495,6 +498,36 @@ public class WestGraphics
         
         //Reload the old clip, as it is no longer useful:
         g2.setClip(oldClip);
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    public void drawCheckBox(WGCheckBox checkBox)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
+        //Draw the button
+        Rectangle2D.Double buttonRect = checkBox.getBounds();
+        g2.setColor(checkBox.getBackgroundColor());
+        g2.fill(buttonRect);
+        g2.setColor(checkBox.getBorderColor());
+        g2.setStroke(new BasicStroke((float)checkBox.getBorderSize()));
+        g2.draw(buttonRect);
+        
+        //Draw the Check when needed:
+        if(checkBox.isChecked())
+        {
+            g2.setColor(checkBox.getCheckColor());
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(buttonRect.getX(), buttonRect.getY());
+            path.lineTo(buttonRect.getX() + buttonRect.getWidth(), buttonRect.getY() + buttonRect.getHeight());
+            g2.draw(path);
+            path.reset();
+            path.moveTo(buttonRect.getX() + buttonRect.getWidth(), buttonRect.getY());
+            path.lineTo(buttonRect.getX(), buttonRect.getY() + buttonRect.getHeight());
+            g2.draw(path);
+        }
         
         //And reload it at the end
         g2.setStroke(oldStroke);

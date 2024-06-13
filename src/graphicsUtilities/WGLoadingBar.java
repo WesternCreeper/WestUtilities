@@ -15,7 +15,7 @@ import java.awt.geom.Rectangle2D;
  * @author Westley
  * This defines a loading bar, which can then be drawn using the WestGraphics method. This is used for drawing and bound creation!!
  */
-public class WGLoadingBar extends WGDrawingObject
+public class WGLoadingBar extends WGBox
 {
     private String originalTitle;
     private String title;
@@ -23,8 +23,6 @@ public class WGLoadingBar extends WGDrawingObject
     private Font titleFont;
     private double percentFilled;
     private boolean isHorizontal;
-    private Color barBackgroundColor;
-    private Color barBorderColor;
     private Color titleColor;
     private Color barColor;
     private BarResizeListener resizer;
@@ -67,15 +65,13 @@ public class WGLoadingBar extends WGDrawingObject
      */
     public WGLoadingBar(Rectangle.Double bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Color barBackgroundColor, Color barBorderColor, Color titleColor, Color barColor, Component parent)
     {
-        super(0, 0, 0, 0, borderSize, parent);
+        super(borderSize, barBackgroundColor, barBorderColor, parent);
         originalTitle = title;
         this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
         this.showPercentage = showPercentage;
         this.titleFont = titleFont;
         this.percentFilled = percentFilled;
         this.isHorizontal = isHorizontal;
-        this.barBackgroundColor = barBackgroundColor;
-        this.barBorderColor = barBorderColor;
         this.titleColor = titleColor;
         this.barColor = barColor;
         if(getParent() != null)
@@ -130,16 +126,6 @@ public class WGLoadingBar extends WGDrawingObject
         this.isHorizontal = isHorizontal;
     }
 
-    public void setBarBackgroundColor(Color barBackgroundColor) {
-        this.barBackgroundColor = barBackgroundColor;
-        getParent().repaint();
-    }
-
-    public void setBarBorderColor(Color barBorderColor) {
-        this.barBorderColor = barBorderColor;
-        getParent().repaint();
-    }
-
     public void setTitleColor(Color titleColor) {
         this.titleColor = titleColor;
         getParent().repaint();
@@ -170,14 +156,6 @@ public class WGLoadingBar extends WGDrawingObject
 
     public boolean isHorizontal() {
         return isHorizontal;
-    }
-
-    public Color getBarBackgroundColor() {
-        return barBackgroundColor;
-    }
-
-    public Color getBarBorderColor() {
-        return barBorderColor;
     }
 
     public Color getTitleColor() {
