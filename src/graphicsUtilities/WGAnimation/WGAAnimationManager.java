@@ -56,6 +56,40 @@ public class WGAAnimationManager
     }
     
     /**
+     * This stops the timer with the interval specified
+     * @param milli the interval
+     */
+    public synchronized void stop(int milli)
+    {
+        for(int i = 0 ; i < allTimers.size() ; i++)
+        {
+            Timer timer = allTimers.get(i);
+            if(timer.getDelay() == milli)
+            {
+                timer.stop();
+                break;
+            }
+        }
+    }
+    
+    /**
+     * This starts the timer with the interval specified
+     * @param milli the interval
+     */
+    public synchronized void start(int milli)
+    {
+        for(int i = 0 ; i < allTimers.size() ; i++)
+        {
+            Timer timer = allTimers.get(i);
+            if(timer.getDelay() == milli)
+            {
+                timer.start();
+                break;
+            }
+        }
+    }
+    
+    /**
      * Please be careful with this function as different Listeners will all correspond to the same timer. Stops a timer based on the given index
      * @param index The index of the timer
      * @throws ArrayIndexOutOfBoundsException when the index is not valid

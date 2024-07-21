@@ -532,11 +532,21 @@ public class FileProcessor
         return result;
     }
     /**
-     * Will return an int if and only if there is no chars. Will return Integer.MIN_VALUE
+     * Will return an int if and only if there is no chars. Will return Integer.MIN_VALUE otherwise
      * @param str The string value to be converted
      * @return INT
      */
     public static int toInt(String str)
+    {
+        return toInt(str, Integer.MIN_VALUE);
+    }
+    /**
+     * Will return an int if and only if there is no chars. Will return default value otherwise
+     * @param str The string value to be converted
+     * @param defaultValue The default value that will be returned if the result could not be turned into an int. Including but not limited to String values, Object values, Boolean values, or Double values
+     * @return INT
+     */
+    public static int toInt(String str, int defaultValue)
     {
         try
         {
@@ -545,7 +555,7 @@ public class FileProcessor
         }
         catch(NumberFormatException e)
         {
-            return Integer.MIN_VALUE;
+            return defaultValue;
         }
     }
     /**
@@ -554,6 +564,16 @@ public class FileProcessor
      * @return The number created during division, will return 0 if the second number is 0 or there is an error
      */
     public static float toFloat(String str)
+    {
+        return toFloat(str, 0);
+    }
+    /**
+     * Using a string this function will make that into a decimal value. String must be in format: 1/2 OR .5
+     * @param str
+     * @param defaultValue The default value that will be returned if the result could not be turned into an int. Including but not limited to String values, Object values, or Boolean values
+     * @return The number created during division, will return defaultValue if there is an error
+     */
+    public static float toFloat(String str, float defaultValue)
     {
         String temp[] = str.split("/");
         if(temp.length == 2)
@@ -573,7 +593,7 @@ public class FileProcessor
         }
         catch(NumberFormatException e)
         {
-            return 0;
+            return defaultValue;
         }
     }
     /**
@@ -582,6 +602,16 @@ public class FileProcessor
      * @return The number created during division, will return 0 if the second number is 0 or there is an error
      */
     public static double toDouble(String str)
+    {
+        return toDouble(str, 0);
+    }
+    /**
+     * Using a string this function will make that into a decimal value. String must be in format: 1/2 OR .5
+     * @param str
+     * @param defaultValue The default value that will be returned if the result could not be turned into an int. Including but not limited to String values, Object values, or Boolean values
+     * @return The number created during division, will return 0 if the second number is 0 or there is an error
+     */
+    public static double toDouble(String str, double defaultValue)
     {
         String temp[] = str.split("/");
         if(temp.length == 2)
@@ -601,15 +631,25 @@ public class FileProcessor
         }
         catch(NumberFormatException e)
         {
-            return 0;
+            return defaultValue;
         }
     }
     /**
      * Using a string this function will make that into a boolean value. True/False
      * @param str
-     * @return The boolean created during division, will return false if there is an error
+     * @return The boolean created from the string, will return false if there is an error
      */
     public static boolean toBoolean(String str)
+    {
+        return toBoolean(str, false);
+    }
+    /**
+     * Using a string this function will make that into a boolean value. True/False
+     * @param str
+     * @param defaultValue The default value that will be returned if the result could not be turned into an int. Including but not limited to String values, Object values, Double values, or Integer values
+     * @return The boolean created from the string, will return false if there is an error
+     */
+    public static boolean toBoolean(String str, boolean defaultValue)
     {
         //If a Boolean:
         try
@@ -619,7 +659,7 @@ public class FileProcessor
         }
         catch(NumberFormatException e)
         {
-            return false;
+            return defaultValue;
         }
     }
     

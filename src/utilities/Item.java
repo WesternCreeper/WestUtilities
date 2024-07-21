@@ -13,13 +13,13 @@ import java.io.FileNotFoundException;
  */
 public class Item 
 {
+    private String name;
+    private String description;
     private int number;
     private int strength;
     private int type;
     private int subtype;
     private int usage;
-    private String name;
-    private String description;
     /**
      * The no parameter constructor
      */
@@ -181,9 +181,16 @@ public class Item
     }
     public String toString()
     {
-        return name + " " + number + " " + strength + " " + type + " " + subtype + " " + usage;
+        return name + " " + number + " " + strength + " " + type + " " + subtype + " " + usage + " " + description;
     }
     
+    /**
+     * Uses the old "Stacking" system of items, none of that new tech stuff with the FileProcessor. (VariableNumber \n ItemName \n ItemNumber \n ItemStrength \n ItemType \n ItemSubType \n ItemUsage \n etc.)
+     * @param file The file
+     * @param start The Start of the file
+     * @return A list of all of the items, properly put together
+     * @throws FileNotFoundException If there is no file found
+     */
     public static ArrayList<Item> getItemList(String file, int start) throws FileNotFoundException
     {
         ArrayList<Item> items = new ArrayList<Item>(0);
@@ -229,6 +236,40 @@ public class Item
             }
             i++;
         }
+        return items;
+    }
+    
+    /**
+     * Uses the new "FileProcessor" method system of items, all made possible by the FileProcessor. ([Id] \n Name = ItemName \n Description = ItemDesc \n etc.) Missing values are assumed to defaults, except Strings
+     * @param file The item file
+     * @return A list of all of the items, properly put together
+     * @throws FileNotFoundException If there is no file found
+     */
+    public static ArrayList<Item> getItemList(String file) throws FileNotFoundException
+    {
+        ArrayList<Item> items = new ArrayList<Item>(0);
+        
+        File fl = new File(file);
+        if(!fl.exists())
+        {
+            FileNotFoundException error = new FileNotFoundException("Item File Doesn't Exist!!!");
+            throw(error);
+        }
+        
+        FileProcessor itemFinder = new FileProcessor(file);
+        int id = 0;
+        while(itemFinder.sectionExists(id + ""))
+        {   //String str, int num, int stren, int ty, int subty, int use, String descr
+            String name = itemFinder.findValue(id + "", "Name", false);
+            String description = itemFinder.findValue(id + "", "Description", false);
+            int number = FileProcessor.toInt(itemFinder.findValue(id + "", "Number"), 0);
+            int strength = FileProcessor.toInt(itemFinder.findValue(id + "", "Strength"), 0);
+            int type = FileProcessor.toInt(itemFinder.findValue(id + "", "Type"), 0);
+            int usage = FileProcessor.toInt(itemFinder.findValue(id + "", "Usage"), 0);
+            items.add(new Item(name, number, strength, type, id, usage, description));
+            id++;
+        }
+        
         return items;
     }
 }

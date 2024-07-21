@@ -118,10 +118,10 @@ public class WGButton extends WGBox
         this(bounds, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
         {
-            setClickListener(clickListener);
-            getClickListener().setParentComponent(parent);
+            super.setClickListener(clickListener);
+            getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
             getParent().addMouseWheelListener((WGButtonListener)getClickListener());
@@ -182,6 +182,16 @@ public class WGButton extends WGBox
     public void setBounds(Rectangle2D.Double newBounds)
     {
         resizer.setBounds(newBounds);
+    }
+    public void setClickListner(WGClickListener clickListener)
+    {
+        super.setClickListener(clickListener);
+        clickListener.setParentComponent(getParent());
+        clickListener.setParentObject(this);
+        ((WGButtonListener)clickListener).setOriginalBackgroundColor(getBackgroundColor());
+        getParent().addMouseListener(clickListener);
+        getParent().addMouseMotionListener((WGButtonListener)clickListener);
+        getParent().addMouseWheelListener((WGButtonListener)clickListener);
     }
     
     /**
