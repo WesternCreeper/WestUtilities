@@ -16,7 +16,6 @@ public abstract class WGBox extends WGDrawingObject
 {
     private Color backgroundColor;
     private Color borderColor;
-    protected WGDrawingObjectResizeListener resizer;
     
     
     protected WGBox(float borderSize, Color backgroundColor, Color borderColor, Component parent)

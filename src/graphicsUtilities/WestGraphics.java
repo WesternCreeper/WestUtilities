@@ -11,6 +11,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.util.ArrayList;
 
 /**
@@ -75,6 +77,24 @@ public class WestGraphics
                 drawCheckBox((WGCheckBox)obj);
             }
         }
+    }
+    
+    /**
+     * This draws an image with both a shader and a resize
+     * @param image The image to be drawn
+     * @param imageOps The shader
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     */
+    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double widthRescale, double heightRescale)
+    {
+        AffineTransform originalTransform = g2.getTransform();
+        g2.transform(new AffineTransform(widthRescale,0,0,heightRescale, 0, 0));
+        
+        g2.drawImage(image, imageOps, x, y);
+        g2.setTransform(originalTransform);
     }
     
     /**

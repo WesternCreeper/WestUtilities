@@ -21,7 +21,7 @@ public class WGToolTip extends WGBox
     public static final int TEXT_STYLE_RIGHT = 2;
     private String[] toolTipText;
     private Font toolTipFont;
-    private ToolTipResizeListener resizer;
+    private WGToolTipListener toolTipListener;
     private Color textColor;
     private double longestStringWidth = 0;
     private int textStyle = 0;
@@ -53,6 +53,7 @@ public class WGToolTip extends WGBox
             listener.setToolTipObject(this);
             getParent().addMouseListener(listener);
             getParent().addMouseMotionListener(listener);
+            toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
             getParent().addComponentListener(resizer);
             resizer.resizeComps();
@@ -156,7 +157,10 @@ public class WGToolTip extends WGBox
     public int getTextStyle() {
         return textStyle;
     }
-    
+
+    public WGToolTipListener getToolTipListener() {
+        return toolTipListener;
+    }
     
     
     //classes or Listeners:

@@ -31,7 +31,6 @@ public class WGTextArea extends WGDrawingObject
     private Color textColor;
     private Color scrollBarColor;
     private WGTextScrollableListener verticalScroll;
-    private TextAreaResizeListener resizer;
     
     /**
      * The standard non-scrollable constructor that holds multiple lines of text in an invisible box

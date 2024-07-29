@@ -19,8 +19,6 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -95,11 +93,18 @@ public class Logger extends Console
     
     //File System:
     private boolean fileWritenTo = false;
+    private boolean outputWriterClosed = false;
+    private boolean alertOnOutput = false;
     private PrintWriter errorWriter;
     private BufferedWriter outputWriter;
     
     public Logger(Color backgroundColor, Color borderColor, Color textColor, Color scrollbarColor, Color passColor, Color failColor)
     {
+        this(backgroundColor, borderColor, textColor, scrollbarColor, passColor, failColor, true);
+    }
+    public Logger(Color backgroundColor, Color borderColor, Color textColor, Color scrollbarColor, Color passColor, Color failColor, boolean alertOnOutput)
+    {
+        this.alertOnOutput = alertOnOutput;
         this.backgroundColor = backgroundColor;
         this.passColor = passColor;
         this.failColor = failColor;
@@ -184,15 +189,7 @@ public class Logger extends Console
     
     public final void logError(Exception e)
     {
-        String errorMessage = e.getLocalizedMessage();
-        if(errorMessage != null)
-        {
-            errorOutputDisplay.addTextLine(errorMessage);
-        }
-        else
-        {
-            errorOutputDisplay.addTextLine("Error Detected. Check the Error File for more information");
-        }
+        errorOutputDisplay.addTextLine("Error Detected. Check the Error File for more information");
         
         try
         {
@@ -235,21 +232,40 @@ public class Logger extends Console
             }
             
             fileWritenTo = true;
-            this.getPaneOwner().addWindowListener(new ApplicationListener());
         }
         outputDisplay.addTextLine(message);
+        if(outputWriterClosed)
+        {
+            try
+            {
+                outputWriter = new BufferedWriter(new FileWriter(outputFile, true));
+            }
+            catch(Exception e)
+            {
+                logError(e);
+            }
+        }
         if(outputWriter != null)
         {
             try
             {
                 outputWriter.append(message + "\n");
+                if(this.getPaneOwner() == null)
+                {
+                    outputWriter.close();
+                    outputWriterClosed = true;
+                }
             }
             catch(IOException e)
             {
                 logError(e);
             }
         }
-        this.requestFocus();
+        //Silences the output when needed
+        if(alertOnOutput)
+        {
+            this.requestFocus();
+        }
     }
     
     public final void testUnitTest(UnitTest test)
@@ -291,28 +307,6 @@ public class Logger extends Console
             standardDisplayInformation.setTextLine(1, runningText);
         }
     }
-    
-    private class ApplicationListener implements WindowListener
-    {
-        public void windowDeactivated(WindowEvent e){}
-        public void windowActivated(WindowEvent e){}
-        public void windowDeiconified(WindowEvent e){}
-        public void windowIconified(WindowEvent e){}
-        public void windowClosed(WindowEvent e){}
-        public void windowOpened(WindowEvent e){}
-        public void windowClosing(WindowEvent e)
-        {
-            try
-            {
-                outputWriter.close();
-            }
-            catch(Exception e2)
-            {
-                logError(e2);
-            }
-        }
-    }
-    
     //Button classes:
     
     

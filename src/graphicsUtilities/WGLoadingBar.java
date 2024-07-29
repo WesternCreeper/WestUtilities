@@ -25,7 +25,6 @@ public class WGLoadingBar extends WGBox
     private boolean isHorizontal;
     private Color titleColor;
     private Color barColor;
-    private BarResizeListener resizer;
     /**
      * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen

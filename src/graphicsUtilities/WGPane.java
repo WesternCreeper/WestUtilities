@@ -20,7 +20,6 @@ public class WGPane extends WGBox
     private final boolean scrollable;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
     private Color scrollBarColor;
-    private PaneResizeListener resizer;
     private WGScrollableListener verticalScroll;
     private WGScrollableListener horizontalScroll;
     
@@ -113,22 +112,73 @@ public class WGPane extends WGBox
         setUpScroll();
     }
     /**
-     * A wrapper for the ArrayList. Does the same thing as ArrayList.remove(int index), only these "Objects" are WGDrawingObjects
-     * @param index The index of the object that one wants to remove
-     * @return The object removed
-     * @throws IndexOutOfBoundsException Thrown when the index is not within the bounds of the arrayList
-     */
-    public WGDrawingObject removeDrawableObject(int index) throws IndexOutOfBoundsException
-    {
-        return containedObjects.remove(index);
-    }
-    /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects
      */
     public void removeAllDrawableObjects()
     {
         verticalScroll.resetScroll();
         horizontalScroll.resetScroll();
+        
+        //Remove all listeners, as they will still listen even after the object disappears
+        for(int i = 0 ; i < containedObjects.size() ; i++)
+        {
+            WGClickListener clicks = containedObjects.get(i).getClickListener();
+            if(clicks != null)
+            {
+                getParent().removeMouseListener(clicks);
+            }
+            //Now remove ButtonListeners, ScrollListeners, Key Listeners, etc.
+            try
+            {
+                WGDrawingObjectResizeListener objResizer = containedObjects.get(i).getResizer();
+                getParent().removeComponentListener(objResizer);
+                
+                WGDrawingObject obj = containedObjects.get(i);
+                if(obj instanceof WGToolTip)
+                {
+                    WGToolTipListener toolTip = ((WGToolTip)obj).getToolTipListener();
+                    getParent().removeMouseListener(toolTip);
+                    getParent().removeMouseMotionListener(toolTip);
+                }
+                else if(obj instanceof WGTextArea)
+                {
+                    WGTextScrollableListener textScroller = ((WGTextArea)obj).getVerticalScroll();
+                    getParent().removeMouseListener(textScroller);
+                    getParent().removeMouseMotionListener(textScroller);
+                    getParent().removeMouseWheelListener(textScroller);
+                }
+                else if(obj instanceof WGTextInput)
+                {
+                    WGTextInputKeyListener keyer = ((WGTextInput)obj).getKeyListener();
+                    WGTextInputClickListener clicker = ((WGTextInput)obj).getClickListener();
+                    getParent().removeKeyListener(keyer);
+                    getParent().removeMouseListener(clicker);
+                    getParent().removeMouseMotionListener(clicker);
+                }
+                else if(obj instanceof WGPane)
+                {
+                    WGScrollableListener scrollerH = ((WGPane)obj).getHorizontalScroll();
+                    WGScrollableListener scrollerV = ((WGPane)obj).getVerticalScroll();
+                    getParent().removeMouseListener(scrollerH);
+                    getParent().removeMouseMotionListener(scrollerH);
+                    getParent().removeMouseWheelListener(scrollerH);
+                    getParent().removeMouseListener(scrollerV);
+                    getParent().removeMouseMotionListener(scrollerV);
+                    getParent().removeMouseWheelListener(scrollerV);
+                }
+                else if(obj instanceof WGButton)
+                {
+                    WGButtonListener buttoner = (WGButtonListener)((WGButton)obj).getClickListener();
+                    getParent().removeMouseMotionListener(buttoner);
+                }
+            }
+            catch(NullPointerException e) //This is completely fine, just keep moving
+            {
+                continue;
+            }
+        }
+        
+        //Now remove the actual objects now that the listeners have been removed
         containedObjects.removeAll(containedObjects);
     }
     /**

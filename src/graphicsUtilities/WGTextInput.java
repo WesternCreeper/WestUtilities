@@ -27,7 +27,6 @@ public class WGTextInput extends WGBox
     private Color cursorColor;
     private Color highlightColor;
     private Color BackgroundOnFocusColor;
-    private TextResizeListener resizer;
     private WGTextInputClickListener clickListener;
     private WGTextInputKeyListener keyListener;
     private CursorAnimator cursorAnimator = new CursorAnimator();
@@ -202,7 +201,7 @@ public class WGTextInput extends WGBox
         this.text = text;
         beingTypedOn = true;
         cursorAnimator.reset();
-        resizer.setUpFont();
+        ((TextResizeListener)resizer).setUpFont();
         if(cursorPosition > text.length()) //Reset the cursor postion when invalid
         {
             cursorPosition = 0;
@@ -211,7 +210,7 @@ public class WGTextInput extends WGBox
 
     public void setTextFont(Font textFont) {
         this.textFont = textFont;
-        resizer.setUpFont();
+        ((TextResizeListener)resizer).setUpFont();
     }
 
     public void setBackgroundColor(Color backgroundColor) 
@@ -388,6 +387,14 @@ public class WGTextInput extends WGBox
 
     public boolean isShiftHeld() {
         return shiftHeld;
+    }
+
+    public WGTextInputClickListener getClickListener() {
+        return clickListener;
+    }
+
+    public WGTextInputKeyListener getKeyListener() {
+        return keyListener;
     }
     
     

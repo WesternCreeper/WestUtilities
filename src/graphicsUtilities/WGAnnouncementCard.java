@@ -25,7 +25,6 @@ public class WGAnnouncementCard extends WGBox
     private Color titleColor;
     private Color splitColor;
     private Color subTitleColor;
-    private AnnouncementResizeListener resizer;
     /**
      * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths
      * @param xCenter The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen

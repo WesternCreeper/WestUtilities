@@ -14,18 +14,14 @@ import java.io.FileNotFoundException;
 public class Item 
 {
     private String name;
-    private String description;
     private int number;
-    private int strength;
-    private int type;
     private int subtype;
-    private int usage;
     /**
      * The no parameter constructor
      */
     public Item()
     {
-        this("", 0, 0, 0, 0);
+        this("", 0, 0);
     }
     /**
      * The one parameter constructor
@@ -33,19 +29,7 @@ public class Item
      */
     public Item(Item item)
     {
-        this(item.getName(), item.getNumber(), item.getStrength(), item.getType(), item.getSubType(), item.getUsage(), item.getDescription());
-    }
-    /**
-     * The 5 parameter constructor
-     * @param str The name of the item
-     * @param num The number items
-     * @param stren The strength of the item
-     * @param ty The type of the item
-     * @param subty The subtype of the item
-     */
-    public Item(String str, int num, int stren, int ty, int subty)
-    {
-        this(str, num, stren, ty, subty, 0, "");
+        this(item.getName(), item.getNumber(), item.getSubType());
     }
     /**
      * The 6 parameter constructor
@@ -57,15 +41,11 @@ public class Item
      * @param use The usage of the item
      * @param descr The description of the item
      */
-    public Item(String str, int num, int stren, int ty, int subty, int use, String descr)
+    public Item(String str, int num, int subty)
     {
         name = str;
         number = num;
-        strength = stren;
-        type = ty;
         subtype = subty;
-        usage = use;
-        description = descr;
     }
     /**
      * Gets the name
@@ -84,44 +64,12 @@ public class Item
         return number;
     }
     /**
-     * Gets the strength
-     * @return INT
-     */
-    public int getStrength()
-    {
-        return strength;
-    }
-    /**
-     * Gets the type
-     * @return INT
-     */
-    public int getType()
-    {
-        return type;
-    }
-    /**
      * Gets the subtype
      * @return INT
      */
     public int getSubType()
     {
         return subtype;
-    }
-    /**
-     * Gets the usage
-     * @return INT
-     */
-    public int getUsage()
-    {
-        return usage;
-    }
-    /**
-     * Gets the description
-     * @return STRING
-     */
-    public String getDescription()
-    {
-        return description;
     }
     /**
      * Sets the name
@@ -140,22 +88,6 @@ public class Item
         number = num;
     }
     /**
-     * Sets the strength
-     * @param num
-     */
-    public void setStrength(int num)
-    {
-        strength = num;
-    }
-    /**
-     * Sets the type
-     * @param num
-     */
-    public void setType(int num)
-    {
-        type = num;
-    }
-    /**
      * Sets the subtype
      * @param num
      */
@@ -163,25 +95,9 @@ public class Item
     {
         subtype = num;
     }
-    /**
-     * Sets the subtype
-     * @param num
-     */
-    public void setUsage(int num)
-    {
-        usage = num;
-    }
-    /**
-     * Sets the description
-     * @param str
-     */
-    public void setDescription(String str)
-    {
-        description = str;
-    }
     public String toString()
     {
-        return name + " " + number + " " + strength + " " + type + " " + subtype + " " + usage + " " + description;
+        return name + " " + number + " " + subtype;
     }
     
     /**
@@ -196,7 +112,7 @@ public class Item
         ArrayList<Item> items = new ArrayList<Item>(0);
         File fl = new File(file);
         int i = 0;
-        int itemSystem = 5; //Number of variables in each item for the overall file
+        int itemSystem = 2; //Number of variables in each item for the overall file
         if(!fl.exists())
         {
             FileNotFoundException error = new FileNotFoundException("Item File Doesn't Exist!!!");
@@ -225,13 +141,7 @@ public class Item
             switch(itemSystem)
             {
                 default:
-                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine())));
-                    break;
-                case 6:
-                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), ""));
-                    break;
-                case 7:
-                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine()), fileIn.nextLine()));
+                    items.add(new Item(fileIn.nextLine(), FileProcessor.toInt(fileIn.nextLine()), FileProcessor.toInt(fileIn.nextLine())));
                     break;
             }
             i++;
@@ -261,12 +171,9 @@ public class Item
         while(itemFinder.sectionExists(id + ""))
         {   //String str, int num, int stren, int ty, int subty, int use, String descr
             String name = itemFinder.findValue(id + "", "Name", false);
-            String description = itemFinder.findValue(id + "", "Description", false);
             int number = FileProcessor.toInt(itemFinder.findValue(id + "", "Number"), 0);
-            int strength = FileProcessor.toInt(itemFinder.findValue(id + "", "Strength"), 0);
-            int type = FileProcessor.toInt(itemFinder.findValue(id + "", "Type"), 0);
-            int usage = FileProcessor.toInt(itemFinder.findValue(id + "", "Usage"), 0);
-            items.add(new Item(name, number, strength, type, id, usage, description));
+            int subType = FileProcessor.toInt(itemFinder.findValue(id + "", "subType"), 0);
+            items.add(new Item(name, number, subType));
             id++;
         }
         

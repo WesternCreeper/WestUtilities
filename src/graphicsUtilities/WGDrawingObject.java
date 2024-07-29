@@ -16,6 +16,7 @@ public abstract class WGDrawingObject
 {
     private Component parent;
     private WGClickListener clickListener;
+    protected WGDrawingObjectResizeListener resizer;
     private double x = 0;
     private double y = 0;
     private double width;
@@ -121,5 +122,9 @@ public abstract class WGDrawingObject
     
     public WGClickListener getClickListener() {
         return clickListener;
+    }
+
+    public WGDrawingObjectResizeListener getResizer() {
+        return resizer;
     }
 }

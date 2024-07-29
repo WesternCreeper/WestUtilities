@@ -22,7 +22,6 @@ public class WGLabel extends WGDrawingObject
     private Font textFont;
     private Color textColor;
     private int textStyle = 0;
-    private LabelResizeListener resizer;
     
     /**
      * This sets up a label, which resets its font size to fit the box created by the percents given
