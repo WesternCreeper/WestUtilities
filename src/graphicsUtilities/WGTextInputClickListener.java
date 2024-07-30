@@ -28,33 +28,32 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     @Override
     public void mouseClicked(MouseEvent e) 
     {
-        if(e.isConsumed())
-        {
-            return;
-        }
         WGTextInput parent = (WGTextInput)getParentObject();
         if(isWithinBounds(e) && parent.isIsShown())
         {
-            if(!parent.isFocused())
+            if(!e.isConsumed())
             {
-                parent.setFocused(true);
-                e.consume();
-            }
-            else
-            {
-                if(!parent.isShiftHeld())
+                if(!parent.isFocused())
                 {
-                    if(parent.isHighlightShown())
-                    {
-                        parent.setHighlightShown(false);
-                    }
-                    parent.setCursorPosition(getCursorPosition(e));
+                    parent.setFocused(true);
+                    e.consume();
                 }
                 else
                 {
-                    parent.setHighlightStart(parent.getCursorPosition());
-                    parent.setHighlightEnd(getCursorPosition(e));
-                    parent.setHighlightShown(true);
+                    if(!parent.isShiftHeld())
+                    {
+                        if(parent.isHighlightShown())
+                        {
+                            parent.setHighlightShown(false);
+                        }
+                        parent.setCursorPosition(getCursorPosition(e));
+                    }
+                    else
+                    {
+                        parent.setHighlightStart(parent.getCursorPosition());
+                        parent.setHighlightEnd(getCursorPosition(e));
+                        parent.setHighlightShown(true);
+                    }
                 }
             }
         }

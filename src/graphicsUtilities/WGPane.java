@@ -171,6 +171,14 @@ public class WGPane extends WGBox
                     WGButtonListener buttoner = (WGButtonListener)((WGButton)obj).getClickListener();
                     getParent().removeMouseMotionListener(buttoner);
                 }
+                else if(obj instanceof WGKeyInput)
+                {
+                    WGKeyInputKeyListener keyer = ((WGKeyInput)obj).getKeyListener();
+                    WGKeyInputClickListener clicker = ((WGKeyInput)obj).getClickListener();
+                    getParent().removeKeyListener(keyer);
+                    getParent().removeMouseListener(clicker);
+                    getParent().removeMouseMotionListener(clicker);
+                }
             }
             catch(NullPointerException e) //This is completely fine, just keep moving
             {

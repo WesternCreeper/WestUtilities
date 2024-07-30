@@ -76,6 +76,10 @@ public class WestGraphics
             {
                 drawCheckBox((WGCheckBox)obj);
             }
+            else if(obj instanceof WGKeyInput)
+            {
+                drawKeyInput((WGKeyInput)obj);
+            }
         }
     }
     
@@ -548,6 +552,32 @@ public class WestGraphics
             path.lineTo(buttonRect.getX(), buttonRect.getY() + buttonRect.getHeight());
             g2.draw(path);
         }
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
+    }
+    private void drawKeyInput(WGKeyInput textInput)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+            
+        //Draw the Box
+        Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
+        Color backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
+        g2.setColor(backgroundColor);
+        g2.fill(buttonRect);
+        Color borderColor = textInput.getBorderColor();
+        g2.setColor(borderColor);
+        g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
+        g2.draw(buttonRect);
+        
+        //Now the text:
+        g2.setColor(textInput.getTextColor());
+        FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
+        double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
+        double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
+        g2.setFont(textInput.getTextFont());
+        g2.drawString(textInput.getText(), (float)textX, (float)textY);
         
         //And reload it at the end
         g2.setStroke(oldStroke);
