@@ -93,6 +93,7 @@ public class WGLabel extends WGDrawingObject
     //Setters:
     public void setText(String text) {
         this.text = text;
+        resizer.resizeComps();
     }
 
     public void setTextFont(Font textFont) {

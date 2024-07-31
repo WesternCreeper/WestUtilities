@@ -22,9 +22,14 @@ public class WGButton extends WGBox
     public final static int IMAGE_CENTER_PLACEMENT = 0;
     public final static int IMAGE_UPPER_LEFT_CORNER_PLACEMENT = 1;
     public final static int IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT = 4;
+    public final static int IMAGE_NORMAL_SCALE = 0;
+    public final static int IMAGE_SCALE_TO_FIT = 1;
     private double imageX;
     private double imageY;
+    private double imageXScale;
+    private double imageYScale;
     private int imagePlacementPeference;
+    private int imageScalePeference;
     private String text;
     private Color textColor;
     private Font textFont;
@@ -140,15 +145,16 @@ public class WGButton extends WGBox
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param buttonImage The image that will be displayed on the button
      * @param imagePlacementPeference The preferred location of the image
+     * @param imageScalePeference The preferred scale of the image
      * @param backgroundColor The color of the background of the font
      * @param borderColor The border color of the box
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, buttonImage, imagePlacementPeference, backgroundColor, borderColor, parent, clickListener);
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, buttonImage, imagePlacementPeference, imageScalePeference, backgroundColor, borderColor, parent, clickListener);
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -156,17 +162,20 @@ public class WGButton extends WGBox
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param buttonImage The image that will be displayed on the button
      * @param imagePlacementPeference The preferred location of the image
+     * @param imageScalePeference The preferred scale of the image
      * @param backgroundColor The color of the background of the font
      * @param borderColor The border color of the box
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, null, null, backgroundColor, borderColor, null, parent, clickListener);
         this.imagePlacementPeference = imagePlacementPeference;
+        this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;
+        resizer.resizeComps();
     }
     
     @Override
@@ -192,6 +201,37 @@ public class WGButton extends WGBox
         getParent().addMouseListener(clickListener);
         getParent().addMouseMotionListener((WGButtonListener)clickListener);
         getParent().addMouseWheelListener((WGButtonListener)clickListener);
+    }
+    private void setUpImage()
+    {
+        //Set up the x and y of the image, based on preferance:
+        switch(imagePlacementPeference)
+        {
+            case IMAGE_CENTER_PLACEMENT:
+                imageX = getX() + 0.5 * (getWidth() - displayedImage.getWidth()); //X + 1/2(width - imageWidth)
+                imageY = getY() + 0.5 * (getHeight() - displayedImage.getHeight()); //Y + 1/2(height - imageHeight)
+                break;
+            case IMAGE_UPPER_LEFT_CORNER_PLACEMENT:
+                imageX = getX();
+                imageY = getY();
+                break;
+            case IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT:
+                imageX = getX() + getWidth() - displayedImage.getWidth(); //X + Width - imageWidth
+                imageY = getY() + getHeight() - displayedImage.getHeight(); //Y + Height - imageHeight
+                break;
+        }
+        //Set up the width and height of the image based on the scale preferrence
+        switch(imageScalePeference)
+        {
+            case IMAGE_NORMAL_SCALE:
+                imageXScale = 1;
+                imageYScale = 1;
+                break;
+            case IMAGE_SCALE_TO_FIT:
+                imageXScale = (double)getWidth() / displayedImage.getWidth();
+                imageYScale = (double)getHeight() / displayedImage.getHeight();
+                break;
+        }
     }
     
     /**
@@ -288,6 +328,36 @@ public class WGButton extends WGBox
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
     }
+
+    public void setImagePlacementPeference(int imagePlacementPeference) {
+        this.imagePlacementPeference = imagePlacementPeference;
+        resizer.resizeComps();
+    }
+
+    public void setImageScalePeference(int imageScalePeference) {
+        this.imageScalePeference = imageScalePeference;
+        resizer.resizeComps();
+    }
+    
+    @Override
+    public void setX(double x)
+    {
+        super.setX(x);
+        if(displayedImage != null) //If there is an image on the button instead of text:
+        {
+            setUpImage();
+        }
+    }
+    
+    @Override
+    public void setY(double y)
+    {
+        super.setY(y);
+        if(displayedImage != null) //If there is an image on the button instead of text:
+        {
+            setUpImage();
+        }
+    }
     
     
     //Getters:
@@ -315,6 +385,14 @@ public class WGButton extends WGBox
         return imageY;
     }
 
+    public double getImageXScale() {
+        return imageXScale;
+    }
+
+    public double getImageYScale() {
+        return imageYScale;
+    }
+
     public BufferedImage getDisplayedImage() {
         return displayedImage;
     }
@@ -340,22 +418,7 @@ public class WGButton extends WGBox
             setHeight(getHeightPercent() * parentHeight);
             if(displayedImage != null) //If there is an image on the button instead of text:
             {
-                //Set up the x and y of the image, based on preferance:
-                switch(imagePlacementPeference)
-                {
-                    case IMAGE_CENTER_PLACEMENT:
-                        imageX = getX() + 0.5 * (getWidth() - displayedImage.getWidth()); //X + 1/2(width - imageWidth)
-                        imageY = getY() + 0.5 * (getHeight() - displayedImage.getHeight()); //Y + 1/2(height - imageHeight)
-                        break;
-                    case IMAGE_UPPER_LEFT_CORNER_PLACEMENT:
-                        imageX = getX();
-                        imageY = getY();
-                        break;
-                    case IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT:
-                        imageX = getX() + getWidth() - displayedImage.getWidth(); //X + Width - imageWidth
-                        imageY = getY() + getHeight() - displayedImage.getHeight(); //Y + Height - imageHeight
-                        break;
-                }
+                setUpImage();
             }
             else if(textFont != null) 
             {

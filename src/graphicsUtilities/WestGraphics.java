@@ -217,7 +217,13 @@ public class WestGraphics
         if(button.getDisplayedImage() != null)
         {
             //The image:
-            g2.drawImage(button.getDisplayedImage(), (int)button.getImageX(), (int)button.getImageY(), null);
+            AffineTransform transformation = new AffineTransform(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
+            g2.drawImage(button.getDisplayedImage(), transformation, null);
+            //Draw a faint overlay of the background:
+            Color bakcgroundColor = button.getBackgroundColor();
+            Color pictureOverlay = new Color(bakcgroundColor.getRed(), bakcgroundColor.getGreen(), bakcgroundColor.getBlue(), 70);
+            g2.setColor(pictureOverlay);
+            g2.fill(buttonRect);
         }
         else if(button.getTextColor() != null && button.getTextFont() != null && button.getText() != null)
         {

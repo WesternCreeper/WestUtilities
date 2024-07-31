@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
  */
 public abstract class WGAFader implements ActionListener
 {
-    private final Color fadeColor;
+    private Color fadeColor;
     private Color fadeOverlay;
     private WGAColorAnimator colorAnimator;
     private Component parent;
@@ -59,9 +59,22 @@ public abstract class WGAFader implements ActionListener
     public Color getFadeOverlay() {
         return fadeOverlay;
     }
+
+    protected Color getFadeColor() {
+        return fadeColor;
+    }
     
     public boolean isDone() {
         return isDone;
     }
     
+    public void setAnimator(int tickMax, Color fadeColor, Color fadeToColor)
+    {
+        this.fadeColor = fadeToColor;
+        colorAnimator = new WGAColorAnimator(tickMax, 0, fadeColor);
+        
+        //Start stopped:
+        isDone = true;
+        colorAnimator.setTick(tickMax);
+    }
 }
