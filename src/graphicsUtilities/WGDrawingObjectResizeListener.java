@@ -63,4 +63,26 @@ public abstract class WGDrawingObjectResizeListener implements ComponentListener
     public double getHeightPercent() {
         return heightPercent;
     }
+    
+    //Setters:
+    public void setXPercent(double xPercent) {
+        this.xPercent = xPercent;
+        resizeComps();
+    }
+
+    public void setYPercent(double yPercent) {
+        this.yPercent = yPercent;
+        resizeComps();
+    }
+
+    public void setWidthPercent(double widthPercent) {
+        this.widthPercent = widthPercent;
+        resizeComps();
+    }
+
+    public void setHeightPercent(double heightPercent) {
+        this.heightPercent = heightPercent;
+        resizeComps();
+    }
+    
 }
