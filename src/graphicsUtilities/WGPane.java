@@ -112,7 +112,7 @@ public class WGPane extends WGBox
         setUpScroll();
     }
     /**
-     * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects
+     * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects. This removes the listeners of the individual objects
      */
     public void removeAllDrawableObjects()
     {
@@ -185,6 +185,17 @@ public class WGPane extends WGBox
                 continue;
             }
         }
+        
+        //Now remove the actual objects now that the listeners have been removed
+        containedObjects.removeAll(containedObjects);
+    }
+    /**
+     * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects. Doesn't remove the listeners of the removed objects
+     */
+    public void removeAllDrawableObjectsNotListeners()
+    {
+        verticalScroll.resetScroll();
+        horizontalScroll.resetScroll();
         
         //Now remove the actual objects now that the listeners have been removed
         containedObjects.removeAll(containedObjects);

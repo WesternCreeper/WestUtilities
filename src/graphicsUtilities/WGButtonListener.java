@@ -18,6 +18,7 @@ import java.awt.event.MouseWheelListener;
 public class WGButtonListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
     private Color originalBackgroundColor;
+    private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -71,15 +72,33 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     {
         if(isWithinBounds(e))
         {
+            //The background
             WGButton button = (WGButton)getParentObject();
             button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor));
             button.getParent().repaint();
+            
+            //The cursor
+            if(button.isIsShown())
+            {
+                getParentComponent().setCursor(WestGraphics.getHoverCursor());
+                cursorSet = true;
+                e.consume();
+            }
         }
         else
         {
+            //The background
             WGButton button = (WGButton)getParentObject();
             button.setBackgroundColorNotClickListener(originalBackgroundColor);
             button.getParent().repaint();
+            
+            //The cursor
+            if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
+                e.consume();
+            }
         }
     }
 }

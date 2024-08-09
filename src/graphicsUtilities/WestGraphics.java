@@ -9,6 +9,7 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,39 @@ import java.util.ArrayList;
  */
 public class WestGraphics
 {
+    private static Cursor defaultCursor = Cursor.getDefaultCursor();
+    private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
+    
+    /**
+     * This function sets up the cursors to the default values
+     */
+    public static void setUpCursors()
+    {
+        defaultCursor = Cursor.getDefaultCursor();
+        hoverCursor = new Cursor(Cursor.HAND_CURSOR);
+    }
+    
+    /**
+     * Sets up the cursor to the given cursors
+     * @param defaultCursor The default cursor
+     * @param hoverCursor The cursor shown when hovering over an object that can be clicked
+     */
+    public static void setUpCursors(Cursor defaultCursor, Cursor hoverCursor)
+    {
+        WestGraphics.defaultCursor = defaultCursor;
+        WestGraphics.hoverCursor = hoverCursor;
+    }
+
+    //Static getters
+    public static Cursor getDefaultCursor() {
+        return defaultCursor;
+    }
+
+    public static Cursor getHoverCursor() {
+        return hoverCursor;
+    }
+    
+    
     private Graphics2D g2;
     /**
      * This constructs a standard WestGraphics object that can then draw the advanced components on the canvas or whatever that the Graphics2D is from.
@@ -94,10 +128,27 @@ public class WestGraphics
      */
     public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double widthRescale, double heightRescale)
     {
+        drawImage(image, imageOps, x, y, widthRescale, heightRescale, 0);
+    }
+    
+    /**
+     * This draws an image with both a shader and a resize
+     * @param image The image to be drawn
+     * @param imageOps The shader
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     * @param rotation The rotation of the image
+     */
+    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double widthRescale, double heightRescale, double rotation)
+    {
         AffineTransform originalTransform = g2.getTransform();
-        g2.transform(new AffineTransform(widthRescale,0,0,heightRescale, 0, 0));
+        AffineTransform currentTransform = new AffineTransform(widthRescale,0,0,heightRescale, x * widthRescale, y * heightRescale);
+        currentTransform.rotate(rotation);
+        g2.transform(currentTransform);
         
-        g2.drawImage(image, imageOps, x, y);
+        g2.drawImage(image, imageOps, 0, 0);
         g2.setTransform(originalTransform);
     }
     
