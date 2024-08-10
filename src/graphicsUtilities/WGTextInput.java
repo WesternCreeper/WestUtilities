@@ -194,6 +194,20 @@ public class WGTextInput extends WGBox
         resizer.setBounds(newBounds);
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGTextInputKeyListener keyer = getKeyListener();
+        WGTextInputClickListener clicker = getClickListener();
+        getParent().removeKeyListener(keyer);
+        getParent().removeMouseListener(clicker);
+        getParent().removeMouseMotionListener(clicker);
+    }
+    
     
 
     //Setters
@@ -202,10 +216,7 @@ public class WGTextInput extends WGBox
         beingTypedOn = true;
         cursorAnimator.reset();
         ((TextResizeListener)resizer).setUpFont();
-        if(cursorPosition > text.length()) //Reset the cursor postion when invalid
-        {
-            cursorPosition = 0;
-        }
+        setUpCursorBounds();
     }
 
     public void setTextFont(Font textFont) {

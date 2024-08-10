@@ -89,6 +89,14 @@ public class WGLabel extends WGDrawingObject
         resizer.setBounds(newBounds);
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+    }
+    
     
     //Setters:
     public void setText(String text) {

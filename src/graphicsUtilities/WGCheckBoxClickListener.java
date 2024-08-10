@@ -18,6 +18,7 @@ import java.awt.event.MouseWheelListener;
 public class WGCheckBoxClickListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
     private Color originalBackgroundColor;
+    private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -61,15 +62,38 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     {
         if(isWithinBounds(e))
         {
+            //The background
             WGCheckBox parent = (WGCheckBox)getParentObject();
             parent.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor));
             parent.getParent().repaint();
+            
+            //The cursor
+            if(isParentShown())
+            {
+                getParentComponent().setCursor(WestGraphics.getHoverCursor());
+                cursorSet = true;
+                e.consume();
+            }
+            else if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
+                e.consume();
+            }
         }
         else
         {
             WGCheckBox parent = (WGCheckBox)getParentObject();
             parent.setBackgroundColorNotClickListener(originalBackgroundColor);
             parent.getParent().repaint();
+            
+            //The cursor
+            if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
+                e.consume();
+            }
         }
     }
     

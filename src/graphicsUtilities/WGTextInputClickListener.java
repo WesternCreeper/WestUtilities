@@ -17,6 +17,7 @@ import java.awt.event.MouseMotionListener;
 public class WGTextInputClickListener extends WGClickListener implements MouseMotionListener
 {
     private Color originalBackgroundColor;
+    private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -29,7 +30,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     public void mouseClicked(MouseEvent e) 
     {
         WGTextInput parent = (WGTextInput)getParentObject();
-        if(isWithinBounds(e) && parent.isIsShown())
+        if(isWithinBounds(e) && isParentShown())
         {
             if(!e.isConsumed())
             {
@@ -37,6 +38,9 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                 {
                     parent.setFocused(true);
                     e.consume();
+                    
+                    //Now set it to the correct cursor type:
+                    getParentComponent().setCursor(WestGraphics.getTextCursor());
                 }
                 else
                 {
@@ -85,13 +89,44 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     {
         if(isWithinBounds(e))
         {
+            //Background
             WGTextInput textInput = (WGTextInput)getParentObject();
             textInput.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_LIGHTER));
+            
+            //The cursor
+            if(isParentShown())
+            {
+                if(!textInput.isFocused()) //To press on cursor
+                {
+                    getParentComponent().setCursor(WestGraphics.getHoverCursor());
+                }
+                else //To type cursor
+                {
+                    getParentComponent().setCursor(WestGraphics.getTextCursor());
+                }
+                cursorSet = true;
+                e.consume();
+            }
+            else if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
+                e.consume();
+            }
         }
         else
         {
+            //Background
             WGTextInput textInput = (WGTextInput)getParentObject();
             textInput.setBackgroundColorNotClickListener(originalBackgroundColor);
+            
+            //The cursor
+            if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
+                e.consume();
+            }
         }
         getParentObject().getParent().repaint();
     }

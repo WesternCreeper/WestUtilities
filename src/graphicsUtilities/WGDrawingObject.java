@@ -61,6 +61,8 @@ public abstract class WGDrawingObject
     
     public abstract void setBounds(Rectangle2D.Double newBounds);
     
+    public abstract void removeListeners();
+    
     
     //Setters:
     public void setIsShown(boolean isShown) {

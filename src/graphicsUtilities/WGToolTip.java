@@ -104,6 +104,19 @@ public class WGToolTip extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGToolTipListener toolTip = getToolTipListener();
+        getParent().removeMouseListener(toolTip);
+        getParent().removeMouseMotionListener(toolTip);
+    }
+    
     public String getLongestString()
     {
         FontMetrics textFM = getParent().getFontMetrics(toolTipFont);

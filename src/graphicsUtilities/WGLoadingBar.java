@@ -97,6 +97,14 @@ public class WGLoadingBar extends WGBox
         resizer.setBounds(newBounds);
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+    }
+    
     
     //Setters:
     public void setTitle(String title) 

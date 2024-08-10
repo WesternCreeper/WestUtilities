@@ -26,6 +26,7 @@ public class WestGraphics
 {
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
     private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
+    private static Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);
     
     /**
      * This function sets up the cursors to the default values
@@ -34,17 +35,20 @@ public class WestGraphics
     {
         defaultCursor = Cursor.getDefaultCursor();
         hoverCursor = new Cursor(Cursor.HAND_CURSOR);
+        textCursor = new Cursor(Cursor.TEXT_CURSOR);
     }
     
     /**
      * Sets up the cursor to the given cursors
      * @param defaultCursor The default cursor
      * @param hoverCursor The cursor shown when hovering over an object that can be clicked
+     * @param textCursor The cursor shown when hovering over a text input of some kind
      */
-    public static void setUpCursors(Cursor defaultCursor, Cursor hoverCursor)
+    public static void setUpCursors(Cursor defaultCursor, Cursor hoverCursor, Cursor textCursor)
     {
         WestGraphics.defaultCursor = defaultCursor;
         WestGraphics.hoverCursor = hoverCursor;
+        WestGraphics.textCursor = textCursor;
     }
 
     //Static getters
@@ -54,6 +58,10 @@ public class WestGraphics
 
     public static Cursor getHoverCursor() {
         return hoverCursor;
+    }
+
+    public static Cursor getTextCursor() {
+        return textCursor;
     }
     
     

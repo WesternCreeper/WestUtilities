@@ -167,6 +167,20 @@ public class WGKeyInput extends WGBox
         resizer.setBounds(newBounds);
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGKeyInputKeyListener keyer = getKeyListener();
+        WGKeyInputClickListener clicker = getClickListener();
+        getParent().removeKeyListener(keyer);
+        getParent().removeMouseListener(clicker);
+        getParent().removeMouseMotionListener(clicker);
+    }
+    
     
 
     //Setters

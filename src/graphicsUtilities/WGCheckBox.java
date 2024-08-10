@@ -72,6 +72,19 @@ public class WGCheckBox extends WGBox
         }
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGCheckBoxClickListener buttoner = (WGCheckBoxClickListener)(getClickListener());
+        getParent().removeMouseListener(buttoner);
+        getParent().removeMouseMotionListener(buttoner);
+        getParent().removeMouseWheelListener(buttoner);
+    }
+    
     //Setters:
     public void setChecked(boolean checked) {
         this.checked = checked;

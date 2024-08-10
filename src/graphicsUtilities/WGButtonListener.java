@@ -78,10 +78,16 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
             button.getParent().repaint();
             
             //The cursor
-            if(button.isIsShown())
+            if(isParentShown())
             {
                 getParentComponent().setCursor(WestGraphics.getHoverCursor());
                 cursorSet = true;
+                e.consume();
+            }
+            else if(cursorSet && !e.isConsumed())
+            {
+                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                cursorSet = false;
                 e.consume();
             }
         }

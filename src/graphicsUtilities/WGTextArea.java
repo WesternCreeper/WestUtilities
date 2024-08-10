@@ -172,6 +172,19 @@ public class WGTextArea extends WGDrawingObject
         resizer.setBounds(newBounds);
     }
     
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGTextScrollableListener scrollerV = getVerticalScroll();
+        getParent().removeMouseListener(scrollerV);
+        getParent().removeMouseMotionListener(scrollerV);
+        getParent().removeMouseWheelListener(scrollerV);
+    }
+    
     public void setTextLine(int index, String information) throws IndexOutOfBoundsException
     {
         text.set(index, information);

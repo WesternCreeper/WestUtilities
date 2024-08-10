@@ -23,6 +23,7 @@ public class WGAColorAnimator extends WGAAnimator
         colors.add(color);
         originalColors.add(color);
         hasBounced.add(false);
+        setTick(tickMax);
     }
     public synchronized void addColor(Color color)
     {

@@ -106,6 +106,16 @@ public class WGClickListener implements MouseListener
         return objectBounds.contains(clickLoaction);
     }
     
+    protected boolean isParentShown()
+    {
+        boolean result = parentObject.isIsShown();
+        if(parentOwningPane != null)
+        {
+            result = result && parentOwningPane.isIsShown();
+        }
+        return result;
+    }
+    
     public Component getParentComponent() {
         return parentComponent;
     }

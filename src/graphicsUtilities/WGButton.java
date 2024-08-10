@@ -192,6 +192,19 @@ public class WGButton extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+        
+        WGButtonListener buttoner = (WGButtonListener)(getClickListener());
+        getParent().removeMouseListener(buttoner);
+        getParent().removeMouseMotionListener(buttoner);
+    }
+    
     public void setClickListner(WGClickListener clickListener)
     {
         super.setClickListener(clickListener);
