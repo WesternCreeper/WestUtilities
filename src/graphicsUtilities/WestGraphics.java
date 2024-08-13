@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
  */
 public class WestGraphics
 {
+    public static MouseEvent lastMouseEvent;
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
     private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
     private static Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);

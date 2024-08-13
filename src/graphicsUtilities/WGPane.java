@@ -97,6 +97,17 @@ public class WGPane extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    @Override
+    public void setIsShown(boolean isShown) 
+    {
+        //Do our own checking:
+        super.setIsShown(isShown);
+        //Now do it for all of the objects within this one:
+        for(int i = 0 ; i < containedObjects.size() ; i++)
+        {
+            containedObjects.get(i).setIsShown(isShown);
+        }
+    }
     
     /**
      * This removes the listeners attached to this object:

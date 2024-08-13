@@ -34,7 +34,10 @@ public class WGAPopupAnimationListener implements ActionListener
         isWorking = !colorAnimator.isDone();
         if(!colorAnimator.isDone())
         {
-            parentComp.setIsShown(true);
+            if(!parentComp.isIsShown())
+            {
+                parentComp.setIsShown(true);
+            }
             if(popOut)
             {
                 colorAnimator.fadeTo(fullTransparentColor);
@@ -53,7 +56,7 @@ public class WGAPopupAnimationListener implements ActionListener
         }
         else
         {
-            if(popOut)
+            if(popOut && parentComp.isIsShown())
             {
                 parentComp.setIsShown(false);
             }

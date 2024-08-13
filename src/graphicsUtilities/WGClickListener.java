@@ -55,6 +55,7 @@ public class WGClickListener implements MouseListener
      */
     public void mouseClicked(MouseEvent e) 
     {
+        setLastMouseEvent(e);
         if(isWithinBounds(e) && !e.isConsumed() && parentObject.isIsShown())
         {
             if(parentOwningPane != null && !parentOwningPane.isIsShown())
@@ -137,5 +138,13 @@ public class WGClickListener implements MouseListener
     }
     
     public void clickEvent(MouseEvent e) {}
+    
+    public void setLastMouseEvent(MouseEvent e)
+    {
+        if(e != WestGraphics.lastMouseEvent)
+        {
+            WestGraphics.lastMouseEvent = e;
+        }
+    }
     
 }

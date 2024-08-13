@@ -32,6 +32,9 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     public WGCheckBoxClickListener(WGDrawingObject parentObject) throws WGNullParentException
     {
         super(parentObject);
+        
+        //Make sure to set the cursor to the correct one when shown:
+        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     /**
      * The necessary components needed to make this object versatile for anything needed to be clicked on. This could be a button, although there is a specific class for those, or any WGDrawingObject, a loading bar or an announcement card. Whatever the need is, this class will be  
@@ -41,14 +44,21 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     public WGCheckBoxClickListener(WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
+        
+        //Make sure to set the cursor to the correct one when shown:
+        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     
     @Override
-    public void mouseDragged(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) 
+    {
+        setLastMouseEvent(e);
+    }
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
+        setLastMouseEvent(e);
         hoverEvent(e);
     }
 
@@ -111,5 +121,14 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     //Getters:
     public Color getOriginalBackgroundColor() {
         return originalBackgroundColor;
+    }
+    
+    @Override
+    public void setParentObject(WGDrawingObject obj)
+    {
+        super.setParentObject(obj);
+        
+        //Make sure to set the cursor to the correct one when shown:
+        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }

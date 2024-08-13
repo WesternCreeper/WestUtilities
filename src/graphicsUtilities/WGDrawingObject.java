@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -17,6 +18,7 @@ public abstract class WGDrawingObject
     private Component parent;
     private WGClickListener clickListener;
     protected WGDrawingObjectResizeListener resizer;
+    private Cursor shownCursor;
     private double x = 0;
     private double y = 0;
     private double width;
@@ -65,8 +67,36 @@ public abstract class WGDrawingObject
     
     
     //Setters:
-    public void setIsShown(boolean isShown) {
+    public void setIsShown(boolean isShown) 
+    {
+        setIsShown(isShown, true);
+    }
+    /**
+     * This sets whether the component is shown or not and sets the cursor based on the second variable
+     * @param isShown Shows or hides the component
+     * @param setCursor Sets or doesn't the cursor
+     */
+    public void setIsShown(boolean isShown, boolean setCursor) 
+    {
         this.isShown = isShown;
+        if(setCursor)
+        {
+            if(isShown && shownCursor != null)
+            {
+                //Now make sure the last event was within the bounds:
+                if(clickListener != null && WestGraphics.lastMouseEvent != null)
+                {
+                    if(clickListener.isWithinBounds(WestGraphics.lastMouseEvent))
+                    {
+                        parent.setCursor(shownCursor);
+                    }
+                }
+            }
+            else if(!isShown)
+            {
+                parent.setCursor(WestGraphics.getDefaultCursor());
+            }
+        }
     }
 
     protected void setX(double x) {
@@ -91,6 +121,10 @@ public abstract class WGDrawingObject
 
     public void setClickListener(WGClickListener clickListener) {
         this.clickListener = clickListener;
+    }
+
+    public void setShownCursor(Cursor shownCursor) {
+        this.shownCursor = shownCursor;
     }
     
     //Getters:

@@ -25,10 +25,14 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     public WGTextInputClickListener (WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
+        
+        //Make sure to set the cursor to the correct one when shown:
+        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     @Override
     public void mouseClicked(MouseEvent e) 
     {
+        setLastMouseEvent(e);
         WGTextInput parent = (WGTextInput)getParentObject();
         if(isWithinBounds(e) && isParentShown())
         {
@@ -41,6 +45,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                     
                     //Now set it to the correct cursor type:
                     getParentComponent().setCursor(WestGraphics.getTextCursor());
+                    getParentObject().setShownCursor(WestGraphics.getTextCursor());
                 }
                 else
                 {
@@ -71,6 +76,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     @Override
     public void mouseDragged(MouseEvent e) 
     {
+        setLastMouseEvent(e);
         if(e.isConsumed())
         {
             return;
@@ -87,6 +93,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     @Override
     public void mouseMoved(MouseEvent e)
     {
+        setLastMouseEvent(e);
         if(isWithinBounds(e))
         {
             //Background
@@ -99,10 +106,12 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                 if(!textInput.isFocused()) //To press on cursor
                 {
                     getParentComponent().setCursor(WestGraphics.getHoverCursor());
+                    getParentObject().setShownCursor(WestGraphics.getHoverCursor());
                 }
                 else //To type cursor
                 {
                     getParentComponent().setCursor(WestGraphics.getTextCursor());
+                    getParentObject().setShownCursor(WestGraphics.getTextCursor());
                 }
                 cursorSet = true;
                 e.consume();
@@ -227,5 +236,14 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                 }
             }
         }
+    }
+    
+    @Override
+    public void setParentObject(WGDrawingObject obj)
+    {
+        super.setParentObject(obj);
+        
+        //Make sure to set the cursor to the correct one when shown:
+        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }
