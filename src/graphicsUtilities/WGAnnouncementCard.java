@@ -26,9 +26,10 @@ public class WGAnnouncementCard extends WGBox
     private Color splitColor;
     private Color subTitleColor;
     /**
-     * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths
-     * @param xCenter The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
-     * @param yCenter The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths.
+     * NOTE: This component acts slightly differently than most other WGObjects act, since the x and y variables have been replaced with the centerX and centerY variables, which define the where the center of the object goes
+     * @param xCenter This is the percentage of the screen where the center of the object will be placed horizontally (x-plane) at 0.5 this is at the center of the screen horizontally
+     * @param yCenter This is the percentage of the screen where the center of the object will be placed vertically (y-plane) at 0.5 this is at the center of the screen vertically
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
      * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component. (Recommendation: to get the best results make sure that splitPercentage + titleHeight + subTitleHeight = 1)
      * @param titleHeightPercentage The percentage of the parent's height that is used for the calculation of the size of the title font

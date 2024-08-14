@@ -195,7 +195,7 @@ public class WGKeyInput extends WGBox
 
     public void setBackgroundColor(Color backgroundColor) 
     {
-        super.setBackgroundColor(backgroundColor);
+        super.setBackgroundColorNotClickListener(backgroundColor);
         BackgroundOnFocusColor = WGColorHelper.getDarkerOrLighter(backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
         if(clickListener != null)
         {
@@ -205,11 +205,6 @@ public class WGKeyInput extends WGBox
     }
 
     //Setters:
-    public void setBackgroundColorNotClickListener(Color backgroundColor) 
-    {
-        super.setBackgroundColor(backgroundColor);
-    }
-
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
     }

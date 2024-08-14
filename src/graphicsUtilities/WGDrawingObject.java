@@ -163,4 +163,8 @@ public abstract class WGDrawingObject
     public WGDrawingObjectResizeListener getResizer() {
         return resizer;
     }
+
+    public Cursor getShownCursor() {
+        return shownCursor;
+    }
 }

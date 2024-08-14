@@ -29,7 +29,7 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @throws WGNullParentException When the WGObject does not have a parent, then it will throw a WGNullParentException so that this object can be supplied a parent Object
      */
-    public WGButtonListener(WGButton parentObject) throws WGNullParentException
+    public WGButtonListener(WGBox parentObject) throws WGNullParentException
     {
         super(parentObject);
         
@@ -41,7 +41,7 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      */
-    public WGButtonListener(WGButton parentObject, Component parentComponent)
+    public WGButtonListener(WGBox parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
         
@@ -83,28 +83,59 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
         if(isWithinBounds(e))
         {
             //The background
-            WGButton button = (WGButton)getParentObject();
-            button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor));
-            button.getParent().repaint();
+            WGBox button = (WGBox)getParentObject();
             
-            //The cursor
-            if(isParentShown())
+            boolean canDoIt = true;
+            //If it is a Pane, make sure this is not hovering over another object on it
+            if(button instanceof WGPane)
             {
-                getParentComponent().setCursor(WestGraphics.getHoverCursor());
-                cursorSet = true;
-                e.consume();
+                WGPane paneParent = (WGPane)button;
+                for(int i = 0 ; i < paneParent.getComponentNumber() ; i++)
+                {
+                    WGDrawingObject ownedObject = paneParent.getComponent(i);
+
+                    //Now if it has a underling object make sure to test if it is within bounds:
+                    WGClickListener clickListener = ownedObject.getClickListener();
+                    if(clickListener != null)
+                    {
+                        if(clickListener.isWithinBounds(e))
+                        {
+                            canDoIt = false;
+                            break;
+                        }
+                    }
+                }
             }
-            else if(cursorSet && !e.isConsumed())
+            
+            if(canDoIt)
             {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
+                button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor));
+                button.getParent().repaint();
+
+                //The cursor
+                if(isParentShown())
+                {
+                    getParentComponent().setCursor(WestGraphics.getHoverCursor());
+                    cursorSet = true;
+                    e.consume();
+                }
+                else if(cursorSet && !e.isConsumed())
+                {
+                    getParentComponent().setCursor(WestGraphics.getDefaultCursor());
+                    cursorSet = false;
+                    e.consume();
+                }
+            }
+            else
+            {
+                button.setBackgroundColorNotClickListener(originalBackgroundColor);
+                button.getParent().repaint();
             }
         }
         else
         {
             //The background
-            WGButton button = (WGButton)getParentObject();
+            WGBox button = (WGBox)getParentObject();
             button.setBackgroundColorNotClickListener(originalBackgroundColor);
             button.getParent().repaint();
             

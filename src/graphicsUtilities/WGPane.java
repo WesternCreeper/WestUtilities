@@ -81,6 +81,59 @@ public class WGPane extends WGBox
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
     }
     
+    /**
+     * 
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
+     * @param backgroundColor The color of the background of the pane
+     * @param borderColor The border color of the pane
+     * @param scrollBarColor The color of the scrollBar
+     * @param parent The component that the pane is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    {
+        this(bounds, borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
+        
+        //Now make the clickListener
+        if(getParent() != null)
+        {
+            super.setClickListener(clickListener);
+            getClickListener().setParentComponent(getParent());
+            getClickListener().setParentObject(this);
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
+            getParent().addMouseListener(getClickListener());
+            getParent().addMouseMotionListener((WGButtonListener)getClickListener());
+            getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
+    
+    /**
+     * 
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
+     * @param backgroundColor The color of the background of the pane
+     * @param borderColor The border color of the pane
+     * @param scrollBarColor The color of the scrollBar
+     * @param parent The component that the pane is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent, clickListener);
+    }
+    
     
     //Methods:
     @Override
@@ -124,6 +177,10 @@ public class WGPane extends WGBox
         getParent().removeMouseListener(scrollerV);
         getParent().removeMouseMotionListener(scrollerV);
         getParent().removeMouseWheelListener(scrollerV);
+        
+        WGButtonListener buttoner = (WGButtonListener)(getClickListener());
+        getParent().removeMouseListener(buttoner);
+        getParent().removeMouseMotionListener(buttoner);
     }
     
     /**

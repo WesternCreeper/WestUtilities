@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -62,8 +63,19 @@ public class WGClickListener implements MouseListener
             {
                 return;
             }
-            clickEvent(e);
-            e.consume();
+            
+            //If you are a pane then run through the entire set of objects on you to make sure that you are not within any of them:
+            if(parentObject instanceof WGPane)
+            {
+                //Lengthy opperation so figure this out inside of a worker:
+                PaneWorker worker = new PaneWorker(e);
+                worker.execute();
+            }
+            else //Instanly do what is needed to be done
+            {
+                clickEvent(e);
+                e.consume();
+            }
         }
     }
 
@@ -147,4 +159,35 @@ public class WGClickListener implements MouseListener
         }
     }
     
+    //Classes:
+    private class PaneWorker extends SwingWorker
+    {
+        private MouseEvent e;
+        PaneWorker(MouseEvent e)
+        {
+            this.e = e;
+        }
+        public synchronized Object doInBackground()
+        {
+            WGPane paneParent = (WGPane)parentObject;
+            for(int i = 0 ; i < paneParent.getComponentNumber() ; i++)
+            {
+                WGDrawingObject ownedObject = paneParent.getComponent(i);
+
+                //Now if it has a underling object make sure to test if it is within bounds:
+                WGClickListener clickListener = ownedObject.getClickListener();
+                if(clickListener != null)
+                {
+                    clickListener.mouseClicked(e);
+                }
+            }
+            //Now do our click if we can
+            if(!e.isConsumed())
+            {
+                clickEvent(e);
+                e.consume();
+            }
+            return null;
+        }
+    }
 }

@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -39,11 +40,61 @@ public abstract class WGBox extends WGDrawingObject
     {
         resizer.setBounds(newBounds);
     }
+    @Override
+    /**
+     * This sets whether the component is shown or not and sets the cursor based on the second variable
+     * @param isShown Shows or hides the component
+     * @param setCursor Sets or doesn't the cursor
+     */
+    public void setIsShown(boolean isShown, boolean setCursor) 
+    {
+        super.setIsShown(isShown, setCursor);
+        if(setCursor)
+        {
+            //Now make sure that these do the correct events as needed
+            WGClickListener clickListener = getClickListener();
+            //Make sure it has been set up to do this:
+            if(clickListener != null && WestGraphics.lastMouseEvent != null)
+            {
+                if(clickListener instanceof WGButtonListener) //Standard Listeners:
+                {
+                    WGButtonListener actualListener = (WGButtonListener)clickListener;
+                    actualListener.hoverEvent(WestGraphics.lastMouseEvent);
+                }
+                else if(clickListener instanceof WGCheckBoxClickListener) //Checkbox listeners:
+                {
+                    WGCheckBoxClickListener actualListener = (WGCheckBoxClickListener)clickListener;
+                    actualListener.hoverEvent(WestGraphics.lastMouseEvent);
+                }
+                else if(clickListener instanceof WGTextInputClickListener) //Text Listeners:
+                {
+                    WGTextInputClickListener actualListener = (WGTextInputClickListener)clickListener;
+                    actualListener.mouseMoved(WestGraphics.lastMouseEvent);
+                }
+                else if(clickListener instanceof WGKeyInputClickListener) //Key Listeners:
+                {
+                    WGKeyInputClickListener actualListener = (WGKeyInputClickListener)clickListener;
+                    actualListener.mouseMoved(WestGraphics.lastMouseEvent);
+                }
+            }
+        }
+    }
     
     //Regular Functions:
 
     //Setters:
-    public void setBackgroundColor(Color backgroundColor) {
+    public void setBackgroundColor(Color backgroundColor) 
+    {
+        this.backgroundColor = backgroundColor;
+        if(getClickListener() != null)
+        {
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
+        }
+        getParent().repaint();
+    }
+
+    public void setBackgroundColorNotClickListener(Color backgroundColor) 
+    {
         this.backgroundColor = backgroundColor;
         getParent().repaint();
     }

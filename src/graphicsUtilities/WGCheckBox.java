@@ -97,16 +97,11 @@ public class WGCheckBox extends WGBox
 
     public void setBackgroundColor(Color backgroundColor) 
     {
-        super.setBackgroundColor(backgroundColor);
+        super.setBackgroundColorNotClickListener(backgroundColor);
         if(getClickListener() != null)
         {
             ((WGCheckBoxClickListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
         }
-    }
-
-    public void setBackgroundColorNotClickListener(Color backgroundColor) 
-    {
-        super.setBackgroundColor(backgroundColor);
     }
 
     //Getters:

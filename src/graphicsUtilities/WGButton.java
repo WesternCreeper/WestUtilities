@@ -319,20 +319,6 @@ public class WGButton extends WGBox
         resizer.resizeComps();
     }
 
-    public void setBackgroundColor(Color backgroundColor) 
-    {
-        super.setBackgroundColor(backgroundColor);
-        if(getClickListener() != null)
-        {
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
-        }
-    }
-
-    public void setBackgroundColorNotClickListener(Color backgroundColor) 
-    {
-        super.setBackgroundColor(backgroundColor);
-    }
-
     public void setDisplayedImage(BufferedImage displayedImage) {
         this.displayedImage = displayedImage;
         resizer.resizeComps();
