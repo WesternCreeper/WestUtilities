@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 public class WestGraphics
 {
+    //Static Package wide important stuff:
     public static MouseEvent lastMouseEvent;
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
     private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
@@ -67,6 +68,10 @@ public class WestGraphics
     }
     
     
+    
+    
+    
+    //Individual drawing based stuff:
     private Graphics2D g2;
     /**
      * This constructs a standard WestGraphics object that can then draw the advanced components on the canvas or whatever that the Graphics2D is from.
@@ -123,6 +128,10 @@ public class WestGraphics
             else if(obj instanceof WGKeyInput)
             {
                 drawKeyInput((WGKeyInput)obj);
+            }
+            else if(obj instanceof WGTextImage)
+            {
+                drawTextImage((WGTextImage)obj);
             }
         }
     }
@@ -648,5 +657,18 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setStroke(oldStroke);
+    }
+    private void drawTextImage(WGTextImage textImage)
+    {
+        //Draw the Image:
+        AffineTransform transformation = new AffineTransform(textImage.getImageXScale(),0,0,textImage.getImageYScale(), textImage.getX() + textImage.getImageOffSetX(), textImage.getY() + textImage.getImageOffSetY());
+        g2.drawImage(textImage.getDisplayImage(), transformation, null);
+        
+        //Now the text:
+        g2.setColor(textImage.getTextColor());
+        double textX = textImage.getTextX();
+        double textY = textImage.getTextY();
+        g2.setFont(textImage.getTextFont());
+        g2.drawString(textImage.getImageText(), (float)(textX + textImage.getImageOffSetX()), (float)(textY + textImage.getImageOffSetY()));
     }
 }

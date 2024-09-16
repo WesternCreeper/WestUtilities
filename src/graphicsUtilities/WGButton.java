@@ -326,6 +326,7 @@ public class WGButton extends WGBox
 
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
+        resizer.resizeComps();
     }
 
     public void setImagePlacementPeference(int imagePlacementPeference) {

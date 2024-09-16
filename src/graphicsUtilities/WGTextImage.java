@@ -1,0 +1,311 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package graphicsUtilities;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+/**
+ *
+ * @author Westley
+ */
+public class WGTextImage extends WGDrawingObject
+{
+    public static final int TEXT_LOWER_LEFT_CORNER = 0;
+    public static final int TEXT_UPPER_LEFT_CORNER = 1;
+    public static final int TEXT_UPPER_RIGHT_CORNER = 2;
+    public static final int TEXT_LOWER_RIGHT_CORNER = 3;
+    private BufferedImage displayImage;
+    private String imageText;
+    private Font textFont;
+    private Color textColor;
+    private double imageOffSetX;
+    private double imageOffSetY;
+    private double textX;
+    private double textY;
+    private double textXSizePercent;
+    private double textYSizePercent;
+    private double imageXScale;
+    private double imageYScale;
+    private int textPosition;
+    private boolean allowImageResize;
+    
+    /**
+     * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param displayedImage The image to be displayed, this will be the bulk of the object
+     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param text The text placed on the image
+     * @param textFont The font that will draw the text
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textFont, textColor, parent);
+    }
+    /**
+     * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param displayedImage The image to be displayed, this will be the bulk of the object
+     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param text The text placed on the image
+     * @param textFont The font that will draw the text
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    {
+        super(0, 0, 0, 0, 0, parent);
+        this.displayImage = displayedImage;
+        imageText = text;
+        this.textFont = textFont;
+        this.textColor = textColor;
+        this.allowImageResize = allowImageResize;
+        textPosition = TEXT_LOWER_LEFT_CORNER;
+        textXSizePercent = 0.25;
+        textYSizePercent = 0.25;
+        if(getParent() != null)
+        {
+            resizer = new ImageResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
+    
+    /**
+     * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
+     * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
+     * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param displayedImage The image to be displayed, this will be the bulk of the object
+     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param text The text placed on the image
+     * @param textPosition This is the position of the text in relation to the image itself.
+     * @param textXSizePercent The percent of the image that the text will take up, in the horizontal direction
+     * @param textYSizePercent The percent of the image that the text will take up, in the vertical direction
+     * @param textFont The font that will draw the text
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    {
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
+    }
+    /**
+     * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param displayedImage The image to be displayed, this will be the bulk of the object
+     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param text The text placed on the image
+     * @param textPosition This is the position of the text in relation to the image itself.
+     * @param textXSizePercent The percent of the image that the text will take up, in the horizontal direction
+     * @param textYSizePercent The percent of the image that the text will take up, in the vertical direction
+     * @param textFont The font that will draw the text
+     * @param textColor The color of the text
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    {
+        super(0, 0, 0, 0, 0, parent);
+        this.displayImage = displayedImage;
+        imageText = text;
+        this.textFont = textFont;
+        this.textColor = textColor;
+        this.allowImageResize = allowImageResize;
+        this.textPosition = textPosition;
+        this.textXSizePercent = textXSizePercent;
+        this.textYSizePercent = textYSizePercent;
+        if(getParent() != null)
+        {
+            resizer = new ImageResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
+    
+    @Override
+    public Rectangle2D.Double getBounds() 
+    {
+        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        return bounds;
+    }
+    public void setUpBounds()
+    {
+        resizer.resizeComps();
+    }
+    public void setBounds(Rectangle2D.Double newBounds)
+    {
+        resizer.setBounds(newBounds);
+    }
+    /**
+     * This removes the listeners attached to this object:
+     */
+    public void removeListeners()
+    {
+        getParent().removeComponentListener(resizer);
+    }
+    
+    
+    //Getters:
+    public BufferedImage getDisplayImage() {
+        return displayImage;
+    }
+
+    public String getImageText() {
+        return imageText;
+    }
+
+    public Font getTextFont() {
+        return textFont;
+    }
+
+    public Color getTextColor() {
+        return textColor;
+    }
+
+    public double getTextX() {
+        return textX;
+    }
+
+    public double getTextY() {
+        return textY;
+    }
+
+    public double getImageXScale() {
+        return imageXScale;
+    }
+
+    public double getImageYScale() {
+        return imageYScale;
+    }
+
+    public double getImageOffSetX() {
+        return imageOffSetX;
+    }
+
+    public double getImageOffSetY() {
+        return imageOffSetY;
+    }
+    
+    
+    //Setters:
+    public void setDisplayImage(BufferedImage displayImage) {
+        this.displayImage = displayImage;
+        resizer.resizeComps();
+    }
+
+    public void setImageText(String imageText) {
+        this.imageText = imageText;
+        resizer.resizeComps();
+    }
+
+    public void setTextFont(Font textFont) {
+        this.textFont = textFont;
+        resizer.resizeComps();
+    }
+
+    public void setTextColor(Color textColor) {
+        this.textColor = textColor;
+        resizer.resizeComps();
+    }
+
+    public void setTextPosition(int textPosition) {
+        this.textPosition = textPosition;
+        resizer.resizeComps();
+    }
+    
+    
+    //classes or Listeners:
+    private class ImageResizeListener extends WGDrawingObjectResizeListener
+    {
+        private ImageResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent)
+        {
+            super(xPercent, yPercent, widthPercent, heightPercent);
+        }
+        public void resizeComps()
+        {
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getSize().getWidth();
+            double parentHeight = getParent().getSize().getHeight();
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setX(getXPercent() * parentWidth);
+            setY(getYPercent() * parentHeight);
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            
+            //Resize the image as applicable
+            double width = (double)getWidth();
+            double height = (double)getHeight();
+            imageOffSetX = 0;
+            imageOffSetY = 0;
+            if(allowImageResize)
+            {
+                imageXScale = (double)getWidth() / displayImage.getWidth();
+                imageYScale = (double)getHeight() / displayImage.getHeight();
+            }
+            else
+            {
+                imageXScale = 1;
+                imageYScale = 1;
+                imageOffSetX = (width - displayImage.getWidth()) / 2;
+                imageOffSetY = (height - displayImage.getHeight()) / 2;
+                width = displayImage.getWidth();
+                height = displayImage.getHeight();
+            }
+            
+            //Now make sure the image is in the correct location:
+            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), width * textXSizePercent, height * textYSizePercent, imageText, 100);
+            FontMetrics textFM = getParent().getFontMetrics(textFont); 
+            
+            switch(textPosition)
+            {
+                case TEXT_LOWER_LEFT_CORNER:
+                    //Place in the lower left corner, relative to the position of the object:
+                    textX = 0;
+                    textY = height - textFM.getDescent();
+                    break;
+                case TEXT_UPPER_LEFT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = 0;
+                    textY = textFM.getAscent() - textFM.getDescent();
+                    break;
+                case TEXT_UPPER_RIGHT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = textFM.getAscent() - textFM.getDescent();
+                    break;
+                case TEXT_LOWER_RIGHT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = height - textFM.getDescent();
+                    break;
+            }
+            
+            //Then repaint the parent to make sure the parent sees the change
+            getParent().repaint();
+        }
+    }
+}
