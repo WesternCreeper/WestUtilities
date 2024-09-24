@@ -40,6 +40,17 @@ public class EnhancedScanner
     {
         return sc.hasNextLine();
     }
+    /**
+     * This closes the Enhanced Scanner, just like a regular scanner so make sure to ONLY call this when you no longer need to use the Enhanced Scanner
+     */
+    public void close()
+    {
+        sc.close();
+    }
+    /**
+     * This finds the section that is named scetionName. This sets the location of the scanner to the location of this section
+     * @param sectionName The name of the section to be found
+     */
     public void findSection(String sectionName)
     {
         if(sectionName.length() == 0)
@@ -65,8 +76,8 @@ public class EnhancedScanner
     }
     /**
      * A section is defined as so: [Section Name], anything on one line that is surrounded by square brackets
-     * @param line
-     * @return 
+     * @param line The line of text from a file. This is to be tested for being a section
+     * @return If this line is a section
      */
     public static boolean isSection(String line)
     {
