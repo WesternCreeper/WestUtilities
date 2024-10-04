@@ -10,31 +10,31 @@ package dataStructures;
  * 
  * A linked list node that can go forwards and backwards
  */
-class DoublyLinkedListNode extends LinkedListNode
+class DoublyLinkedListNode<E> extends LinkedListNode<E>
 {
-    private LinkedListNode back;
-    
-    public DoublyLinkedListNode(LinkedListNode next, LinkedListNode back)
+    private LinkedListNode<E> back;
+
+    public DoublyLinkedListNode(LinkedListNode<E> next, LinkedListNode<E> back)
     {
         super(next);
         this.back = back;
     }
-    public DoublyLinkedListNode(Object object)
+    public DoublyLinkedListNode(E object)
     {
         super(object);
     }
-    public DoublyLinkedListNode(Object object, LinkedListNode next, LinkedListNode back)
+    public DoublyLinkedListNode(E object, LinkedListNode<E> next, LinkedListNode<E> back)
     {
         super(object, next);
         this.back = back;
     }
-    
+
     //Methods:
-    public LinkedListNode back()
+    public LinkedListNode<E> back()
     {
         return back;
     }
-    public void setBack(LinkedListNode back)
+    public void setBack(LinkedListNode<E> back)
     {
         this.back = back;
     }

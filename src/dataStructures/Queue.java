@@ -8,10 +8,10 @@ package dataStructures;
  *
  * @author Westley
  */
-public class Queue 
+public class Queue<E>
 {
-    private LinkedListNode top;
-    private LinkedListNode last;
+    private LinkedListNode<E> top;
+    private LinkedListNode<E> last;
 
     /**
     * Creates a standard empty queue 
@@ -33,17 +33,17 @@ public class Queue
         last = null;
     }
 
-    public void enqueue(Object obj)
+    public void enqueue(E obj)
     {
         //Make sure that we have a top
         if(isEmpty())
         {
-            top = new LinkedListNode(obj);
+            top = new LinkedListNode<E>(obj);
             last = top;
         }
         else //We have a top, add to the end
         {
-            last.setNext(new LinkedListNode(obj));
+            last.setNext(new LinkedListNode<E>(obj));
             last = last.next();
         }
     }
@@ -52,18 +52,18 @@ public class Queue
     * Returns and removes the front item in the list
     * Will return null if the front does not exist
     */
-    public Object dequeue()
+    public E dequeue()
     {
-        LinkedListNode result = top;
+        LinkedListNode<E> result = top;
         if(!isEmpty())
         {
             top = top.next();
         }
-        return result;
+        return result.getObject();
     }
 
-    public Object getFront()
+    public E getFront()
     {
-        return top;
+        return top.getObject();
     }
 }

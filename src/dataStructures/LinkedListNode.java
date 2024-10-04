@@ -11,41 +11,40 @@ package dataStructures;
  * 
  * A standard node for a linked list. This only goes forwards. Not backwards
  */
-class LinkedListNode
+class LinkedListNode<E>
 {
-    private LinkedListNode next;
-    private Object nodeObject;
+    private LinkedListNode<E> next;
+    private E nodeObj;
 
-    public LinkedListNode(LinkedListNode next)
+    public LinkedListNode(LinkedListNode<E> next)
     {
         this.next = next;
     }
-    public LinkedListNode(Object object)
+    public LinkedListNode(E obj)
     {
-        nodeObject = object;
+        nodeObj = obj;
     }
-    public LinkedListNode(Object object, LinkedListNode next)
+    public LinkedListNode(E obj, LinkedListNode<E> next)
     {
         this.next = next;
-        nodeObject = object;
+        nodeObj = obj;
     }
 
-    //Methods:
-    public LinkedListNode next()
+    public LinkedListNode<E> next()
     {
         return next;
     }
-    public void setNext(LinkedListNode next)
+    public void setNext(LinkedListNode<E> next)
     {
         this.next = next;
     }
-    public Object getObject()
+    public E getObject()
     {
-        return nodeObject;
+        return nodeObj;
     }
     @Override
     public String toString()
     {
-        return nodeObject.toString();
+        return nodeObj.toString();
     }
 }

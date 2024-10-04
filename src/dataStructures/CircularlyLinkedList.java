@@ -9,9 +9,9 @@ package dataStructures;
  * @author Westley
  * A list made of forward and backward references but in a circular design so there is no top and no bottom. This design uses an internal iterator
  */
-public class CircularlyLinkedList
+public class CircularlyLinkedList<E>
 {
-    private DoublyLinkedListNode current;
+    private DoublyLinkedListNode<E> current;
 
     public CircularlyLinkedList() {}
 
@@ -28,7 +28,7 @@ public class CircularlyLinkedList
     * This returns the current positon of the iterator object. If the iterator is not within proper bounds, then the output will be null
     * @return Object The object that was at the current iterator's position.
     */
-    public Object getCurrent()
+    public E getCurrent()
     {
         //If the position is at the header, then don't return the header node
         if(current == null)
@@ -45,7 +45,7 @@ public class CircularlyLinkedList
     {
         if(current != null)
         {
-            current = (DoublyLinkedListNode)current.next();
+            current = (DoublyLinkedListNode<E>)current.next();
         }
     }
 
@@ -56,7 +56,7 @@ public class CircularlyLinkedList
     {
         if(current != null)
         {
-            current = (DoublyLinkedListNode)current.back();
+            current = (DoublyLinkedListNode<E>)current.back();
         }
     }
 
@@ -64,19 +64,19 @@ public class CircularlyLinkedList
     * Inserts an object right after the current postion (So this is the same and add(e) when the current positon is the same as the end) Changes the position of current to the new object
     * @param e The object to be added
     */
-    public void insertNext(Object e)
+    public void insertNext(E e)
     {
         if(current == null)
         {
-            current = new DoublyLinkedListNode(e);
+            current = new DoublyLinkedListNode<E>(e);
             current.setNext(current);
             current.setBack(current);
         }
         else
         {
-            DoublyLinkedListNode newNode = new DoublyLinkedListNode(e, current.next(), current);
+            DoublyLinkedListNode<E> newNode = new DoublyLinkedListNode<E>(e, current.next(), current);
             current.setNext(newNode);
-            ((DoublyLinkedListNode)newNode.next()).setBack(newNode);
+            ((DoublyLinkedListNode<E>)newNode.next()).setBack(newNode);
             current = newNode;
         }
     }
@@ -85,19 +85,19 @@ public class CircularlyLinkedList
     * Inserts an object right before the current postion (So this is the same and add(e) when the current positon is the same as the end) Changes the position of current to the new object
     * @param e The object to be added
     */
-    public void insertBack(Object e)
+    public void insertBack(E e)
     {
         if(current == null)
         {
-            current = new DoublyLinkedListNode(e);
+            current = new DoublyLinkedListNode<E>(e);
             current.setNext(current);
             current.setBack(current);
         }
         else
         {
-            DoublyLinkedListNode newNode = new DoublyLinkedListNode(e, current, current.back());
+            DoublyLinkedListNode<E> newNode = new DoublyLinkedListNode<E>(e, current, current.back());
             current.back().setNext(newNode);
-            ((DoublyLinkedListNode)current).setBack(newNode);
+            ((DoublyLinkedListNode<E>)current).setBack(newNode);
             current = newNode;
         }
     }
@@ -106,14 +106,14 @@ public class CircularlyLinkedList
     * Removes the current node. If current is at the end of the list, then no objects are removed from the list. Returns the object that was removed. The position of current will the the object before the removed item.
     * @return Object The object in the node that was removed, null if there is an error with that action
     */
-    public Object remove()
+    public E remove()
     {
-        DoublyLinkedListNode oldNode = current;
+        DoublyLinkedListNode<E> oldNode = current;
         if(current != null && current.next() != current)
         {
-            current = (DoublyLinkedListNode)current.back();
+            current = (DoublyLinkedListNode<E>)current.back();
             current.setNext(oldNode.next());
-            ((DoublyLinkedListNode)current.next()).setBack(current);
+            ((DoublyLinkedListNode<E>)current.next()).setBack(current);
             return oldNode.getObject();
         }
         else if(current.next() == current)
@@ -128,16 +128,16 @@ public class CircularlyLinkedList
     * Removes the next node. If current is at the end of the list, then no objects are removed from the list. Returns the object that was removed. The position of current will remain the same
     * @return Object The object in the node that was removed, null if there is an error with that action
     */
-    public Object removeNext()
+    public E removeNext()
     {
-        DoublyLinkedListNode oldNode = (DoublyLinkedListNode)current.next();
+        DoublyLinkedListNode<E> oldNode = (DoublyLinkedListNode<E>)current.next();
         if(current.next() == current)
         {
             current = null;
-            return oldNode;
+            return oldNode.getObject();
         }
         current.setNext(oldNode.next());
-        ((DoublyLinkedListNode)oldNode.next()).setBack(current);
+        ((DoublyLinkedListNode<E>)oldNode.next()).setBack(current);
         return oldNode.getObject();
     }
 
@@ -145,13 +145,13 @@ public class CircularlyLinkedList
     * Removes the previous node. If current is at the end of the list, then no objects are removed from the list. Returns the object that was removed. The position of current will remain the same
     * @return Object The object in the node that was removed, null if there is an error with that action
     */
-    public Object removeBack()
+    public E removeBack()
     {
-        DoublyLinkedListNode oldNode = (DoublyLinkedListNode)current.back();
+        DoublyLinkedListNode<E> oldNode = (DoublyLinkedListNode<E>)current.back();
         if(current.back() == current)
         {
             current = null;
-            return oldNode;
+            return oldNode.getObject();
         }
         oldNode.back().setNext(current);
         current.setBack(oldNode.back());
@@ -162,13 +162,13 @@ public class CircularlyLinkedList
     * Finds the node with the object in it, then sets current to its position
     * @param e The object that needs to be found in the linkedlist. If it cannot be found, the position of current is untouched
     */
-    public void find(Object e)
+    public void find(E e)
     {
-        DoublyLinkedListNode finder = current;
+        DoublyLinkedListNode<E> finder = current;
         while(finder.next() != current) //No looping forever
         {
-            finder = (DoublyLinkedListNode)finder.next();
-            Object obj = finder.getObject();
+            finder = (DoublyLinkedListNode<E>)finder.next();
+            E obj = finder.getObject();
             if(obj != null && obj.equals(e))
             {
                 current = finder;
