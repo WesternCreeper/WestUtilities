@@ -8,9 +8,9 @@ package dataStructures;
  *
  * @author Westley
  */
-public class Stack 
+public class Stack <E>
 {
-    private LinkedListNode top;
+    private LinkedListNode<E> top;
 
     /**
     * Creates a standard empty stack
@@ -27,18 +27,18 @@ public class Stack
         top = null;
     }
 
-    public void push(Object obj)
+    public void push(E obj)
     {
         //Just make the new top the pushed one:
-        top = new LinkedListNode(obj, top);
+        top = new LinkedListNode<E>(obj, top);
     }
 
     /**
     * This function grabs the top of the stack. If this is empty then it will return FAILED_RETREIVE
     */
-    public Object top()
+    public E top()
     {
-        return top;
+        return top.getObject();
     }
     /**
     * This function removes the top object. If the stack is already empty, then this function will do nothing
@@ -53,13 +53,13 @@ public class Stack
     /**
     * This function grabs the top of the stack, and removes it. If this is empty then it will return FAILED_RETREIVE
     */
-    public Object popTop()
+    public E popTop()
     {
-        LinkedListNode result = top;
+        LinkedListNode<E> result = top;
         if(!isEmpty())
         {
             top = top.next();
         }
-        return result;
+        return result.getObject();
     }
 }
