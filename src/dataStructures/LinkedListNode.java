@@ -10,6 +10,7 @@ package dataStructures;
  * @author Westley
  * 
  * A standard node for a linked list. This only goes forwards. Not backwards
+ * @param <E> The class that is represented in this data structure
  */
 class LinkedListNode<E>
 {

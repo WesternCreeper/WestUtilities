@@ -9,6 +9,7 @@ package dataStructures;
  * @author Westley
  * 
  * A linked list node that can go forwards and backwards
+ * @param <E> The class that is represented in this data structure
  */
 class DoublyLinkedListNode<E> extends LinkedListNode<E>
 {

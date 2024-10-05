@@ -8,6 +8,7 @@ package dataStructures;
  *
  * @author Westley
  * A list made of forward and backward references but in a circular design so there is no top and no bottom. This design uses an internal iterator
+ * @param <E> The class that is represented in this data structure
  */
 public class CircularlyLinkedList<E>
 {

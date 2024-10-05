@@ -8,6 +8,7 @@ package dataStructures;
  *
  * @author Westley
  * A list made of forward and backward references allowing for bidirectional movement. This design uses an internal iterator
+ * @param <E> The class that is represented in this data structure
  */
 public class DoublyLinkedList<E>
 {

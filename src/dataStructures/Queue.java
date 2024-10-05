@@ -7,6 +7,7 @@ package dataStructures;
 /**
  *
  * @author Westley
+ * @param <E> The class that is represented in this data structure
  */
 public class Queue<E>
 {

@@ -8,6 +8,7 @@ package dataStructures;
  *
  * @author Westley
  * A list made of forward facing references. There is an additional capability to add items to the end of the list, however the basic design uses an internal iterator
+ * @param <E> The class that is represented in this data structure
  */
 public class LinkedList<E>
 {
