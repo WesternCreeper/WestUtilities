@@ -34,9 +34,9 @@ public class WGAPopupAnimationListener implements ActionListener
         isWorking = !colorAnimator.isDone();
         if(!colorAnimator.isDone())
         {
-            if(!parentComp.isIsShown())
+            if(!parentComp.isShown())
             {
-                parentComp.setIsShown(true);
+                parentComp.setShown(true);
             }
             if(popOut)
             {
@@ -45,9 +45,9 @@ public class WGAPopupAnimationListener implements ActionListener
             }
             else
             {
-                if(!parentComp.isIsShown())
+                if(!parentComp.isShown())
                 {
-                    parentComp.setIsShown(true);
+                    parentComp.setShown(true);
                 }
                 colorAnimator.fadeFrom(fullTransparentColor);
                 setColorsForParent();
@@ -56,9 +56,9 @@ public class WGAPopupAnimationListener implements ActionListener
         }
         else
         {
-            if(popOut && parentComp.isIsShown())
+            if(popOut && parentComp.isShown())
             {
-                parentComp.setIsShown(false);
+                parentComp.setShown(false);
             }
         }
     }

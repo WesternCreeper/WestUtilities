@@ -218,6 +218,15 @@ public class WGTextInput extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        this.textFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        this.cursorColor = theme.getCursorColor();
+        this.highlightColor = theme.getHighlightColor();
+        resizer.resizeComps();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -225,6 +234,10 @@ public class WGTextInput extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
         
         WGTextInputKeyListener keyer = getKeyListener();
         WGTextInputClickListener clicker = getClickListener();

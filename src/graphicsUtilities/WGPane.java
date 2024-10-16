@@ -173,15 +173,21 @@ public class WGPane extends WGBox
         resizer.setBounds(newBounds);
     }
     @Override
-    public void setIsShown(boolean isShown) 
+    public void setShown(boolean isShown) 
     {
         //Do our own checking:
-        super.setIsShown(isShown);
+        super.setShown(isShown);
         //Now do it for all of the objects within this one:
         for(int i = 0 ; i < containedObjects.size() ; i++)
         {
-            containedObjects.get(i).setIsShown(isShown);
+            containedObjects.get(i).setShown(isShown);
         }
+    }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        this.scrollBarColor = theme.getScrollBarColor();
+        resizer.resizeComps();
     }
     
     /**
@@ -190,6 +196,10 @@ public class WGPane extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
         
         WGScrollableListener scrollerH = getHorizontalScroll();
         WGScrollableListener scrollerV = getVerticalScroll();
@@ -224,8 +234,11 @@ public class WGPane extends WGBox
      */
     public void removeAllDrawableObjects()
     {
-        verticalScroll.resetScroll();
-        horizontalScroll.resetScroll();
+        if(scrollable)
+        {
+            verticalScroll.resetScroll();
+            horizontalScroll.resetScroll();
+        }
         
         //Remove all listeners, as they will still listen even after the object disappears
         for(int i = 0 ; i < containedObjects.size() ; i++)

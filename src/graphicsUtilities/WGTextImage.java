@@ -145,6 +145,20 @@ public class WGTextImage extends WGDrawingObject
             throw new WGNullParentException();
         }
     }
+    /**
+     * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param displayedImage The image to be displayed, this will be the bulk of the object
+     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param text The text placed on the image
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, displayedImage, allowImageResize, text, theme.getTextPosition(), theme.getTextXSizePercent(), theme.getTextYSizePercent(), theme.getTextFont(), theme.getTextColor(), parent);
+    }
     
     @Override
     public Rectangle2D.Double getBounds() 
@@ -166,6 +180,19 @@ public class WGTextImage extends WGDrawingObject
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
+    }
+    public void setTheme(WGTheme theme)
+    {
+        this.textPosition = theme.getTextPosition();
+        this.textXSizePercent = theme.getTextXSizePercent();
+        this.textYSizePercent = theme.getTextYSizePercent();
+        this.textFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        resizer.resizeComps();
     }
     
     
@@ -247,6 +274,10 @@ public class WGTextImage extends WGDrawingObject
         }
         public void resizeComps()
         {
+            if(displayImage == null) //If there is no image, then save time by not calculating anything
+            {
+                return;
+            }
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getSize().getWidth();
             double parentHeight = getParent().getSize().getHeight();
@@ -284,23 +315,23 @@ public class WGTextImage extends WGDrawingObject
             {
                 case TEXT_LOWER_LEFT_CORNER:
                     //Place in the lower left corner, relative to the position of the object:
-                    textX = 0;
-                    textY = height - textFM.getDescent();
+                    textX = getX();
+                    textY = getY() + height - textFM.getDescent();
                     break;
                 case TEXT_UPPER_LEFT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = 0;
-                    textY = textFM.getAscent() - textFM.getDescent();
+                    textX = getX();
+                    textY = getY() + textFM.getAscent() - textFM.getDescent();
                     break;
                 case TEXT_UPPER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = width - textFM.stringWidth(imageText);
-                    textY = textFM.getAscent() - textFM.getDescent();
+                    textX = getX() + width - textFM.stringWidth(imageText);
+                    textY = getY() + textFM.getAscent() - textFM.getDescent();
                     break;
                 case TEXT_LOWER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = width - textFM.stringWidth(imageText);
-                    textY = height - textFM.getDescent();
+                    textX = getX() + width - textFM.stringWidth(imageText);
+                    textY = getY() + height - textFM.getDescent();
                     break;
             }
             

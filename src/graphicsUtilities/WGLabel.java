@@ -98,6 +98,12 @@ public class WGLabel extends WGDrawingObject implements TextStyles
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        this.textFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        this.textStyle = theme.getTextStyle();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -105,6 +111,10 @@ public class WGLabel extends WGDrawingObject implements TextStyles
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
     }
     
     

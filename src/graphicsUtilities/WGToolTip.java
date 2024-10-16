@@ -117,6 +117,14 @@ public class WGToolTip extends WGBox implements TextStyles
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        this.toolTipFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        this.textStyle = theme.getTextStyle();
+        resizer.resizeComps();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -132,6 +140,10 @@ public class WGToolTip extends WGBox implements TextStyles
     
     public String getLongestString()
     {
+        if(toolTipText == null || toolTipText.length == 0)
+        {
+            return "";
+        }
         FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
         int longest = 0;
         for(int i = 1 ; i < toolTipText.length ; i++)
@@ -148,18 +160,29 @@ public class WGToolTip extends WGBox implements TextStyles
     //Setters:
     public void setToolTipText(String toolTipText) {
         this.toolTipText = toolTipText.split("\n");
+        
+        //Now make sure that if the object was being shown but now should not because of the new text to update that:
+        if(toolTipText.isEmpty() && isShown())
+        {
+            setShown(false);
+        }
+        
+        resizer.resizeComps();
     }
 
     public void setToolTipFont(Font toolTipFont) {
         this.toolTipFont = toolTipFont;
+        resizer.resizeComps();
     }
 
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
+        resizer.resizeComps();
     }
 
     public void setTextStyle(int textStyle) {
         this.textStyle = textStyle;
+        resizer.resizeComps();
     }
     
     

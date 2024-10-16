@@ -87,7 +87,16 @@ public class WestGraphics
      */
     public void draw(WGDrawingObject obj)
     {
-        if(obj.isIsShown())
+        draw(obj, true);
+    }
+    /**
+     * Draws the given WGDrawingObject based on internal functions
+     * @param obj The object to be drawn
+     * @param drawToolTip Draw the tool tip associated with this object?
+     */
+    public void draw(WGDrawingObject obj, boolean drawToolTip)
+    {
+        if(obj.isShown())
         {
             if(obj instanceof WGButton)
             {
@@ -135,10 +144,13 @@ public class WestGraphics
             }
             
             //Now make sure to draw the tool tip that is part of this object:
-            WGToolTip addedToolTip = obj.getToolTip();
-            if(addedToolTip != null && addedToolTip.isIsShown())
+            if(drawToolTip)
             {
-                drawToolTip(addedToolTip);
+                WGToolTip addedToolTip = obj.getToolTip();
+                if(addedToolTip != null && addedToolTip.isShown())
+                {
+                    drawToolTip(addedToolTip);
+                }
             }
         }
     }
@@ -668,8 +680,13 @@ public class WestGraphics
     private void drawTextImage(WGTextImage textImage)
     {
         //Draw the Image:
+        BufferedImage image = textImage.getDisplayImage();
+        if(image == null) //Don't draw something that will result in an error!
+        {
+            return;
+        }
         AffineTransform transformation = new AffineTransform(textImage.getImageXScale(),0,0,textImage.getImageYScale(), textImage.getX() + textImage.getImageOffSetX(), textImage.getY() + textImage.getImageOffSetY());
-        g2.drawImage(textImage.getDisplayImage(), transformation, null);
+        g2.drawImage(image, transformation, null);
         
         //Now the text:
         g2.setColor(textImage.getTextColor());

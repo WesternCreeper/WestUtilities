@@ -59,7 +59,7 @@ public class AIConsole extends Console
         try
         {
             animationManager = new WGAAnimationManager();
-            consoleOutput = new WGTextArea(consoleOutputBounds, standardBorderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, backgroundColor, borderColor, scrollbarColor, this);
+            consoleOutput = new WGTextArea(consoleOutputBounds, standardBorderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
             consoleInput = new WGTextInput(consoleInputBounds, standardBorderSize, inputFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, this, animationManager, new WGTextInputClickListener(), new consoleTextReturn());
             consoleReturnButton = new WGButton(consoleReturnButtonBounds, standardBorderSize, "Return", returnButtonFont, backgroundColor, borderColor, textColor, this, new consoleReturn());
         }

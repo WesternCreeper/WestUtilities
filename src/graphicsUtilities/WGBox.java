@@ -6,7 +6,6 @@ package graphicsUtilities;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -40,15 +39,21 @@ public abstract class WGBox extends WGDrawingObject
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        setBorderSize(theme.getBorderSize());
+        setBackgroundColor(theme.getBackgroundColor());
+        setBorderColor(theme.getBorderColor());
+    }
     @Override
     /**
      * This sets whether the component is shown or not and sets the cursor based on the second variable
      * @param isShown Shows or hides the component
      * @param setCursor Sets or doesn't the cursor
      */
-    public void setIsShown(boolean isShown, boolean setCursor) 
+    public void setShown(boolean isShown, boolean setCursor) 
     {
-        super.setIsShown(isShown, setCursor);
+        super.setShown(isShown, setCursor);
         if(setCursor)
         {
             //Now make sure that these do the correct events as needed

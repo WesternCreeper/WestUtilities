@@ -91,6 +91,10 @@ public class WGCheckBox extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
         
         WGCheckBoxClickListener buttoner = (WGCheckBoxClickListener)(getClickListener());
         getParent().removeMouseListener(buttoner);
@@ -115,6 +119,12 @@ public class WGCheckBox extends WGBox
         {
             ((WGCheckBoxClickListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
         }
+    }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        checkColor = theme.getCheckColor();
+        resizer.resizeComps();
     }
 
     //Getters:

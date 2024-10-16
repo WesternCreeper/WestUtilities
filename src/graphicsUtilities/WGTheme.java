@@ -17,6 +17,9 @@ import java.awt.Font;
 public class WGTheme implements TextStyles
 {
     private int textStyle;
+    private int textPosition;
+    private double textXSizePercent;
+    private double textYSizePercent;
     private float borderSize;
     private Color backgroundColor;
     private Color borderColor;
@@ -27,9 +30,12 @@ public class WGTheme implements TextStyles
     private Color scrollBarColor;
     private Color barColor;
     private Font textFont;
-    public WGTheme(float borderSize, int textStyle, Color backgroundColor, Color borderColor, Color textColor, Color scrollBarColor, Color cursorColor, Color highlightColor, Color barColor, Color checkColor, Font textFont)
+    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Color backgroundColor, Color borderColor, Color textColor, Color scrollBarColor, Color cursorColor, Color highlightColor, Color barColor, Color checkColor, Font textFont)
     {
         this.textFont = textFont;
+        this.textPosition = textPosition;
+        this.textXSizePercent = textXSizePercent;
+        this.textYSizePercent = textYSizePercent;
         this.textStyle = textStyle;
         this.borderSize = borderSize;
         this.backgroundColor = backgroundColor;
@@ -105,6 +111,18 @@ public class WGTheme implements TextStyles
     public void setTextFont(Font textFont) {
         this.textFont = textFont;
     }
+
+    public void setTextPosition(int textPosition) {
+        this.textPosition = textPosition;
+    }
+
+    public void setTextXSizePercent(double textXSizePercent) {
+        this.textXSizePercent = textXSizePercent;
+    }
+
+    public void setTextYSizePercent(double textYSizePercent) {
+        this.textYSizePercent = textYSizePercent;
+    }
     
     
     //Getters:
@@ -150,5 +168,17 @@ public class WGTheme implements TextStyles
 
     public Font getTextFont() {
         return textFont;
+    }
+
+    public int getTextPosition() {
+        return textPosition;
+    }
+
+    public double getTextXSizePercent() {
+        return textXSizePercent;
+    }
+
+    public double getTextYSizePercent() {
+        return textYSizePercent;
     }
 }

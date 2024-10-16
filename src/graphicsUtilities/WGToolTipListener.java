@@ -17,6 +17,7 @@ import javax.swing.Timer;
  */
 public class WGToolTipListener extends WGClickListener implements MouseMotionListener
 {
+    private static final int Y_MOUSE_OFFSET = 16;
     public static final int BASE_WAIT_TIME = 2500;
     private WGToolTip toolTipObject;
     private Timer waitTimer;
@@ -78,7 +79,7 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
                 entered = true;
             }
             toolTipObject.setX(e.getX());
-            toolTipObject.setY(e.getY());
+            toolTipObject.setY(e.getY() + Y_MOUSE_OFFSET);
         }
         else
         {
@@ -87,14 +88,14 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
                 waitTimer.stop();
                 entered = false;
             }
-            toolTipObject.setIsShown(false);
+            toolTipObject.setShown(false, false);
         }
     }
     
     //Setter:
     public void setToolTipObject(WGToolTip toolTipObject) {
         this.toolTipObject = toolTipObject;
-        toolTipObject.setIsShown(false);
+        toolTipObject.setShown(false, false);
     }
     
     
@@ -112,7 +113,7 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
         {
             if(entered)
             {
-                toolTipObject.setIsShown(true);
+                toolTipObject.setShown(true, false);
             }
         }
     }

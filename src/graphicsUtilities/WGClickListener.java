@@ -57,9 +57,9 @@ public class WGClickListener implements MouseListener
     public void mouseClicked(MouseEvent e) 
     {
         setLastMouseEvent(e);
-        if(isWithinBounds(e) && !e.isConsumed() && parentObject.isIsShown())
+        if(isWithinBounds(e) && !e.isConsumed() && parentObject.isShown())
         {
-            if(parentOwningPane != null && !parentOwningPane.isIsShown())
+            if(parentOwningPane != null && !parentOwningPane.isShown())
             {
                 return;
             }
@@ -121,10 +121,10 @@ public class WGClickListener implements MouseListener
     
     protected boolean isParentShown()
     {
-        boolean result = parentObject.isIsShown();
+        boolean result = parentObject.isShown();
         if(parentOwningPane != null)
         {
-            result = result && parentOwningPane.isIsShown();
+            result = result && parentOwningPane.isShown();
         }
         return result;
     }

@@ -250,6 +250,13 @@ public class WGButton extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        textColor = theme.getTextColor();
+        textFont = theme.getTextFont();
+        resizer.resizeComps();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -257,6 +264,10 @@ public class WGButton extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
         
         WGButtonListener buttoner = (WGButtonListener)(getClickListener());
         getParent().removeMouseListener(buttoner);

@@ -105,12 +105,10 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param textWrapped Whether or not the text is wrapped when the line becomes too long
      * @param textColor The color of the text
      * @param parent The component that the button is on, and is used to determine how big this object is
-     * @param backgroundColor The color of the background of the pane
-     * @param borderColor The border color of the pane
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
         //Create the object
         super(0, 0, 0, 0, borderSize, parent);
@@ -155,14 +153,12 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param textWrapped Whether or not the text is wrapped when the line becomes too long
      * @param textColor The color of the text
      * @param parent The component that the button is on, and is used to determine how big this object is
-     * @param backgroundColor The color of the background of the pane
-     * @param borderColor The border color of the pane
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, backgroundColor, borderColor, scrollBarColor, parent);
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, scrollBarColor, parent);
     }
     
     /**
@@ -176,7 +172,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      */
     public WGTextArea(Rectangle2D.Double bounds, String[] text, boolean textWrapped, Component parent, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), textWrapped, theme.getTextColor(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), textWrapped, theme.getTextColor(), theme.getScrollBarColor(), parent);
     }
     
     @Override
@@ -194,6 +190,14 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        setBorderSize(theme.getBorderSize());
+        this.textFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        this.textStyle = theme.getTextStyle();
+        this.scrollBarColor = theme.getScrollBarColor();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -201,6 +205,10 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
         
         WGTextScrollableListener scrollerV = getVerticalScroll();
         getParent().removeMouseListener(scrollerV);

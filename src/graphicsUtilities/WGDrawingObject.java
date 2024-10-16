@@ -10,11 +10,11 @@ import java.awt.geom.Rectangle2D;
 
 /**
  *
- * @author Westley
  * This class defines the basic functions of a West Graphics object. Specifically it defines functions like: getBounds() and other important cross object functionalities
+ * @author Westley
  */
 public abstract class WGDrawingObject
-{
+{ 
     private Component parent;
     private WGClickListener clickListener;
     protected WGDrawingObjectResizeListener resizer;
@@ -66,18 +66,20 @@ public abstract class WGDrawingObject
     
     public abstract void removeListeners();
     
+    public abstract void setTheme(WGTheme theme);
+    
     
     //Setters:
-    public void setIsShown(boolean isShown) 
+    public void setShown(boolean isShown) 
     {
-        setIsShown(isShown, true);
+        setShown(isShown, true);
     }
     /**
      * This sets whether the component is shown or not and sets the cursor based on the second variable
      * @param isShown Shows or hides the component
      * @param setCursor Sets or doesn't the cursor
      */
-    public void setIsShown(boolean isShown, boolean setCursor) 
+    public void setShown(boolean isShown, boolean setCursor) 
     {
         this.isShown = isShown;
         if(setCursor)
@@ -140,7 +142,7 @@ public abstract class WGDrawingObject
     }
     
     //Getters:
-    public boolean isIsShown() {
+    public boolean isShown() {
         return isShown;
     }
 

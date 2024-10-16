@@ -70,6 +70,44 @@ public class WGAnnouncementCard extends WGBox
             resizer.resizeComps();
         }
     }
+    /**
+     * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths.
+     * NOTE: This component acts slightly differently than most other WGObjects act, since the x and y variables have been replaced with the centerX and centerY variables, which define the where the center of the object goes
+     * @param xCenter This is the percentage of the screen where the center of the object will be placed horizontally (x-plane) at 0.5 this is at the center of the screen horizontally
+     * @param yCenter This is the percentage of the screen where the center of the object will be placed vertically (y-plane) at 0.5 this is at the center of the screen vertically
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component. (Recommendation: to get the best results make sure that splitPercentage + titleHeight + subTitleHeight = 1)
+     * @param titleHeightPercentage The percentage of the parent's height that is used for the calculation of the size of the title font
+     * @param subTitleHeightPercentage The percentage of the parent's height that is used for the calculation of the size of the subtitle font
+     * @param splitPercentage The percentage of the parent's height that is used for the calculation of the size of the split
+     * @param title The Title for the announcement
+     * @param subTitle The Subtitle for the announcement
+     * @param splitColor The color of the line that splits the title and the subtitle
+     * @param parent The component that the object is on, and is used to determine how big this object is
+     */
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Color splitColor, Component parent, WGTheme theme)
+    {
+        super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent);
+        this.splitHeight = 0;
+        this.title = title;
+        this.titleFont = theme.getTextFont();
+        this.subTitle = subTitle;
+        this.subTitleFont = theme.getTextFont();
+        this.titleColor = theme.getTextColor();
+        this.splitColor = splitColor;
+        this.subTitleColor = theme.getTextColor();
+        drawBackground = true;
+        if(getBackgroundColor() == null || getBorderColor() == null)
+        {
+            drawBackground = false;
+        }
+        if(getParent() != null)
+        {
+            resizer = new AnnouncementResizeListener(xCenter, yCenter, widthPercent, heightPercent, titleHeightPercentage, subTitleHeightPercentage, splitPercentage);
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+        }
+    }
 
     
     //Methods:
@@ -91,6 +129,15 @@ public class WGAnnouncementCard extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        this.titleFont = theme.getTextFont();
+        this.subTitleFont = theme.getTextFont();
+        this.titleColor = theme.getTextColor();
+        this.subTitleColor = theme.getTextColor();
+        resizer.resizeComps();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -98,6 +145,10 @@ public class WGAnnouncementCard extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
     }
 
     

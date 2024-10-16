@@ -111,8 +111,8 @@ public class Logger extends Console
         try
         {
             standardDisplayInformation = new WGTextArea(displayInformationBounds, borderSize, displayInformationText, displayInformationFont, WGTextArea.TEXT_STYLE_LEFT, textColor, this);
-            errorOutputDisplay = new WGTextArea(errorOutputBounds, borderSize, new String[0], errorOutputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, backgroundColor, borderColor, scrollbarColor, this);
-            outputDisplay = new WGTextArea(outputBounds, borderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, backgroundColor, borderColor, scrollbarColor, this);
+            errorOutputDisplay = new WGTextArea(errorOutputBounds, borderSize, new String[0], errorOutputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
+            outputDisplay = new WGTextArea(outputBounds, borderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
             errorOutputDisplayLabel = new WGLabel(errorOutputLabelBounds, borderSize, WGLabel.TEXT_STYLE_MIDDLE, "Error Output:", errorOutputFont, textColor, this);
             outputDisplayLabel = new WGLabel(outputLabelBounds, borderSize, WGLabel.TEXT_STYLE_MIDDLE, "Regular Output:", errorOutputFont, textColor, this);
         
@@ -120,7 +120,7 @@ public class Logger extends Console
             switchToUnitTestsButton = new WGButton(switchToUnitTestsBounds, borderSize, "Tests", switchToUnitTestsFont, backgroundColor, borderColor, textColor, this, new SwitchToUnitTestsListener());
         
             unitTestDisplayLabel = new WGLabel(unitTestDisplayLabelBounds, borderSize, WGLabel.TEXT_STYLE_LEFT, "Unit Tests:", unitTestDisplayFont, textColor, this);
-            unitTestDisplay = new WGTextArea(unitTestDisplayBounds, borderSize, new String[0], unitTestDisplayFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, backgroundColor, borderColor, scrollbarColor, this);
+            unitTestDisplay = new WGTextArea(unitTestDisplayBounds, borderSize, new String[0], unitTestDisplayFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
         }
         catch(WGNullParentException e) {} //This should NEVER happen
         
@@ -129,7 +129,7 @@ public class Logger extends Console
         animationManager.startAllTimers();
         
         //Start on the proper page:
-        switchToLogsButton.setIsShown(false);
+        switchToLogsButton.setShown(false);
         page = LOGS_PAGE;
         
         //Set up the filing system:
@@ -286,8 +286,8 @@ public class Logger extends Console
     
     public void showAllPageButtons()
     {
-        switchToLogsButton.setIsShown(true);
-        switchToUnitTestsButton.setIsShown(true);
+        switchToLogsButton.setShown(true);
+        switchToUnitTestsButton.setShown(true);
     }
     
     
@@ -318,7 +318,7 @@ public class Logger extends Console
             {
                 page = LOGS_PAGE;
                 showAllPageButtons();
-                switchToLogsButton.setIsShown(false);
+                switchToLogsButton.setShown(false);
             }
         }
     }
@@ -331,7 +331,7 @@ public class Logger extends Console
             {
                 page = UNIT_TESTS_PAGE;
                 showAllPageButtons();
-                switchToUnitTestsButton.setIsShown(false);
+                switchToUnitTestsButton.setShown(false);
             }
         }
     }

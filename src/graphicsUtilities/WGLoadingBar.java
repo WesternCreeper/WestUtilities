@@ -110,6 +110,14 @@ public class WGLoadingBar extends WGBox
     {
         resizer.setBounds(newBounds);
     }
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        this.titleFont = theme.getTextFont();
+        this.titleColor = theme.getTextColor();
+        this.barColor = theme.getBarColor();
+        resizer.resizeComps();
+    }
     
     /**
      * This removes the listeners attached to this object:
@@ -117,6 +125,10 @@ public class WGLoadingBar extends WGBox
     public void removeListeners()
     {
         getParent().removeComponentListener(resizer);
+        if(getToolTip() != null)
+        {
+            getToolTip().removeListeners();
+        }
     }
     
     
