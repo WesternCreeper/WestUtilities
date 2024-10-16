@@ -82,6 +82,19 @@ public class WGPane extends WGBox
     }
     
     /**
+     * This creates a standard WGPane that holds numerous other objects. This constructor allows for the creation of a non-clickable, yet scrollable pane that has many robust features
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param scrollable The boolean that determines whether the pane is scrollable or not. This is a final variable so there is only one time to determine this
+     * @param parent The component that the pane is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGPane(Rectangle2D.Double bounds, boolean scrollable, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), scrollable, theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
+    }
+    
+    /**
      * This creates a clickable WGPane that can hold numerous other objects. This constructor allows for the creation of a clickable, but not scrollable pane that has many robust features
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
@@ -128,6 +141,19 @@ public class WGPane extends WGBox
     public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, backgroundColor, borderColor, parent, clickListener);
+    }
+    
+    /**
+     * This creates a clickable WGPane that can hold numerous other objects. This constructor allows for the creation of a clickable, but not scrollable pane that has many robust features
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param parent The component that the pane is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGPane(Rectangle2D.Double bounds, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent, clickListener);
     }
     
     

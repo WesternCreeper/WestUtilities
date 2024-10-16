@@ -133,6 +133,13 @@ public class WestGraphics
             {
                 drawTextImage((WGTextImage)obj);
             }
+            
+            //Now make sure to draw the tool tip that is part of this object:
+            WGToolTip addedToolTip = obj.getToolTip();
+            if(addedToolTip != null && addedToolTip.isIsShown())
+            {
+                drawToolTip(addedToolTip);
+            }
         }
     }
     

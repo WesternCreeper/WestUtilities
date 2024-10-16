@@ -5,7 +5,6 @@
 package graphicsUtilities;
 
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
-import graphicsUtilities.WGAnimation.WGAStringAnimator;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -105,6 +104,18 @@ public class WGTextInput extends WGBox
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager);
     }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param parent The component that the text input is on, and is used to determine how big this object is
+     * @param parentAnimationManager The needed animation manager to get the text cursor to blink
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getCursorColor(), theme.getHighlightColor(), parent, parentAnimationManager);
+    }
     
     
     /**
@@ -176,6 +187,20 @@ public class WGTextInput extends WGBox
     public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager, textClickListener, textKeyListener);
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param parent The component that the text input is on, and is used to determine how big this object is
+     * @param parentAnimationManager The needed animation manager to get the text cursor to blink
+     * @param textClickListener The click listener, overrides the basic version
+     * @param textKeyListener The key listener, overrides the basic version
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getCursorColor(), theme.getHighlightColor(), parent, parentAnimationManager, textClickListener, textKeyListener);
     }
     
     //Methods:

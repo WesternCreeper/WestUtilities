@@ -80,6 +80,20 @@ public class WGLoadingBar extends WGBox
             resizer.resizeComps();
         }
     }
+    /**
+     * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param title The text written on the bar
+     * @param showPercentage The option for a percentage to be written after the title
+     * @param percentFilled The percent the bar should be filled
+     * @param isHorizontal The option to make the bar display everything horizontal or vertical. The bounds are NOT changed based on this option, so make sure the bar can fit the text!
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @param parent The parent component upon which this object is being drawn on
+     */
+    public WGLoadingBar(Rectangle.Double bounds, String title, boolean showPercentage, double percentFilled, boolean isHorizontal, Component parent, WGTheme theme)
+    {
+        this(bounds, theme.getBorderSize(), title, showPercentage, theme.getTextFont(), percentFilled, isHorizontal, theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getBarColor(), parent);
+    }
 
     
     @Override

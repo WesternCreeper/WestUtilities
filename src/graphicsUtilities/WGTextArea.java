@@ -15,11 +15,8 @@ import java.util.ArrayList;
  *
  * @author Westley
  */
-public class WGTextArea extends WGDrawingObject
+public class WGTextArea extends WGDrawingObject implements TextStyles
 {
-    public static final int TEXT_STYLE_LEFT = 0;
-    public static final int TEXT_STYLE_MIDDLE = 1;
-    public static final int TEXT_STYLE_RIGHT = 2;
     private boolean textWrapped = false;
     private int textStyle = 0;
     private double stringYOffset = 0;
@@ -85,6 +82,18 @@ public class WGTextArea extends WGDrawingObject
     public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Color textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textColor, parent);
+    }
+    /**
+     * The standard non-scrollable constructor that holds multiple lines of text in an invisible box
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param text The actual text. This is an array as more than one line is allowed to fit on the screen
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextArea(Rectangle2D.Double bounds, String[] text, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), theme.getTextColor(), parent);
     }
     /**
      * The standard scrollable constructor that holds multiple lines of text in an invisible box. NOTE: This function does NOT change the size of the font based on the size of the object. So make sure the Font object has the size you wanted
@@ -154,6 +163,20 @@ public class WGTextArea extends WGDrawingObject
     public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, backgroundColor, borderColor, scrollBarColor, parent);
+    }
+    
+    /**
+     * The standard scrollable constructor that holds multiple lines of text in an invisible box. NOTE: This function does NOT change the size of the font based on the size of the object. So make sure the Font object has the size you wanted
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param text The actual text. This is an array as more than one line is allowed to fit on the screen
+     * @param textWrapped Whether or not the text is wrapped when the line becomes too long
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGTextArea(Rectangle2D.Double bounds, String[] text, boolean textWrapped, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), textWrapped, theme.getTextColor(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
     }
     
     @Override
@@ -299,8 +322,8 @@ public class WGTextArea extends WGDrawingObject
         public void resizeComps()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);

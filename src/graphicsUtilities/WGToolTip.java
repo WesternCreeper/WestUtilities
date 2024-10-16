@@ -14,11 +14,8 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Westley
  */
-public class WGToolTip extends WGBox
+public class WGToolTip extends WGBox implements TextStyles
 {
-    public static final int TEXT_STYLE_LEFT = 0;
-    public static final int TEXT_STYLE_MIDDLE = 1;
-    public static final int TEXT_STYLE_RIGHT = 2;
     private String[] toolTipText;
     private Font toolTipFont;
     private WGToolTipListener toolTipListener;
@@ -83,6 +80,22 @@ public class WGToolTip extends WGBox
     {
         this(widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, listener, toolTipOwner);
         this.textStyle = textStyle;
+    }
+    /**
+     * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string. And has the ability to specify where the text goes
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param text The text that will be written on the tooltip, this will be turned into an array when new line characters are found in the string
+     * @param parent The parent that the object is being drawn on, useful for any click operation
+     * @param listener The listener that makes sure this object is being displayed in the correct location, This is set up for you so no need to set it up (Use the most basic definition)
+     * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGToolTip(double widthPercent, double heightPercent, String text, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
+    {
+        this(widthPercent, heightPercent, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
+        this.textStyle = theme.getTextStyle();
     }
     
     //Methods

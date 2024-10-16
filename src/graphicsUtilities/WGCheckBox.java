@@ -71,6 +71,19 @@ public class WGCheckBox extends WGBox
             throw new WGNullParentException();
         }
     }
+    /**
+     * 
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param checked The state of the checkBox, whether checked or unchecked
+     * @param clickListener The click manager that allows for the checkbox to be set up. This is automatically set up so use the no param definition
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+    */
+    public WGCheckBox(Rectangle2D.Double bounds, boolean checked, WGCheckBoxClickListener clickListener, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), checked, theme.getBackgroundColor(), theme.getBorderColor(), theme.getCheckColor(), clickListener, parent);
+    }
     
     /**
      * This removes the listeners attached to this object:

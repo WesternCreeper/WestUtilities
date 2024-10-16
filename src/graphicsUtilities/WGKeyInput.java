@@ -26,7 +26,7 @@ public class WGKeyInput extends WGBox
     private boolean shiftHeld = false;
     
     /**
-     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param textFont The font that will draw the text
@@ -63,7 +63,7 @@ public class WGKeyInput extends WGBox
         }
     }
     /**
-     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
      * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
@@ -83,10 +83,22 @@ public class WGKeyInput extends WGBox
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager);
     }
+    /**
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param parent The component that the text input is on, and is used to determine how big this object is
+     * @param parentAnimationManager The needed animation manager to get the text cursor to blink
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getCursorColor(), theme.getHighlightColor(), parent, parentAnimationManager);
+    }
     
     
     /**
-     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param textFont The font that will draw the text
@@ -128,7 +140,7 @@ public class WGKeyInput extends WGBox
         }
     }
     /**
-     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
      * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
@@ -149,6 +161,20 @@ public class WGKeyInput extends WGBox
     public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager, textClickListener, textKeyListener);
+    }
+    /**
+     * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param parent The component that the text input is on, and is used to determine how big this object is
+     * @param parentAnimationManager The needed animation manager to get the text cursor to blink
+     * @param textClickListener The click listener, overrides the basic version
+     * @param textKeyListener The key listener, overrides the basic version
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getCursorColor(), theme.getHighlightColor(), parent, parentAnimationManager, textClickListener, textKeyListener);
     }
     
     //Methods:

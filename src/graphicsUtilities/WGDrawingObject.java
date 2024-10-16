@@ -18,6 +18,7 @@ public abstract class WGDrawingObject
     private Component parent;
     private WGClickListener clickListener;
     protected WGDrawingObjectResizeListener resizer;
+    private WGToolTip toolTip;
     private Cursor shownCursor;
     private double x = 0;
     private double y = 0;
@@ -126,6 +127,17 @@ public abstract class WGDrawingObject
     public void setShownCursor(Cursor shownCursor) {
         this.shownCursor = shownCursor;
     }
+
+    /**
+     * A very important not about this:
+     * Do NOT use this function if this object is a tool tip!
+     * This is ONLY used when the tool tip is created but later needs to be changed, when there is no longer a reference to the original tool tip. This is the reference to that original tool tip
+     * This is also useful in the drawing routine
+     * @param toolTip The Tool Tip that is added to this object, important when the tool tip no longer has a reference but needs to be changed
+    */ 
+    public void setToolTip(WGToolTip toolTip) {
+        this.toolTip = toolTip;
+    }
     
     //Getters:
     public boolean isIsShown() {
@@ -166,5 +178,9 @@ public abstract class WGDrawingObject
 
     public Cursor getShownCursor() {
         return shownCursor;
+    }
+
+    public WGToolTip getToolTip() {
+        return toolTip;
     }
 }

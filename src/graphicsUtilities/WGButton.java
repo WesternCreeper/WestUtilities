@@ -86,6 +86,18 @@ public class WGButton extends WGBox
         }
     }
     /**
+     * This creates a baseline button that can and WILL resize itself. This will fully integrate it's resizing
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param text The text that goes on the button
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
+    }
+    /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
      * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
@@ -138,6 +150,33 @@ public class WGButton extends WGBox
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param text The text that goes on the button
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, String text, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
+        if(getParent() != null)
+        {
+            super.setClickListener(clickListener);
+            getClickListener().setParentComponent(getParent());
+            getClickListener().setParentObject(this);
+            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
+            getParent().addMouseListener(getClickListener());
+            getParent().addMouseMotionListener((WGButtonListener)getClickListener());
+            getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
      * @param xPercent The percentage of the parent component that is where the x starts. As in 0.3 would mean that the x starts at 30% of the parent's width. And if it has a width of 0.4 then the component would always be in the middle of the screen
      * @param yPercent The percentage of the parent component that is where the y starts. Same idea as above but with the y and height
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
@@ -172,6 +211,25 @@ public class WGButton extends WGBox
     public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, null, null, backgroundColor, borderColor, null, parent, clickListener);
+        this.imagePlacementPeference = imagePlacementPeference;
+        this.imageScalePeference = imageScalePeference;
+        displayedImage = buttonImage;
+        resizer.resizeComps();
+    }
+    /**
+     * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param buttonImage The image that will be displayed on the button
+     * @param imagePlacementPeference The preferred location of the image
+     * @param imageScalePeference The preferred scale of the image
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGButton(Rectangle2D.Double bounds, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), null, null, theme.getBackgroundColor(), theme.getBorderColor(), null, parent, clickListener);
         this.imagePlacementPeference = imagePlacementPeference;
         this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;

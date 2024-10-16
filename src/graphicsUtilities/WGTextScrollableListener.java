@@ -105,7 +105,8 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         //Finds the totalArea
         FontMetrics textFM = parentTextArea.getParent().getFontMetrics(parentTextArea.getTextFont());
         
-        totalArea = text.size() * textFM.getHeight();
+        //The addition of descent is entirely redundent. However, it guarentees that the text shown does not have tails going off the page (Such as the letters "p", "g", etc.)
+        totalArea = text.size() * (textFM.getHeight()) + textFM.getDescent(); 
         
         scrollBarHeight = seeableArea / totalArea * seeableArea;
         scrollY = 0;

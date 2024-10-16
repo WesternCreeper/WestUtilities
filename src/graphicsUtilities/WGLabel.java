@@ -13,11 +13,8 @@ import java.awt.geom.Rectangle2D;
  * This is a simple component that just has a text inside of box that isn't drawn. That's it, nothing else interesting to note here
  * @author Westley
  */
-public class WGLabel extends WGDrawingObject
+public class WGLabel extends WGDrawingObject implements TextStyles
 {
-    public static final int TEXT_STYLE_LEFT = 0;
-    public static final int TEXT_STYLE_MIDDLE = 1;
-    public static final int TEXT_STYLE_RIGHT = 2;
     private String text;
     private Font textFont;
     private Color textColor;
@@ -70,6 +67,19 @@ public class WGLabel extends WGDrawingObject
     public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
+    }
+    
+    /**
+     * This sets up a label, which resets its font size to fit the box created by the percents given
+     * @param bounds The percentage of the parent component, in a rectangle form
+     * @param text The text that is the label
+     * @param parent The component that the button is on, and is used to determine how big this object is
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGLabel(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        this(bounds, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getTextColor(), parent);
     }
     
     
