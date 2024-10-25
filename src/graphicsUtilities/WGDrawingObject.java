@@ -6,6 +6,9 @@ package graphicsUtilities;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.GradientPaint;
+import java.awt.Paint;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -15,6 +18,10 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class WGDrawingObject
 { 
+    protected final static int NO_GRADIENT_ORIENTATION_PREFERENCE = 0;
+    protected final static int VERTICAL_GRADIENT_ORIENTATION_PREFERENCE = 1;
+    
+    
     private Component parent;
     private WGClickListener clickListener;
     protected WGDrawingObjectResizeListener resizer;
@@ -67,6 +74,49 @@ public abstract class WGDrawingObject
     public abstract void removeListeners();
     
     public abstract void setTheme(WGTheme theme);
+    
+    protected Paint fixPaintBounds(Paint paint)
+    {
+        return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE);
+    }
+    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference)
+    {
+        Paint newPaint;
+        if(paint instanceof GradientPaint)
+        {
+            GradientPaint oldPaint = (GradientPaint)paint;
+            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference);
+            newPaint = new GradientPaint(points[0], oldPaint.getColor1(), points[1], oldPaint.getColor2());
+        }
+        else
+        {
+            newPaint = paint;
+        }
+        return newPaint;
+    }
+    /**
+     * This function gets the points relative to this drawing object for the gradient to render correctly
+     * @param gradientOrientationPreference The gradient orientation that determines how the points are created relative to the location of this object
+     * @return the points that help define this gradient so that it follows the proper orientation.
+     */
+    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference)
+    {
+        Point2D.Double[] points = new Point2D.Double[2];
+        
+        switch(gradientOrientationPreference)
+        {
+            case VERTICAL_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = new Point2D.Double(getX(), getY());
+                points[1] = new Point2D.Double(getX(), getY() + getHeight());
+                break;
+            default:
+                points[0] = new Point2D.Double(getX(), getY());
+                points[1] = new Point2D.Double(getX(), getY());
+                break;
+        }
+        
+        return points;
+    }
     
     
     //Setters:

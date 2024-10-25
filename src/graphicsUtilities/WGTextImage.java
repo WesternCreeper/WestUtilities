@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -24,7 +24,7 @@ public class WGTextImage extends WGDrawingObject
     private BufferedImage displayImage;
     private String imageText;
     private Font textFont;
-    private Color textColor;
+    private Paint textColor;
     private double imageOffSetX;
     private double imageOffSetY;
     private double textX;
@@ -50,7 +50,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textFont, textColor, parent);
     }
@@ -65,7 +65,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
@@ -105,7 +105,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
     }
@@ -123,7 +123,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Color textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
@@ -209,7 +209,7 @@ public class WGTextImage extends WGDrawingObject
         return textFont;
     }
 
-    public Color getTextColor() {
+    public Paint getTextColor() {
         return textColor;
     }
 
@@ -254,7 +254,7 @@ public class WGTextImage extends WGDrawingObject
         resizer.resizeComps();
     }
 
-    public void setTextColor(Color textColor) {
+    public void setTextColor(Paint textColor) {
         this.textColor = textColor;
         resizer.resizeComps();
     }
@@ -334,6 +334,9 @@ public class WGTextImage extends WGDrawingObject
                     textY = getY() + height - textFM.getDescent();
                     break;
             }
+
+            //Now fix the colors of this object:
+            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -19,7 +19,7 @@ public class WGToolTip extends WGBox implements TextStyles
     private String[] toolTipText;
     private Font toolTipFont;
     private WGToolTipListener toolTipListener;
-    private Color textColor;
+    private Paint textColor;
     private double longestStringWidth = 0;
     private int textStyle = 0;
     /**
@@ -37,7 +37,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         toolTipText = text.split("\n");
@@ -76,7 +76,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         this(widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, listener, toolTipOwner);
         this.textStyle = textStyle;
@@ -175,7 +175,7 @@ public class WGToolTip extends WGBox implements TextStyles
         resizer.resizeComps();
     }
 
-    public void setTextColor(Color textColor) {
+    public void setTextColor(Paint textColor) {
         this.textColor = textColor;
         resizer.resizeComps();
     }
@@ -195,7 +195,7 @@ public class WGToolTip extends WGBox implements TextStyles
         return toolTipFont;
     }
 
-    public Color getTextColor() {
+    public Paint getTextColor() {
         return textColor;
     }
 
@@ -246,6 +246,11 @@ public class WGToolTip extends WGBox implements TextStyles
             {
                 setHeight(textHeight + borderPadding * 2);
             }
+
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

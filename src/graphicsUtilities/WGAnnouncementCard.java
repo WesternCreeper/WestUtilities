@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -22,9 +22,9 @@ public class WGAnnouncementCard extends WGBox
     private Font titleFont;
     private String subTitle;
     private Font subTitleFont;
-    private Color titleColor;
-    private Color splitColor;
-    private Color subTitleColor;
+    private Paint titleColor;
+    private Paint splitColor;
+    private Paint subTitleColor;
     /**
      * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths.
      * NOTE: This component acts slightly differently than most other WGObjects act, since the x and y variables have been replaced with the centerX and centerY variables, which define the where the center of the object goes
@@ -47,7 +47,7 @@ public class WGAnnouncementCard extends WGBox
      * @param borderColor The color of the border of the box, if null then drawBackground is automatically set to false
      * @param parent The component that the object is on, and is used to determine how big this object is
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Color titleColor, Color splitColor, Color subTitleColor, Color backgroundColor, Color borderColor, Component parent)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Component parent)
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.splitHeight = 0;
@@ -85,7 +85,7 @@ public class WGAnnouncementCard extends WGBox
      * @param splitColor The color of the line that splits the title and the subtitle
      * @param parent The component that the object is on, and is used to determine how big this object is
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Color splitColor, Component parent, WGTheme theme)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Component parent, WGTheme theme)
     {
         super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent);
         this.splitHeight = 0;
@@ -186,15 +186,15 @@ public class WGAnnouncementCard extends WGBox
         resizer.resizeComps();
     }
 
-    public void setTitleColor(Color titleColor) {
+    public void setTitleColor(Paint titleColor) {
         this.titleColor = titleColor;
     }
 
-    public void setSplitColor(Color splitColor) {
+    public void setSplitColor(Paint splitColor) {
         this.splitColor = splitColor;
     }
 
-    public void setSubTitleColor(Color subTitleColor) {
+    public void setSubTitleColor(Paint subTitleColor) {
         this.subTitleColor = subTitleColor;
     }
     
@@ -224,15 +224,15 @@ public class WGAnnouncementCard extends WGBox
         return subTitleFont;
     }
 
-    public Color getTitleColor() {
+    public Paint getTitleColor() {
         return titleColor;
     }
 
-    public Color getSplitColor() {
+    public Paint getSplitColor() {
         return splitColor;
     }
 
-    public Color getSubTitleColor() {
+    public Paint getSubTitleColor() {
         return subTitleColor;
     }
     
@@ -282,6 +282,12 @@ public class WGAnnouncementCard extends WGBox
             double totalHeight = titleFM.getHeight() - subTitleFM.getDescent() - subTitleFM.getLeading() - titleFM.getLeading() + subTitleFM.getHeight() + borderPadding * 2 + splitHeight;
             setHeight(totalHeight);
             
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            titleColor = fixPaintBounds(titleColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            splitColor = fixPaintBounds(splitColor);
+            subTitleColor = fixPaintBounds(subTitleColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

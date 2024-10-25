@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Font;
 
 /**
@@ -21,16 +21,16 @@ public class WGTheme implements TextStyles
     private double textXSizePercent;
     private double textYSizePercent;
     private float borderSize;
-    private Color backgroundColor;
-    private Color borderColor;
-    private Color textColor;
-    private Color checkColor;
-    private Color cursorColor;
-    private Color highlightColor;
-    private Color scrollBarColor;
-    private Color barColor;
+    private Paint backgroundColor;
+    private Paint borderColor;
+    private Paint textColor;
+    private Paint checkColor;
+    private Paint cursorColor;
+    private Paint highlightColor;
+    private Paint scrollBarColor;
+    private Paint barColor;
     private Font textFont;
-    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Color backgroundColor, Color borderColor, Color textColor, Color scrollBarColor, Color cursorColor, Color highlightColor, Color barColor, Color checkColor, Font textFont)
+    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
     {
         this.textFont = textFont;
         this.textPosition = textPosition;
@@ -72,35 +72,35 @@ public class WGTheme implements TextStyles
         this.borderSize = borderSize;
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
+    public void setBackgroundColor(Paint backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
-    public void setBorderColor(Color borderColor) {
+    public void setBorderColor(Paint borderColor) {
         this.borderColor = borderColor;
     }
 
-    public void setTextColor(Color textColor) {
+    public void setTextColor(Paint textColor) {
         this.textColor = textColor;
     }
 
-    public void setCheckColor(Color checkColor) {
+    public void setCheckColor(Paint checkColor) {
         this.checkColor = checkColor;
     }
 
-    public void setCursorColor(Color cursorColor) {
+    public void setCursorColor(Paint cursorColor) {
         this.cursorColor = cursorColor;
     }
 
-    public void setHighlightColor(Color highlightColor) {
+    public void setHighlightColor(Paint highlightColor) {
         this.highlightColor = highlightColor;
     }
 
-    public void setScrollBarColor(Color scrollBarColor) {
+    public void setScrollBarColor(Paint scrollBarColor) {
         this.scrollBarColor = scrollBarColor;
     }
 
-    public void setBarColor(Color barColor) {
+    public void setBarColor(Paint barColor) {
         this.barColor = barColor;
     }
 
@@ -130,35 +130,35 @@ public class WGTheme implements TextStyles
         return borderSize;
     }
 
-    public Color getBackgroundColor() {
+    public Paint getBackgroundColor() {
         return backgroundColor;
     }
 
-    public Color getBorderColor() {
+    public Paint getBorderColor() {
         return borderColor;
     }
 
-    public Color getTextColor() {
+    public Paint getTextColor() {
         return textColor;
     }
 
-    public Color getCheckColor() {
+    public Paint getCheckColor() {
         return checkColor;
     }
 
-    public Color getCursorColor() {
+    public Paint getCursorColor() {
         return cursorColor;
     }
 
-    public Color getHighlightColor() {
+    public Paint getHighlightColor() {
         return highlightColor;
     }
 
-    public Color getScrollBarColor() {
+    public Paint getScrollBarColor() {
         return scrollBarColor;
     }
 
-    public Color getBarColor() {
+    public Paint getBarColor() {
         return barColor;
     }
 

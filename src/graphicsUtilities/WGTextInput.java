@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -22,10 +23,10 @@ public class WGTextInput extends WGBox
     private static final double CURSOR_WIDTH = 2.5;
     private String text;
     private Font textFont;
-    private Color textColor;
-    private Color cursorColor;
-    private Color highlightColor;
-    private Color BackgroundOnFocusColor;
+    private Paint textColor;
+    private Paint cursorColor;
+    private Paint highlightColor;
+    private Paint backgroundOnFocusColor;
     private WGTextInputClickListener clickListener;
     private WGTextInputKeyListener keyListener;
     private CursorAnimator cursorAnimator = new CursorAnimator();
@@ -55,7 +56,7 @@ public class WGTextInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
@@ -100,7 +101,7 @@ public class WGTextInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager);
     }
@@ -134,7 +135,7 @@ public class WGTextInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
+    public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
@@ -184,7 +185,7 @@ public class WGTextInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Color cursorColor, Color highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
+    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager, textClickListener, textKeyListener);
     }
@@ -262,10 +263,17 @@ public class WGTextInput extends WGBox
         ((TextResizeListener)resizer).setUpFont();
     }
 
-    public void setBackgroundColor(Color backgroundColor) 
+    public void setBackgroundColor(Paint backgroundColor) 
     {
         super.setBackgroundColorNotClickListener(backgroundColor);
-        BackgroundOnFocusColor = WGColorHelper.getDarkerOrLighter(backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
+        if(backgroundColor instanceof Color)
+        {
+            backgroundOnFocusColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
+        }
+        else
+        {
+            backgroundOnFocusColor = backgroundColor;
+        }
         if(clickListener != null)
         {
             clickListener.setOriginalBackgroundColor(backgroundColor);
@@ -330,11 +338,11 @@ public class WGTextInput extends WGBox
     }
 
     //Setters:
-    public void setTextColor(Color textColor) {
+    public void setTextColor(Paint textColor) {
         this.textColor = textColor;
     }
 
-    public void setHighlightColor(Color highlightColor) {
+    public void setHighlightColor(Paint highlightColor) {
         this.highlightColor = highlightColor;
     }
 
@@ -343,7 +351,7 @@ public class WGTextInput extends WGBox
         this.cursorShown = focused;
     }
 
-    public void setCursorColor(Color cursorColor) {
+    public void setCursorColor(Paint cursorColor) {
         this.cursorColor = cursorColor;
     }
 
@@ -381,20 +389,20 @@ public class WGTextInput extends WGBox
         return textFont;
     }
 
-    public Color getTextColor() {
+    public Paint getTextColor() {
         return textColor;
     }
 
-    public Color getCursorColor() {
+    public Paint getCursorColor() {
         return cursorColor;
     }
 
-    public Color getHighlightColor() {
+    public Paint getHighlightColor() {
         return highlightColor;
     }
 
-    public Color getBackgroundOnFocusColor() {
-        return BackgroundOnFocusColor;
+    public Paint getBackgroundOnFocusColor() {
+        return backgroundOnFocusColor;
     }
 
     public boolean isFocused() {
@@ -461,6 +469,14 @@ public class WGTextInput extends WGBox
             setHeight(getHeightPercent() * parentHeight);
             setUpFont();
             setUpCursorBounds();
+
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            cursorColor = fixPaintBounds(cursorColor);
+            highlightColor = fixPaintBounds(highlightColor);
+            
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

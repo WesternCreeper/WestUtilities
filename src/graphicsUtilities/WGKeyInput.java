@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -18,8 +19,8 @@ public class WGKeyInput extends WGBox
 {
     private String text;
     private Font textFont;
-    private Color textColor;
-    private Color BackgroundOnFocusColor;
+    private Paint textColor;
+    private Paint backgroundOnFocusColor;
     private WGKeyInputClickListener clickListener;
     private WGKeyInputKeyListener keyListener;
     private boolean focused = false;
@@ -37,7 +38,7 @@ public class WGKeyInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
@@ -75,7 +76,7 @@ public class WGKeyInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager);
     }
@@ -107,7 +108,7 @@ public class WGKeyInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
+    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.text = "";
@@ -150,7 +151,7 @@ public class WGKeyInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Color backgroundColor, Color borderColor, Color textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
+    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager, textClickListener, textKeyListener);
     }
@@ -222,10 +223,18 @@ public class WGKeyInput extends WGBox
         ((KeyResizeListener)resizer).setUpFont();
     }
 
-    public void setBackgroundColor(Color backgroundColor) 
+    public void setBackgroundColor(Paint backgroundColor) 
     {
         super.setBackgroundColorNotClickListener(backgroundColor);
-        BackgroundOnFocusColor = WGColorHelper.getDarkerOrLighter(backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
+        if(backgroundColor instanceof Color)
+        {
+            backgroundOnFocusColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);
+        }
+        else
+        {
+            backgroundOnFocusColor = backgroundColor;
+        }
+        
         if(clickListener != null)
         {
             clickListener.setOriginalBackgroundColor(backgroundColor);
@@ -234,7 +243,7 @@ public class WGKeyInput extends WGBox
     }
 
     //Setters:
-    public void setTextColor(Color textColor) {
+    public void setTextColor(Paint textColor) {
         this.textColor = textColor;
     }
 
@@ -256,7 +265,7 @@ public class WGKeyInput extends WGBox
         return textFont;
     }
 
-    public Color getTextColor() {
+    public Paint getTextColor() {
         return textColor;
     }
     
@@ -276,8 +285,8 @@ public class WGKeyInput extends WGBox
         return keyListener;
     }
 
-    public Color getBackgroundOnFocusColor() {
-        return BackgroundOnFocusColor;
+    public Paint getBackgroundOnFocusColor() {
+        return backgroundOnFocusColor;
     }
     
     
@@ -299,6 +308,12 @@ public class WGKeyInput extends WGBox
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             setUpFont();
+            
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

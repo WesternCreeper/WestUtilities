@@ -9,6 +9,7 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -202,20 +203,20 @@ public class WestGraphics
         FontMetrics titleFM = g2.getFontMetrics(loadingBar.getTitleFont());
         g2.setFont(loadingBar.getTitleFont());
         Rectangle2D.Double originalBarRect = loadingBar.getBounds();
-        g2.setColor(loadingBar.getBackgroundColor());
+        g2.setPaint(loadingBar.getBackgroundColor());
         g2.fill(originalBarRect);
         
         double percentWidth = originalBarRect.getWidth() * (loadingBar.isHorizontal() ? loadingBar.getPercentFilled() : 1);
         double percentHeight = originalBarRect.getHeight() * (loadingBar.isHorizontal() ? 1 : loadingBar.getPercentFilled());
         Rectangle2D.Double percentRect = new Rectangle2D.Double(originalBarRect.getX(), originalBarRect.getY(), percentWidth, percentHeight);
-        g2.setColor(loadingBar.getBarColor());
+        g2.setPaint(loadingBar.getBarColor());
         g2.fill(percentRect);
         
-        g2.setColor(loadingBar.getBorderColor());
+        g2.setPaint(loadingBar.getBorderColor());
         g2.setStroke(new BasicStroke((float)loadingBar.getBorderSize()));
         g2.draw(originalBarRect);
         
-        g2.setColor(loadingBar.getTitleColor());
+        g2.setPaint(loadingBar.getTitleColor());
         String text = loadingBar.getTitle();
         g2.drawString(text, (float)(originalBarRect.getX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (float)(originalBarRect.getY() + ((titleFM.getAscent() - titleFM.getDescent() + originalBarRect.getHeight()) / 2)));
         
@@ -247,9 +248,9 @@ public class WestGraphics
                 totalHeight -= titleFM.getDescent();
             }
             Rectangle2D.Double backgroundRect = new Rectangle2D.Double(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
-            g2.setColor(announcementCard.getBackgroundColor());
+            g2.setPaint(announcementCard.getBackgroundColor());
             g2.fill(backgroundRect);
-            g2.setColor(announcementCard.getBorderColor());
+            g2.setPaint(announcementCard.getBorderColor());
             g2.setStroke(new BasicStroke((float)announcementCard.getBorderSize()));
             g2.draw(backgroundRect);
         }
@@ -257,7 +258,7 @@ public class WestGraphics
         //Now draw the title:
         double titleX = announcementCard.getX() + ((totalWidth - titleWidth) / 2);
         double titleY = announcementCard.getY() + titleFM.getHeight() - subTitleFM.getDescent() - subTitleFM.getLeading() - titleFM.getDescent() - titleFM.getLeading();
-        g2.setColor(announcementCard.getTitleColor());
+        g2.setPaint(announcementCard.getTitleColor());
         g2.setFont(announcementCard.getTitleFont());
         g2.drawString(announcementCard.getTitle(), (float)titleX, (float)titleY);
         
@@ -271,7 +272,7 @@ public class WestGraphics
             path.moveTo(announcementCard.getX(), splitY);
             path.lineTo(announcementCard.getX() + totalWidth, splitY);
             path.closePath();
-            g2.setColor(announcementCard.getSplitColor());
+            g2.setPaint(announcementCard.getSplitColor());
             g2.draw(path);
         }
         
@@ -279,7 +280,7 @@ public class WestGraphics
         double subTitleX = announcementCard.getX() + ((totalWidth - subTitleWidth) / 2);
         double subTitleY = splitY + subTitleFM.getHeight();
         g2.setFont(announcementCard.getSubTitleFont());
-        g2.setColor(announcementCard.getSubTitleColor());
+        g2.setPaint(announcementCard.getSubTitleColor());
         g2.drawString(announcementCard.getSubTitle(), (float)subTitleX, (float)subTitleY);
         
         //And reload it at the end
@@ -296,9 +297,9 @@ public class WestGraphics
             
         //Draw the button
         Rectangle2D.Double buttonRect = button.getBounds();
-        g2.setColor(button.getBackgroundColor());
+        g2.setPaint(button.getBackgroundColor());
         g2.fill(buttonRect);
-        g2.setColor(button.getBorderColor());
+        g2.setPaint(button.getBorderColor());
         g2.setStroke(new BasicStroke((float)button.getBorderSize()));
         g2.draw(buttonRect);
         
@@ -309,15 +310,19 @@ public class WestGraphics
             AffineTransform transformation = new AffineTransform(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
             g2.drawImage(button.getDisplayedImage(), transformation, null);
             //Draw a faint overlay of the background:
-            Color bakcgroundColor = button.getBackgroundColor();
-            Color pictureOverlay = new Color(bakcgroundColor.getRed(), bakcgroundColor.getGreen(), bakcgroundColor.getBlue(), 70);
-            g2.setColor(pictureOverlay);
-            g2.fill(buttonRect);
+            Paint backgroundColor = button.getBackgroundColor();
+            if(backgroundColor instanceof Color)
+            {
+                Color bakcgroundColor = (Color)button.getBackgroundColor();
+                Paint pictureOverlay = new Color(bakcgroundColor.getRed(), bakcgroundColor.getGreen(), bakcgroundColor.getBlue(), 70);
+                g2.setPaint(pictureOverlay);
+                g2.fill(buttonRect);
+            }
         }
         else if(button.getTextColor() != null && button.getTextFont() != null && button.getText() != null)
         {
             //The text:
-            g2.setColor(button.getTextColor());
+            g2.setPaint(button.getTextColor());
             FontMetrics textFM = g2.getFontMetrics(button.getTextFont());
             double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
             double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
@@ -339,14 +344,14 @@ public class WestGraphics
             
         //Draw the button
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(toolTip.getX(), toolTip.getY(), toolTip.getWidth(), toolTip.getHeight());
-        g2.setColor(toolTip.getBackgroundColor());
+        g2.setPaint(toolTip.getBackgroundColor());
         g2.fill(buttonRect);
-        g2.setColor(toolTip.getBorderColor());
+        g2.setPaint(toolTip.getBorderColor());
         g2.setStroke(new BasicStroke((float)toolTip.getBorderSize()));
         g2.draw(buttonRect);
         
         //Now the text:
-        g2.setColor(toolTip.getTextColor());
+        g2.setPaint(toolTip.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(toolTip.getToolTipFont());
         double textX = toolTip.getX();
         if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
@@ -387,7 +392,7 @@ public class WestGraphics
         
         //Draw the background:
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
-        g2.setColor(pane.getBackgroundColor());
+        g2.setPaint(pane.getBackgroundColor());
         g2.fill(buttonRect);
         
         
@@ -410,7 +415,7 @@ public class WestGraphics
         
         
         //Then draw in the border:
-        g2.setColor(pane.getBorderColor());
+        g2.setPaint(pane.getBorderColor());
         g2.setStroke(new BasicStroke((float)pane.getBorderSize()));
         g2.draw(buttonRect);
         
@@ -447,7 +452,7 @@ public class WestGraphics
         //Then draw in the scrollBar:
         if(pane.isScrollable() && scrollBar != null && scrollBar.isShown())
         {
-            g2.setColor(pane.getScrollBarColor());
+            g2.setPaint(pane.getScrollBarColor());
             Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
             g2.fill(scrollBarRect);
         }
@@ -474,7 +479,7 @@ public class WestGraphics
         //Then draw in the scrollBar:
         if(scrollBar != null && scrollBar.isShown())
         {
-            g2.setColor(textArea.getScrollBarColor());
+            g2.setPaint(textArea.getScrollBarColor());
             Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
             g2.fill(scrollBarRect);
         }
@@ -490,7 +495,7 @@ public class WestGraphics
         Stroke oldStroke = g2.getStroke();
         
         //Draw the text:
-        g2.setColor(label.getTextColor());
+        g2.setPaint(label.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(label.getTextFont());
         double textX = label.getX();
         
@@ -523,23 +528,23 @@ public class WestGraphics
             
         //Draw the Box
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
-        Color backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
-        g2.setColor(backgroundColor);
+        Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
+        g2.setPaint(backgroundColor);
         g2.fill(buttonRect);
-        Color borderColor = textInput.getBorderColor();
-        g2.setColor(borderColor);
+        Paint borderColor = textInput.getBorderColor();
+        g2.setPaint(borderColor);
         g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
         g2.draw(buttonRect);
             
         //Draw the highlight:
         if(textInput.isHighlightShown() && textInput.isFocused())
         {
-            g2.setColor(textInput.getHighlightColor());
+            g2.setPaint(textInput.getHighlightColor());
             g2.fill(textInput.getHighlightBounds());
         }
         
         //Now the text:
-        g2.setColor(textInput.getTextColor());
+        g2.setPaint(textInput.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
         double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
@@ -549,7 +554,7 @@ public class WestGraphics
         //Draw the cursor
         if(textInput.isCursorShown() && textInput.isFocused())
         {
-            g2.setColor(textInput.getCursorColor());
+            g2.setPaint(textInput.getCursorColor());
             g2.fill(textInput.getCursorBounds());
         }
         
@@ -584,7 +589,7 @@ public class WestGraphics
         g2.setFont(textArea.getTextFont());
         textY += textFM.getHeight() - textArea.getStringYOffset();
         ArrayList<String> allText;
-        ArrayList<Color> allTextColors;
+        ArrayList<Paint> allTextColors;
         if(textArea.isTextWrapped())
         {
             allText = textArea.getFormatedText();
@@ -606,7 +611,7 @@ public class WestGraphics
                 int stringWidth = textFM.stringWidth(allText.get(i));
                 textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
             }
-            g2.setColor(allTextColors.get(i));
+            g2.setPaint(allTextColors.get(i));
             g2.drawString(allText.get(i), (float)textX, (float)textY);
             textY += textFM.getHeight();
         }
@@ -628,16 +633,16 @@ public class WestGraphics
             
         //Draw the button
         Rectangle2D.Double buttonRect = checkBox.getBounds();
-        g2.setColor(checkBox.getBackgroundColor());
+        g2.setPaint(checkBox.getBackgroundColor());
         g2.fill(buttonRect);
-        g2.setColor(checkBox.getBorderColor());
+        g2.setPaint(checkBox.getBorderColor());
         g2.setStroke(new BasicStroke((float)checkBox.getBorderSize()));
         g2.draw(buttonRect);
         
         //Draw the Check when needed:
         if(checkBox.isChecked())
         {
-            g2.setColor(checkBox.getCheckColor());
+            g2.setPaint(checkBox.getCheckColor());
             Path2D.Double path = new Path2D.Double();
             path.moveTo(buttonRect.getX(), buttonRect.getY());
             path.lineTo(buttonRect.getX() + buttonRect.getWidth(), buttonRect.getY() + buttonRect.getHeight());
@@ -658,16 +663,16 @@ public class WestGraphics
             
         //Draw the Box
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
-        Color backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
-        g2.setColor(backgroundColor);
+        Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
+        g2.setPaint(backgroundColor);
         g2.fill(buttonRect);
-        Color borderColor = textInput.getBorderColor();
-        g2.setColor(borderColor);
+        Paint borderColor = textInput.getBorderColor();
+        g2.setPaint(borderColor);
         g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
         g2.draw(buttonRect);
         
         //Now the text:
-        g2.setColor(textInput.getTextColor());
+        g2.setPaint(textInput.getTextColor());
         FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
         double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
@@ -689,7 +694,7 @@ public class WestGraphics
         g2.drawImage(image, transformation, null);
         
         //Now the text:
-        g2.setColor(textImage.getTextColor());
+        g2.setPaint(textImage.getTextColor());
         double textX = textImage.getTextX();
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());

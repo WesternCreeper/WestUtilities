@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class WGPane extends WGBox
     public final static boolean HORIZONTAL_SCROLL_PREFERED = false;
     private final boolean scrollable;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
-    private Color scrollBarColor;
+    private Paint scrollBarColor;
     private WGScrollableListener verticalScroll;
     private WGScrollableListener horizontalScroll;
     
@@ -34,7 +34,7 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Component parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.scrollBarColor = scrollBarColor;
@@ -76,7 +76,7 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Color backgroundColor, Color borderColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
     }
@@ -104,7 +104,7 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, float borderSize, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(Rectangle2D.Double bounds, float borderSize, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, false, backgroundColor, borderColor, null, parent);
         
@@ -138,7 +138,7 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Color backgroundColor, Color borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, backgroundColor, borderColor, parent, clickListener);
     }
@@ -301,7 +301,7 @@ public class WGPane extends WGBox
     
     //Setters:
 
-    public void setScrollBarColor(Color scrollBarColor) {
+    public void setScrollBarColor(Paint scrollBarColor) {
         this.scrollBarColor = scrollBarColor;
     }
     
@@ -315,7 +315,7 @@ public class WGPane extends WGBox
         return horizontalScroll;
     }
 
-    public Color getScrollBarColor() {
+    public Paint getScrollBarColor() {
         return scrollBarColor;
     }
 
@@ -361,6 +361,11 @@ public class WGPane extends WGBox
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
+            
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            scrollBarColor = fixPaintBounds(scrollBarColor);
             
             //Wait for all of the components added to this object to finish setting up:
             for(int i = 0 ; i < containedObjects.size() ; i++)

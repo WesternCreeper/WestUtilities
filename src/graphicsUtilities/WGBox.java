@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 
@@ -14,11 +14,11 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class WGBox extends WGDrawingObject
 {
-    private Color backgroundColor;
-    private Color borderColor;
+    private Paint backgroundColor;
+    private Paint borderColor;
     
     
-    protected WGBox(float borderSize, Color backgroundColor, Color borderColor, Component parent)
+    protected WGBox(float borderSize, Paint backgroundColor, Paint borderColor, Component parent)
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.backgroundColor = backgroundColor;
@@ -88,7 +88,7 @@ public abstract class WGBox extends WGDrawingObject
     //Regular Functions:
 
     //Setters:
-    public void setBackgroundColor(Color backgroundColor) 
+    public void setBackgroundColor(Paint backgroundColor) 
     {
         this.backgroundColor = backgroundColor;
         if(getClickListener() != null)
@@ -98,24 +98,24 @@ public abstract class WGBox extends WGDrawingObject
         getParent().repaint();
     }
 
-    public void setBackgroundColorNotClickListener(Color backgroundColor) 
+    public void setBackgroundColorNotClickListener(Paint backgroundColor) 
     {
         this.backgroundColor = backgroundColor;
         getParent().repaint();
     }
 
-    public void setBorderColor(Color borderColor) {
+    public void setBorderColor(Paint borderColor) {
         this.borderColor = borderColor;
         getParent().repaint();
     }
 
     
     //Getters:
-    public Color getBackgroundColor() {
+    public Paint getBackgroundColor() {
         return backgroundColor;
     }
 
-    public Color getBorderColor() {
+    public Paint getBorderColor() {
         return borderColor;
     }
     

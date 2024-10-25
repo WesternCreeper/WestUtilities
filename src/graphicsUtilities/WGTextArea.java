@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -21,12 +21,12 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     private int textStyle = 0;
     private double stringYOffset = 0;
     private ArrayList<String> text;
-    private ArrayList<Color> textColors;
+    private ArrayList<Paint> textColors;
     private ArrayList<String> formatedText;
-    private ArrayList<Color> formatedColors;
+    private ArrayList<Paint> formatedColors;
     private Font textFont;
-    private Color textColor;
-    private Color scrollBarColor;
+    private Paint textColor;
+    private Paint scrollBarColor;
     private WGTextScrollableListener verticalScroll;
     
     /**
@@ -40,7 +40,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, Color textColor, Component parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.textStyle = textStyle;
@@ -57,7 +57,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         }
         //Set the arrayList up:
         this.text = new ArrayList<String>(1);
-        textColors = new ArrayList<Color>(1);
+        textColors = new ArrayList<Paint>(1);
         for(int i = 0 ; i < text.length ; i++)
         {
             this.text.add(text[i]);
@@ -79,7 +79,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Color textColor, Component parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textColor, parent);
     }
@@ -108,7 +108,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Component parent) throws WGNullParentException
     {
         //Create the object
         super(0, 0, 0, 0, borderSize, parent);
@@ -132,7 +132,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         }
         //Set the arrayList up:
         this.text = new ArrayList<String>(1);
-        textColors = new ArrayList<Color>(1);
+        textColors = new ArrayList<Paint>(1);
         for(int i = 0 ; i < text.length ; i++)
         {
             this.text.add(text[i]);
@@ -156,7 +156,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Color textColor, Color scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, scrollBarColor, parent);
     }
@@ -229,10 +229,10 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         resizer.resizeComps();
     }
     
-    public void addTextLine(String information, Color textColor) throws IndexOutOfBoundsException
+    public void addTextLine(String information, Paint textColor) throws IndexOutOfBoundsException
     {
         text.add(information);
-        textColors.add(textColor);
+        textColors.add(fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE));
         resizer.resizeComps();
     }
     
@@ -269,8 +269,8 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         this.textFont = textFont;
     }
 
-    public void setTextColor(Color textColor) {
-        this.textColor = textColor;
+    public void setTextColor(Paint textColor) {
+        this.textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
     }
 
     public void setStringYOffset(double stringYOffset) {
@@ -283,7 +283,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         return text;
     }
 
-    public ArrayList<Color> getTextColors() {
+    public ArrayList<Paint> getTextColors() {
         return textColors;
     }
 
@@ -303,7 +303,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         return verticalScroll;
     }
 
-    public Color getScrollBarColor() {
+    public Paint getScrollBarColor() {
         return scrollBarColor;
     }
 
@@ -311,7 +311,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         return formatedText;
     }
 
-    public ArrayList<Color> getFormatedColors() {
+    public ArrayList<Paint> getFormatedColors() {
         return formatedColors;
     }
 
@@ -344,7 +344,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
                 if(textWrapped)
                 {
                     ArrayList<String> newList = new ArrayList<String>(text.size());
-                    ArrayList<Color> newColorList = new ArrayList<Color>(textColors.size());
+                    ArrayList<Paint> newColorList = new ArrayList<Paint>(textColors.size());
                     FontMetrics textFM = getParent().getFontMetrics(textFont);
                     double objectWidth = getWidth();
                     //First copy over the strings:
@@ -433,6 +433,10 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
                 textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, (double)(getHeight() - borderPadding) / text.size(), getLongestString(), 100);
             }
             stringYOffset = 0;
+
+            //Now fix the colors of this object:
+            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }

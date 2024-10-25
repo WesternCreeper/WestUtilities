@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -15,7 +16,7 @@ import java.awt.event.MouseMotionListener;
  */
 public class WGKeyInputClickListener extends WGClickListener implements MouseMotionListener
 {
-    private Color originalBackgroundColor;
+    private Paint originalBackgroundColor;
     private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
@@ -86,7 +87,10 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
         if(isWithinBounds(e))
         {
             WGKeyInput textInput = (WGKeyInput)getParentObject();
-            textInput.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter(originalBackgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_LIGHTER));
+            if(originalBackgroundColor instanceof Color)
+            {
+                textInput.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_LIGHTER));
+            }
             
             //The cursor
             if(isParentShown())
@@ -134,12 +138,12 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     public void mouseReleased(MouseEvent e){}
     
     //Getters:
-    public Color getOriginalBackgroundColor() {
+    public Paint getOriginalBackgroundColor() {
         return originalBackgroundColor;
     }
     
     //Setters:
-    public void setOriginalBackgroundColor(Color originalBackgroundColor) {
+    public void setOriginalBackgroundColor(Paint originalBackgroundColor) {
         this.originalBackgroundColor = originalBackgroundColor;
     }
     

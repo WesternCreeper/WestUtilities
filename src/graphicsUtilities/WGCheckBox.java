@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -15,7 +15,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class WGCheckBox extends WGBox
 {
-    private Color checkColor;
+    private Paint checkColor;
     private boolean checked;
     /**
      * 
@@ -27,12 +27,12 @@ public class WGCheckBox extends WGBox
      * @param checked The state of the checkBox, whether checked or unchecked
      * @param backgroundColor The color of the background of the font
      * @param borderColor The border color of the box
-     * @param checkColor The Color of the check on the checkBox
+     * @param checkColor The Paint of the check on the checkBox
      * @param clickListener The click manager that allows for the checkbox to be set up. This is automatically set up so use the no param definition
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean checked, Color backgroundColor, Color borderColor, Color checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
+    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, checked, backgroundColor, borderColor, checkColor, clickListener, parent);
     }
@@ -43,12 +43,12 @@ public class WGCheckBox extends WGBox
      * @param checked The state of the checkBox, whether checked or unchecked
      * @param backgroundColor The color of the background of the font
      * @param borderColor The border color of the box
-     * @param checkColor The Color of the check on the checkBox
+     * @param checkColor The Paint of the check on the checkBox
      * @param clickListener The click manager that allows for the checkbox to be set up. This is automatically set up so use the no param definition
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(Rectangle2D.Double bounds, float borderSize, boolean checked, Color backgroundColor, Color borderColor, Color checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
+    public WGCheckBox(Rectangle2D.Double bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, borderColor, parent);
         this.checked = checked;
@@ -108,11 +108,11 @@ public class WGCheckBox extends WGBox
         getParent().repaint();
     }
 
-    public void setCheckColor(Color checkColor) {
+    public void setCheckColor(Paint checkColor) {
         this.checkColor = checkColor;
     }
 
-    public void setBackgroundColor(Color backgroundColor) 
+    public void setBackgroundColor(Paint backgroundColor) 
     {
         super.setBackgroundColorNotClickListener(backgroundColor);
         if(getClickListener() != null)
@@ -132,7 +132,7 @@ public class WGCheckBox extends WGBox
         return checked;
     }
 
-    public Color getCheckColor() {
+    public Paint getCheckColor() {
         return checkColor;
     }
     
@@ -154,6 +154,12 @@ public class WGCheckBox extends WGBox
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
+            
+            //Now fix the colors of this object:
+            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
+            setBorderColor(fixPaintBounds(getBorderColor()));
+            checkColor = fixPaintBounds(checkColor);
+            
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();
         }
