@@ -7,6 +7,7 @@ package graphicsUtilities;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
+import java.awt.RadialGradientPaint;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -113,6 +114,11 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
                 if(originalBackgroundColor instanceof Color)
                 {
                     button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor));
+                    button.getParent().repaint();
+                }
+                else if(originalBackgroundColor instanceof RadialGradientPaint)
+                {
+                    button.setBackgroundColorNotClickListener(button.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
                     button.getParent().repaint();
                 }
 

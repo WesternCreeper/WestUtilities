@@ -117,7 +117,7 @@ public class WestGraphics
             }
             else if(obj instanceof WGPane)
             {
-                drawPane((WGPane)obj);
+                drawPane((WGPane)obj, false);
             }
             else if(obj instanceof WGLabel)
             {
@@ -382,7 +382,7 @@ public class WestGraphics
      * The drawing method for a pane that will draw the pane and all subsequent objects attached to the pane
      * @param pane The pane to be drawn and the components added to it that also draw
      */
-    private void drawPane(WGPane pane)
+    private void drawPane(WGPane pane, boolean withinAnotherPane)
     {
         //Save the original stroke in case the user wanted that one
         Stroke oldStroke = g2.getStroke();
@@ -397,12 +397,23 @@ public class WestGraphics
         
         
         //To make sure nothing goes off the pane:
-        g2.setClip(pane.getBounds());
+        if(!withinAnotherPane || oldClip.contains(pane.getBounds())) //If not within another pane or the other pane's clip contains our clip, then we can redo the clip
+        {
+            g2.setClip(pane.getBounds());
+        }
         
         //Now the internal components:
         for(int i = 0 ; i < pane.getComponentNumber() ; i++)
         {
-            draw(pane.getComponent(i));
+            WGDrawingObject obj = pane.getComponent(i);
+            if(obj instanceof WGPane)
+            {
+                drawPane((WGPane)obj, true);
+            }
+            else
+            {
+                draw(pane.getComponent(i));
+            }
         }
         
         //Draw the scrollBars
@@ -698,6 +709,6 @@ public class WestGraphics
         double textX = textImage.getTextX();
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());
-        g2.drawString(textImage.getImageText(), (float)(textX + textImage.getImageOffSetX()), (float)(textY + textImage.getImageOffSetY()));
+        g2.drawString(textImage.getImageText(), (float)(textImage.getX() + textX + textImage.getImageOffSetX()), (float)(textImage.getY() + textY + textImage.getImageOffSetY()));
     }
 }

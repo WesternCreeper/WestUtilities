@@ -7,6 +7,7 @@ package graphicsUtilities;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
+import java.awt.RadialGradientPaint;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -78,6 +79,11 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
             if(originalBackgroundColor instanceof Color)
             {
                 parent.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor));
+                parent.getParent().repaint();
+            }
+            else if(originalBackgroundColor instanceof RadialGradientPaint)
+            {
+                parent.setBackgroundColorNotClickListener(parent.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
                 parent.getParent().repaint();
             }
             

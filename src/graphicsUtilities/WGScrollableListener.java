@@ -222,6 +222,10 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
     
     private void doScroll(double mouseMovement, boolean useScrollSpeed)
     {
+        doScroll(parentPane, mouseMovement, useScrollSpeed);
+    }
+    private void doScroll(WGPane parentPane, double mouseMovement, boolean useScrollSpeed)
+    {
         if(!shown)
         {
             return;
@@ -244,9 +248,18 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 {
                     WGDrawingObject obj = parentPane.getComponent(i);
                     obj.setY(obj.getY() + Math.abs(minY - scrollY));
+                    
+                    //If it is a pane then we will need to go additional work:
+                    if(obj instanceof WGPane)
+                    {
+                        doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                    }
                 }
-                scrollY = minY;
-                scrollBarY = 0;
+                if(parentPane == this.parentPane)
+                {
+                    scrollY = minY;
+                    scrollBarY = 0;
+                }
                 return;
             }
             else if(scrollY + movement > maxY)
@@ -257,16 +270,20 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 {
                     WGDrawingObject obj = parentPane.getComponent(i);
                     obj.setY(obj.getY() - Math.abs(maxY - scrollY));
+                    
+                    //If it is a pane then we will need to go additional work:
+                    if(obj instanceof WGPane)
+                    {
+                        doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                    }
                 }
-                scrollY = maxY;
-                scrollBarY = seeableArea - scrollBarHeight;
+                if(parentPane == this.parentPane)
+                {
+                    scrollY = maxY;
+                    scrollBarY = seeableArea - scrollBarHeight;
+                }
                 return;
             }
-            //Now scroll:
-            scrollY += movement;
-            //Change into a form that the scrollBar understands:
-            double scrollBarMovement = movement * seeableArea / totalArea;
-            scrollBarY += scrollBarMovement;
 
             //Now set all of the components to the correct location:
             int iEnd = parentPane.getComponentNumber();
@@ -274,6 +291,20 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             {
                 WGDrawingObject obj = parentPane.getComponent(i);
                 obj.setY(obj.getY() - movement);
+                    
+                //If it is a pane then we will need to go additional work:
+                if(obj instanceof WGPane)
+                {
+                    doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                }
+            }
+            if(parentPane == this.parentPane)
+            {
+                //Now scroll:
+                scrollY += movement;
+                //Change into a form that the scrollBar understands:
+                double scrollBarMovement = movement * seeableArea / totalArea;
+                scrollBarY += scrollBarMovement;
             }
         }
         else
@@ -294,9 +325,18 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 {
                     WGDrawingObject obj = parentPane.getComponent(i);
                     obj.setX(obj.getX() + Math.abs(minX - scrollY));
+                    
+                    //If it is a pane then we will need to go additional work:
+                    if(obj instanceof WGPane)
+                    {
+                        doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                    }
                 }
-                scrollY = minX;
-                scrollBarY = 0;
+                if(parentPane == this.parentPane)
+                {
+                    scrollY = minX;
+                    scrollBarY = 0;
+                }
                 return;
             }
             else if(scrollY + movement > maxX)
@@ -307,16 +347,20 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 {
                     WGDrawingObject obj = parentPane.getComponent(i);
                     obj.setX(obj.getX() - Math.abs(maxX - scrollY));
+                    
+                    //If it is a pane then we will need to go additional work:
+                    if(obj instanceof WGPane)
+                    {
+                        doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                    }
                 }
-                scrollY = maxX;
-                scrollBarY = seeableArea - scrollBarHeight;
+                if(parentPane == this.parentPane)
+                {
+                    scrollY = maxX;
+                    scrollBarY = seeableArea - scrollBarHeight;
+                }
                 return;
             }
-            //Now scroll:
-            scrollY += movement;
-            //Change into a form that the scrollBar understands:
-            double scrollBarMovement = movement * seeableArea / totalArea;
-            scrollBarY += scrollBarMovement;
 
             //Now set all of the components to the correct location:
             int iEnd = parentPane.getComponentNumber();
@@ -324,6 +368,20 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             {
                 WGDrawingObject obj = parentPane.getComponent(i);
                 obj.setX(obj.getX() - movement);
+                    
+                //If it is a pane then we will need to go additional work:
+                if(obj instanceof WGPane)
+                {
+                    doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
+                }
+            }
+            if(parentPane == this.parentPane)
+            {
+                //Now scroll:
+                scrollY += movement;
+                //Change into a form that the scrollBar understands:
+                double scrollBarMovement = movement * seeableArea / totalArea;
+                scrollBarY += scrollBarMovement;
             }
         }
         shown = totalArea > seeableArea;

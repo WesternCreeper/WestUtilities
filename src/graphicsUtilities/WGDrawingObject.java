@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.GradientPaint;
 import java.awt.Paint;
+import java.awt.RadialGradientPaint;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -18,8 +20,10 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class WGDrawingObject
 { 
-    protected final static int NO_GRADIENT_ORIENTATION_PREFERENCE = 0;
-    protected final static int VERTICAL_GRADIENT_ORIENTATION_PREFERENCE = 1;
+    public final static int NO_GRADIENT_ORIENTATION_PREFERENCE = 0;
+    public final static int VERTICAL_GRADIENT_ORIENTATION_PREFERENCE = 1;
+    public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE = 2;
+    public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE = 3;
     
     
     private Component parent;
@@ -77,16 +81,26 @@ public abstract class WGDrawingObject
     
     protected Paint fixPaintBounds(Paint paint)
     {
-        return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE);
+        return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE, null);
     }
     protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference)
+    {
+        return fixPaintBounds(paint, gradientOrientationPreference, null);
+    }
+    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference, MouseEvent e)
     {
         Paint newPaint;
         if(paint instanceof GradientPaint)
         {
             GradientPaint oldPaint = (GradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference);
+            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e);
             newPaint = new GradientPaint(points[0], oldPaint.getColor1(), points[1], oldPaint.getColor2());
+        }
+        else if(paint instanceof RadialGradientPaint)
+        {
+            RadialGradientPaint oldPaint = (RadialGradientPaint)paint;
+            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e);
+            newPaint = new RadialGradientPaint(points[0], (float)points[1].getX(), oldPaint.getFractions(), oldPaint.getColors());
         }
         else
         {
@@ -99,7 +113,7 @@ public abstract class WGDrawingObject
      * @param gradientOrientationPreference The gradient orientation that determines how the points are created relative to the location of this object
      * @return the points that help define this gradient so that it follows the proper orientation.
      */
-    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference)
+    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference, MouseEvent e)
     {
         Point2D.Double[] points = new Point2D.Double[2];
         
@@ -108,6 +122,45 @@ public abstract class WGDrawingObject
             case VERTICAL_GRADIENT_ORIENTATION_PREFERENCE:
                 points[0] = new Point2D.Double(getX(), getY());
                 points[1] = new Point2D.Double(getX(), getY() + getHeight());
+                break;
+            case RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = new Point2D.Double(getX() + (getWidth()/2), getY() + (getHeight()/2));
+                
+                double radius = (getWidth()/2);
+                double heightRadius = (getHeight()/2);
+                if(radius > heightRadius)
+                {
+                    radius = heightRadius;
+                }
+                if(radius <= 0)
+                {
+                    radius = 1;
+                }
+                
+                points[1] = new Point2D.Double(radius, 0);
+                break;
+            case RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE:
+                if(e != null)
+                {
+                    points[0] = new Point2D.Double(e.getX(), e.getY());
+                }
+                else
+                {
+                    points[0] = new Point2D.Double(getX() + (getWidth()/2), getY() + (getHeight()/2));
+                }
+                
+                radius = (getWidth()/2);
+                heightRadius = (getHeight()/2);
+                if(radius > heightRadius)
+                {
+                    radius = heightRadius;
+                }
+                if(radius <= 0)
+                {
+                    radius = 1;
+                }
+                
+                points[1] = new Point2D.Double(radius, 0);
                 break;
             default:
                 points[0] = new Point2D.Double(getX(), getY());

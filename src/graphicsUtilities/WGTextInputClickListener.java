@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
 import java.awt.FontMetrics;
+import java.awt.RadialGradientPaint;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -102,6 +103,11 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             if(originalBackgroundColor instanceof Color)
             {
                 textInput.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_LIGHTER));
+            }
+            else if(originalBackgroundColor instanceof RadialGradientPaint)
+            {
+                textInput.setBackgroundColorNotClickListener(textInput.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
+                textInput.getParent().repaint();
             }
             
             //The cursor

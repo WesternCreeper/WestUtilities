@@ -315,23 +315,23 @@ public class WGTextImage extends WGDrawingObject
             {
                 case TEXT_LOWER_LEFT_CORNER:
                     //Place in the lower left corner, relative to the position of the object:
-                    textX = getX();
-                    textY = getY() + height - textFM.getDescent();
+                    textX = 0;
+                    textY = height - textFM.getDescent();
                     break;
                 case TEXT_UPPER_LEFT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = getX();
-                    textY = getY() + textFM.getAscent() - textFM.getDescent();
+                    textX = 0;
+                    textY = textFM.getAscent() - textFM.getDescent();
                     break;
                 case TEXT_UPPER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = getX() + width - textFM.stringWidth(imageText);
-                    textY = getY() + textFM.getAscent() - textFM.getDescent();
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = textFM.getAscent() - textFM.getDescent();
                     break;
                 case TEXT_LOWER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
-                    textX = getX() + width - textFM.stringWidth(imageText);
-                    textY = getY() + height - textFM.getDescent();
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = height - textFM.getDescent();
                     break;
             }
 
