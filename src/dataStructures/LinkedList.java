@@ -60,6 +60,11 @@ public class LinkedList<E>
         }
         return current.getObject();
     }
+    
+    public boolean hasNext()
+    {
+        return current.next() != null;
+    }
 
     /**
     * This will advance the current position by one, if and only if the current object can

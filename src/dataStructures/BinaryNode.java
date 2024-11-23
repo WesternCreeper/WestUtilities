@@ -12,9 +12,13 @@ package dataStructures;
  */
 class BinaryNode<E>
 {
+    public final static int COLOR_RED = 1;
+    public final static int COLOR_BLACK = 0;
     private E object;
     private BinaryNode<E> left;
     private BinaryNode<E> right;
+    private int color = -1;
+    private int level = 0;
     public BinaryNode() 
     {
         object = null;
@@ -35,7 +39,7 @@ class BinaryNode<E>
     */
     public E getObject()
     {
-       return object; 
+        return object; 
     }
 
     /**
@@ -43,7 +47,7 @@ class BinaryNode<E>
     */
     public void setObject(E e)
     {
-       object = e; 
+        object = e; 
     }
 
     /**
@@ -51,7 +55,7 @@ class BinaryNode<E>
     */
     public BinaryNode<E> getLeft()
     {
-       return left; 
+        return left; 
     }
 
     /**
@@ -59,7 +63,7 @@ class BinaryNode<E>
     */
     public void setLeft(BinaryNode<E> newLeft)
     {
-       left = newLeft; 
+        left = newLeft; 
     }
 
     /**
@@ -67,7 +71,7 @@ class BinaryNode<E>
     */
     public BinaryNode<E> getRight()
     {
-       return right; 
+        return right; 
     }
 
     /**
@@ -75,6 +79,120 @@ class BinaryNode<E>
     */
     public void setRight(BinaryNode<E> newRight)
     {
-       right = newRight; 
+        right = newRight; 
+    }
+
+    /**
+    * Sets the current color
+    */
+    public void setColor(int newColor)
+    {
+        color = newColor;
+    }
+
+    /**
+    * Returns the current color
+    * @return INTEGER - The current color
+    */
+    public int getColor()
+    {
+        return color;
+    }
+
+    public void setLevel(int newLevel)
+    {
+        level = newLevel;
+    }
+
+    public int getLevel()
+    {
+        return level;
+    }
+   
+    /**
+    * Finds out if the binary node has any children (1 or 2)
+    */
+    public boolean hasChildren()
+    {
+        return right != null || left != null;
+    }
+
+    /**
+    * Removes the child given, if the given node is not its child then nothing will happen
+    */
+    public void removeChild(BinaryNode<E> child)
+    {
+        if(left.equals(child))
+        {
+           left = null;
+        }
+        else if(right.equals(child))
+        {
+           right = null;
+        }
+    }
+    /**
+    * This will ONLY return a non-null value when there is one child to this node
+    */
+    public BinaryNode<E> getChild()
+    {
+        if(left == null && right != null)
+        {
+           return right;
+        }
+        else if(left != null && right == null)
+        {
+           return left;
+        }
+        else
+        {
+           return null;
+        }
+    }
+
+    /**
+    * Replaces the child given, with the second node given. If the first node given is not a child of this node, then nothing will happen
+    */
+    public void replaceChild(BinaryNode<E> child, BinaryNode<E> node)
+    {
+        if(left.equals(child))
+        {
+           left = node;
+        }
+        else if(right.equals(child))
+        {
+           right = node;
+        }
+    }
+
+    public int getHeight()
+    {
+        return getHeight(this);
+    }
+    private int getHeight(BinaryNode<E> node)
+    {
+        if(!node.hasChildren())
+        {
+           return 0;
+        }
+        int leftHeight = 0;
+        if(node.getLeft() != null)
+        {
+           leftHeight = getHeight(node.getLeft());
+        }
+        int rightHeight = 0;
+        if(node.getRight() != null)
+        {
+           rightHeight = getHeight(node.getRight());
+        }
+
+        if(rightHeight > leftHeight)
+        {
+           return rightHeight + 1;
+        }
+        else
+        {
+           return leftHeight + 1;
+        }
     }
 }

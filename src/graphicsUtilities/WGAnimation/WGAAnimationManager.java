@@ -144,4 +144,32 @@ public class WGAAnimationManager
             allTimers.get(i).start();
         }
     }
+    
+    /**
+     * This removes all of the listeners off of the timers already added. This is helpful when listeners are added in real time to make sure that the same one doesn't get added twice
+     */
+    public synchronized final void removeAllListeners()
+    {
+        for(int i = 0 ; i < allTimers.size() ; i++)
+        {
+            Timer currentTimer = allTimers.get(i);
+            ActionListener[] allListeners = currentTimer.getActionListeners();
+            for(int a = 0 ; a < allListeners.length ; a++)
+            {
+                currentTimer.removeActionListener(allListeners[a]);
+            }
+        }
+    }
+    
+    /**
+     * This removes a certain listener from ALL of the timers
+     * @param listener The listener that needs to be removed
+     */
+    public synchronized final void removeListener(ActionListener listener)
+    {
+        for(int i = 0 ; i < allTimers.size() ; i++)
+        {
+            allTimers.get(i).removeActionListener(listener);
+        }
+    }
 }
