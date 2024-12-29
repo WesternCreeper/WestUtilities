@@ -22,8 +22,8 @@ public class HashTable<E extends Object>
     private final int numericSpacing;
     private int numberOfFilledIndexes = 0;
     private int tableSize;
-    private Object[] allObjects;
-    private String[] allKeys;
+    protected Object[] allObjects;
+    protected String[] allKeys;
 
     public HashTable(int size, int hashOption)
     {

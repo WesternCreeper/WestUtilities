@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
 import java.awt.geom.Rectangle2D;
@@ -16,12 +17,15 @@ public abstract class WGBox extends WGDrawingObject
 {
     private Paint backgroundColor;
     private Paint borderColor;
+    private boolean isHovered = false;
+    private Paint hoverBackgroundColor;
     
     
-    protected WGBox(float borderSize, Paint backgroundColor, Paint borderColor, Component parent)
+    protected WGBox(float borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Component parent)
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.backgroundColor = backgroundColor;
+        this.hoverBackgroundColor = hoverBackgroundColor;
         this.borderColor = borderColor;
     }
     
@@ -43,7 +47,13 @@ public abstract class WGBox extends WGDrawingObject
     {
         setBorderSize(theme.getBorderSize());
         setBackgroundColor(theme.getBackgroundColor());
+        hoverBackgroundColor = WGTheme.getHoverBackgroundColor(theme.getBackgroundColor());
         setBorderColor(theme.getBorderColor());
+    }
+    @Override
+    public void setShown(boolean isShown)
+    {
+        super.setShown(isShown);
     }
     @Override
     /**
@@ -82,6 +92,7 @@ public abstract class WGBox extends WGDrawingObject
                     actualListener.mouseMoved(WestGraphics.lastMouseEvent);
                 }
             }
+            isHovered = false;
         }
     }
     
@@ -91,22 +102,28 @@ public abstract class WGBox extends WGDrawingObject
     public void setBackgroundColor(Paint backgroundColor) 
     {
         this.backgroundColor = backgroundColor;
-        if(getClickListener() != null)
+        if(backgroundColor instanceof Color)
         {
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
+            hoverBackgroundColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
         }
-        getParent().repaint();
-    }
-
-    public void setBackgroundColorNotClickListener(Paint backgroundColor) 
-    {
-        this.backgroundColor = backgroundColor;
+        else
+        {
+            hoverBackgroundColor = backgroundColor;
+        }
         getParent().repaint();
     }
 
     public void setBorderColor(Paint borderColor) {
         this.borderColor = borderColor;
         getParent().repaint();
+    }
+
+    public void setHovered(boolean isHovered) {
+        this.isHovered = isHovered;
+    }
+
+    public void setHoverBackgroundColor(Paint hoverBackgroundColor) {
+        this.hoverBackgroundColor = hoverBackgroundColor;
     }
 
     
@@ -117,6 +134,14 @@ public abstract class WGBox extends WGDrawingObject
 
     public Paint getBorderColor() {
         return borderColor;
+    }
+
+    public boolean isHovered() {
+        return isHovered;
+    }
+
+    public Paint getHoverBackgroundColor() {
+        return hoverBackgroundColor;
     }
     
 }

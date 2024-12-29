@@ -4,10 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
-import java.awt.Paint;
 import java.awt.Component;
-import java.awt.RadialGradientPaint;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -19,7 +16,6 @@ import java.awt.event.MouseWheelListener;
  */
 public class WGButtonListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
-    private Paint originalBackgroundColor;
     private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
@@ -49,16 +45,6 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
         
         //Make sure to set the cursor to the correct one when shown:
         parentObject.setShownCursor(WestGraphics.getHoverCursor());
-    }
-    
-    //Setters:
-    public void setOriginalBackgroundColor(Paint originalBackgroundColor) {
-        this.originalBackgroundColor = originalBackgroundColor;
-    }
-    
-    //Getters:
-    public Paint getOriginalBackgroundColor() {
-        return originalBackgroundColor;
     }
 
     @Override
@@ -111,16 +97,7 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
             
             if(canDoIt)
             {
-                if(originalBackgroundColor instanceof Color)
-                {
-                    button.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor));
-                    button.getParent().repaint();
-                }
-                else if(originalBackgroundColor instanceof RadialGradientPaint)
-                {
-                    button.setBackgroundColorNotClickListener(button.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
-                    button.getParent().repaint();
-                }
+                button.setHovered(true);
 
                 //The cursor
                 if(isParentShown())
@@ -138,16 +115,14 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
             }
             else
             {
-                button.setBackgroundColorNotClickListener(originalBackgroundColor);
-                button.getParent().repaint();
+                button.setHovered(false);
             }
         }
         else
         {
             //The background
             WGBox button = (WGBox)getParentObject();
-            button.setBackgroundColorNotClickListener(originalBackgroundColor);
-            button.getParent().repaint();
+            button.setHovered(false);
             
             //The cursor
             if(cursorSet && !e.isConsumed())
@@ -157,6 +132,7 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
                 e.consume();
             }
         }
+        getParentObject().getParent().repaint();
     }
     @Override
     public void setParentObject(WGDrawingObject obj)

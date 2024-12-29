@@ -100,15 +100,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
         {
             //Background
             WGTextInput textInput = (WGTextInput)getParentObject();
-            if(originalBackgroundColor instanceof Color)
-            {
-                textInput.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_LIGHTER));
-            }
-            else if(originalBackgroundColor instanceof RadialGradientPaint)
-            {
-                textInput.setBackgroundColorNotClickListener(textInput.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
-                textInput.getParent().repaint();
-            }
+            textInput.setHovered(true);
             
             //The cursor
             if(isParentShown())
@@ -137,7 +129,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
         {
             //Background
             WGTextInput textInput = (WGTextInput)getParentObject();
-            textInput.setBackgroundColorNotClickListener(originalBackgroundColor);
+            textInput.setHovered(false);
             
             //The cursor
             if(cursorSet && !e.isConsumed())

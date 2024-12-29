@@ -297,7 +297,14 @@ public class WestGraphics
             
         //Draw the button
         Rectangle2D.Double buttonRect = button.getBounds();
-        g2.setPaint(button.getBackgroundColor());
+        if(button.isHovered())
+        {
+            g2.setPaint(button.getHoverBackgroundColor());
+        }
+        else
+        {
+            g2.setPaint(button.getBackgroundColor());
+        }
         g2.fill(buttonRect);
         g2.setPaint(button.getBorderColor());
         g2.setStroke(new BasicStroke((float)button.getBorderSize()));
@@ -310,11 +317,15 @@ public class WestGraphics
             AffineTransform transformation = new AffineTransform(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
             g2.drawImage(button.getDisplayedImage(), transformation, null);
             //Draw a faint overlay of the background:
-            Paint backgroundColor = button.getBackgroundColor();
-            if(backgroundColor instanceof Color)
+            Paint background = button.getBackgroundColor();
+            if(background instanceof Color)
             {
-                Color bakcgroundColor = (Color)button.getBackgroundColor();
-                Paint pictureOverlay = new Color(bakcgroundColor.getRed(), bakcgroundColor.getGreen(), bakcgroundColor.getBlue(), 70);
+                Color backgroundColor = (Color)background;
+                if(button.isHovered())
+                {
+                    backgroundColor = (Color)button.getHoverBackgroundColor();
+                }
+                Paint pictureOverlay = new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 70);
                 g2.setPaint(pictureOverlay);
                 g2.fill(buttonRect);
             }
@@ -392,7 +403,14 @@ public class WestGraphics
         
         //Draw the background:
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
-        g2.setPaint(pane.getBackgroundColor());
+        if(pane.isHovered())
+        {
+            g2.setPaint(pane.getHoverBackgroundColor());
+        }
+        else
+        {
+            g2.setPaint(pane.getBackgroundColor());
+        }
         g2.fill(buttonRect);
         
         
@@ -540,7 +558,14 @@ public class WestGraphics
         //Draw the Box
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
         Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
-        g2.setPaint(backgroundColor);
+        if(textInput.isHovered() && !textInput.isFocused())
+        {
+            g2.setPaint(textInput.getHoverBackgroundColor());
+        }
+        else
+        {
+            g2.setPaint(backgroundColor);
+        }
         g2.fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
         g2.setPaint(borderColor);
@@ -644,7 +669,14 @@ public class WestGraphics
             
         //Draw the button
         Rectangle2D.Double buttonRect = checkBox.getBounds();
-        g2.setPaint(checkBox.getBackgroundColor());
+        if(checkBox.isHovered())
+        {
+            g2.setPaint(checkBox.getHoverBackgroundColor());
+        }
+        else
+        {
+            g2.setPaint(checkBox.getBackgroundColor());
+        }
         g2.fill(buttonRect);
         g2.setPaint(checkBox.getBorderColor());
         g2.setStroke(new BasicStroke((float)checkBox.getBorderSize()));
@@ -675,7 +707,14 @@ public class WestGraphics
         //Draw the Box
         Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
         Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
-        g2.setPaint(backgroundColor);
+        if(textInput.isHovered() && !textInput.isFocused())
+        {
+            g2.setPaint(textInput.getHoverBackgroundColor());
+        }
+        else
+        {
+            g2.setPaint(backgroundColor);
+        }
         g2.fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
         g2.setPaint(borderColor);

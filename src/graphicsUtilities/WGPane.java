@@ -36,7 +36,7 @@ public class WGPane extends WGBox
      */
     public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         this.scrollBarColor = scrollBarColor;
         this.scrollable = scrollable;
         if(getParent() != null)
@@ -114,7 +114,6 @@ public class WGPane extends WGBox
             super.setClickListener(clickListener);
             getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
             getParent().addMouseWheelListener((WGButtonListener)getClickListener());

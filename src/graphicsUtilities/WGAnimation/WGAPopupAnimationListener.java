@@ -67,7 +67,7 @@ public class WGAPopupAnimationListener implements ActionListener
         if(parentComp instanceof WGButton)
         {
             WGButton button = (WGButton)parentComp;
-            button.setBackgroundColorNotClickListener(colorAnimator.getColor(0));
+            button.setBackgroundColor(colorAnimator.getColor(0));
             button.setTextColor(colorAnimator.getColor(1));
             button.setBorderColor(colorAnimator.getColor(2));
         }

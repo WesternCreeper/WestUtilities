@@ -64,7 +64,7 @@ public class WGLoadingBar extends WGBox
      */
     public WGLoadingBar(Rectangle.Double bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Component parent)
     {
-        super(borderSize, barBackgroundColor, barBorderColor, parent);
+        super(borderSize, barBackgroundColor, WGTheme.getHoverBackgroundColor(barBackgroundColor), barBorderColor, parent);
         originalTitle = title;
         this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
         this.showPercentage = showPercentage;

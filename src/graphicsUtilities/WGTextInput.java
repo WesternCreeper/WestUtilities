@@ -58,7 +58,7 @@ public class WGTextInput extends WGBox
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         this.text = "";
         this.textFont = textFont;
         this.textColor = textColor;
@@ -137,7 +137,7 @@ public class WGTextInput extends WGBox
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         this.text = "";
         this.textFont = textFont;
         this.textColor = textColor;
@@ -265,7 +265,7 @@ public class WGTextInput extends WGBox
 
     public void setBackgroundColor(Paint backgroundColor) 
     {
-        super.setBackgroundColorNotClickListener(backgroundColor);
+        super.setBackgroundColor(backgroundColor);
         if(backgroundColor instanceof Color)
         {
             backgroundOnFocusColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor, 1, WGColorHelper.PREFERRANCE_COLOR_DARKER);

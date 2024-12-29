@@ -39,7 +39,7 @@ public class WGToolTip extends WGBox implements TextStyles
      */
     public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         toolTipText = text.split("\n");
         toolTipFont = textFont;
         this.textColor = textColor;

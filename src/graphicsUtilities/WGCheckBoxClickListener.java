@@ -76,16 +76,7 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
         {
             //The background
             WGCheckBox parent = (WGCheckBox)getParentObject();
-            if(originalBackgroundColor instanceof Color)
-            {
-                parent.setBackgroundColorNotClickListener(WGColorHelper.getDarkerOrLighter((Color)originalBackgroundColor));
-                parent.getParent().repaint();
-            }
-            else if(originalBackgroundColor instanceof RadialGradientPaint)
-            {
-                parent.setBackgroundColorNotClickListener(parent.fixPaintBounds(originalBackgroundColor, WGDrawingObject.RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE, e));
-                parent.getParent().repaint();
-            }
+            parent.setHovered(true);
             
             //The cursor
             if(isParentShown())
@@ -104,8 +95,7 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
         else
         {
             WGCheckBox parent = (WGCheckBox)getParentObject();
-            parent.setBackgroundColorNotClickListener(originalBackgroundColor);
-            parent.getParent().repaint();
+            parent.setHovered(false);
             
             //The cursor
             if(cursorSet && !e.isConsumed())

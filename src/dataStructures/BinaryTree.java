@@ -87,7 +87,7 @@ public class BinaryTree <E>
     {
         return current.getObject();
     }
-
+    
     /**
     * Inserts an object to the left of the current position. This will replace the object in the left side if there is one.
     */

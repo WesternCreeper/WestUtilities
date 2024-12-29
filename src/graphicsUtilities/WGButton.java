@@ -71,7 +71,7 @@ public class WGButton extends WGBox
      */
     public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         this.text = text;
         this.textFont = textFont;
         this.textColor = textColor;
@@ -136,13 +136,15 @@ public class WGButton extends WGBox
         this(bounds, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
         {
-            super.setClickListener(clickListener);
-            getClickListener().setParentComponent(getParent());
-            getClickListener().setParentObject(this);
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGButtonListener)getClickListener());
-            getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+            if(clickListener != null)
+            {
+                super.setClickListener(clickListener);
+                getClickListener().setParentComponent(getParent());
+                getClickListener().setParentObject(this);
+                getParent().addMouseListener(getClickListener());
+                getParent().addMouseMotionListener((WGButtonListener)getClickListener());
+                getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+            }
         }
         else
         {
@@ -166,7 +168,6 @@ public class WGButton extends WGBox
             super.setClickListener(clickListener);
             getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            ((WGButtonListener)getClickListener()).setOriginalBackgroundColor(getBackgroundColor());
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
             getParent().addMouseWheelListener((WGButtonListener)getClickListener());
@@ -280,29 +281,12 @@ public class WGButton extends WGBox
         super.setClickListener(clickListener);
         clickListener.setParentComponent(getParent());
         clickListener.setParentObject(this);
-        ((WGButtonListener)clickListener).setOriginalBackgroundColor(getBackgroundColor());
         getParent().addMouseListener(clickListener);
         getParent().addMouseMotionListener((WGButtonListener)clickListener);
         getParent().addMouseWheelListener((WGButtonListener)clickListener);
     }
     private void setUpImage()
     {
-        //Set up the x and y of the image, based on preferance:
-        switch(imagePlacementPeference)
-        {
-            case IMAGE_CENTER_PLACEMENT:
-                imageX = getX() + 0.5 * (getWidth() - displayedImage.getWidth()); //X + 1/2(width - imageWidth)
-                imageY = getY() + 0.5 * (getHeight() - displayedImage.getHeight()); //Y + 1/2(height - imageHeight)
-                break;
-            case IMAGE_UPPER_LEFT_CORNER_PLACEMENT:
-                imageX = getX();
-                imageY = getY();
-                break;
-            case IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT:
-                imageX = getX() + getWidth() - displayedImage.getWidth(); //X + Width - imageWidth
-                imageY = getY() + getHeight() - displayedImage.getHeight(); //Y + Height - imageHeight
-                break;
-        }
         //Set up the width and height of the image based on the scale preferrence
         switch(imageScalePeference)
         {
@@ -313,6 +297,22 @@ public class WGButton extends WGBox
             case IMAGE_SCALE_TO_FIT:
                 imageXScale = (double)getWidth() / displayedImage.getWidth();
                 imageYScale = (double)getHeight() / displayedImage.getHeight();
+                break;
+        }
+        //Set up the x and y of the image, based on preferance:
+        switch(imagePlacementPeference)
+        {
+            case IMAGE_CENTER_PLACEMENT:
+                imageX = getX() + 0.5 * (getWidth() - displayedImage.getWidth() * imageXScale); //X + 1/2(width - imageWidth)
+                imageY = getY() + 0.5 * (getHeight() - displayedImage.getHeight() * imageYScale); //Y + 1/2(height - imageHeight)
+                break;
+            case IMAGE_UPPER_LEFT_CORNER_PLACEMENT:
+                imageX = getX();
+                imageY = getY();
+                break;
+            case IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT:
+                imageX = getX() + getWidth() - displayedImage.getWidth() * imageXScale; //X + Width - imageWidth
+                imageY = getY() + getHeight() - displayedImage.getHeight() * imageYScale; //Y + Height - imageHeight
                 break;
         }
     }

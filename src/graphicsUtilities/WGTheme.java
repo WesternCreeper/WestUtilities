@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Font;
 
@@ -64,6 +65,16 @@ public class WGTheme implements TextStyles
         this.highlightColor = oldTheme.getHighlightColor();
         this.barColor = oldTheme.getBarColor();
         this.checkColor = oldTheme.getCheckColor();
+    }
+    
+    //Methods:
+    public static Paint getHoverBackgroundColor(Paint backgroundColor)
+    {
+        if(backgroundColor instanceof Color)
+        {
+            return WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
+        }
+        return backgroundColor;
     }
     
     

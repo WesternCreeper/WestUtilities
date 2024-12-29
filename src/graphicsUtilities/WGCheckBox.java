@@ -50,7 +50,7 @@ public class WGCheckBox extends WGBox
     */
     public WGCheckBox(Rectangle2D.Double bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
         this.checked = checked;
         this.checkColor = checkColor;
         if(getParent() != null)
@@ -114,7 +114,7 @@ public class WGCheckBox extends WGBox
 
     public void setBackgroundColor(Paint backgroundColor) 
     {
-        super.setBackgroundColorNotClickListener(backgroundColor);
+        super.setBackgroundColor(backgroundColor);
         if(getClickListener() != null)
         {
             ((WGCheckBoxClickListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);

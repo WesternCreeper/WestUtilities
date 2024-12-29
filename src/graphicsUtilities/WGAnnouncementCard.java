@@ -49,7 +49,7 @@ public class WGAnnouncementCard extends WGBox
      */
     public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Component parent)
     {
-        super(borderSize, backgroundColor, borderColor, parent);
+        super(borderSize, backgroundColor, null, borderColor, parent);
         this.splitHeight = 0;
         this.title = title;
         this.titleFont = titleFont;
@@ -87,7 +87,7 @@ public class WGAnnouncementCard extends WGBox
      */
     public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Component parent, WGTheme theme)
     {
-        super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent);
+        super(theme.getBorderSize(), theme.getBackgroundColor(), null, theme.getBorderColor(), parent);
         this.splitHeight = 0;
         this.title = title;
         this.titleFont = theme.getTextFont();
