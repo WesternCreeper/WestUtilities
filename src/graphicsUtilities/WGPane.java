@@ -297,6 +297,23 @@ public class WGPane extends WGBox
         }
     }
     
+    /**
+     * Finds out if the object given would be visible on this pane based on its current position.
+     * @param drawableObject The object needing to be tested
+     * @return Boolean (true if on, else false)
+     */
+    public boolean isDrawableObjectVisible(WGDrawingObject drawableObject)
+    {
+        if(drawableObject.getY() + drawableObject.getHeight() > getY() && drawableObject.getY() < getY() + getHeight())
+        {
+            if(drawableObject.getX() + drawableObject.getWidth() > getX() && drawableObject.getX() < getX() + getWidth())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     
     //Setters:
 

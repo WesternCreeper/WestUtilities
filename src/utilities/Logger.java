@@ -48,7 +48,7 @@ public class Logger extends Console
     //Error Output variables:
     private final Rectangle2D.Double errorOutputBounds = new Rectangle2D.Double(6/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
     private final Rectangle2D.Double errorOutputLabelBounds = new Rectangle2D.Double(6/slotSize, 0, 20/slotSize, 5/slotSize);
-    private final Font errorOutputFont = new Font("Serif", 24, Font.PLAIN);
+    private final Font errorOutputFont = new Font("Serif", Font.PLAIN, 24);
     
     //Output variables:
     private final Rectangle2D.Double outputBounds = new Rectangle2D.Double(26/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
@@ -189,7 +189,15 @@ public class Logger extends Console
     
     public final void logError(Exception e)
     {
+        String errorMessage = e.getLocalizedMessage();
+        if(errorMessage != null)
+        {
+            errorOutputDisplay.addTextLine(errorMessage);
+        }
+        else
+        {
         errorOutputDisplay.addTextLine("Error Detected. Check the Error File for more information");
+        }
         
         try
         {

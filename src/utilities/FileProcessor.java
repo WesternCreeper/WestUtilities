@@ -70,28 +70,32 @@ public class FileProcessor
             {
                 String str = sc.nextLine();
                 str = str.trim();
-                str = removeWhite(str, true);
-                if(str.length() >= (sectionHeader.length() + section.length()) && str.substring(0, sectionHeader.length()).equalsIgnoreCase(sectionHeader) && str.substring(sectionHeader.length(), sectionHeader.length() + section.length()).equalsIgnoreCase(section))
+                if(str.contains("[") && str.contains("]")) //Is a section!
                 {
-                    while(sc.hasNextLine())
+                    String fileSectionName = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                    fileSectionName = removeWhite(fileSectionName, removeSpaceWithinString);
+                    if(fileSectionName.toLowerCase().equals( removeWhite(section, removeSpaceWithinString).toLowerCase() )) //Then check the inside of the section to the section name
                     {
-                        str = sc.nextLine();
-                        str = str.trim();
-                        str = removeWhite(str, removeSpaceWithinString);
-                        if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader))
+                        while(sc.hasNextLine())
                         {
-                            return FAILED_RETURN_VALUE;
-                        }
-                        //Find the location of the equals sign
-                        String keyAndValue[] = str.split("=");
-                        if(keyAndValue.length == 2)
-                        {
-                            String keyInLine = keyAndValue[0].trim();
-                            if(keyInLine.toLowerCase().equals(key.toLowerCase()))
+                            str = sc.nextLine();
+                            str = str.trim();
+                            str = removeWhite(str, removeSpaceWithinString);
+                            if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader))
                             {
-                                sc.close();
-                                str = keyAndValue[1];
-                                return str.trim();
+                                return FAILED_RETURN_VALUE;
+                            }
+                            //Find the location of the equals sign
+                            String keyAndValue[] = str.split("=");
+                            if(keyAndValue.length == 2)
+                            {
+                                String keyInLine = keyAndValue[0].trim();
+                                if(keyInLine.toLowerCase().equals(key.toLowerCase()))
+                                {
+                                    sc.close();
+                                    str = keyAndValue[1];
+                                    return str.trim();
+                                }
                             }
                         }
                     }
@@ -174,28 +178,32 @@ public class FileProcessor
             {
                 String str = sc.nextLine();
                 str = str.trim();
-                str = removeWhite(str, true);
-                if(str.length() >= (sectionHeader.length() + section.length()) && str.substring(0, sectionHeader.length()).equalsIgnoreCase(sectionHeader) && str.substring(sectionHeader.length(), sectionHeader.length() + section.length()).equalsIgnoreCase(section))
+                if(str.contains("[") && str.contains("]")) //Is a section!
                 {
-                    while(sc.hasNextLine())
+                    String fileSectionName = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                    fileSectionName = removeWhite(fileSectionName, removeSpaceWithinString);
+                    if(fileSectionName.toLowerCase().equals( removeWhite(section, removeSpaceWithinString).toLowerCase() )) //Then check the inside of the section to the section name
                     {
-                        str = sc.nextLine();
-                        str = str.trim();
-                        str = removeWhite(str, removeSpaceWithinString);
-                        if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader))
+                        while(sc.hasNextLine())
                         {
-                            return FAILED_RETURN_VALUE;
-                        }
-                        //Find the location of the equals sign
-                        String keyAndValue[] = str.split("=");
-                        if(keyAndValue.length == 2)
-                        {
-                            String valueInLine = keyAndValue[1].trim();
-                            if(valueInLine.toLowerCase().contains(value.toLowerCase()))
+                            str = sc.nextLine();
+                            str = str.trim();
+                            str = removeWhite(str, removeSpaceWithinString);
+                            if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader))
                             {
-                                sc.close();
-                                str = keyAndValue[0];
-                                return str.trim();
+                                return FAILED_RETURN_VALUE;
+                            }
+                            //Find the location of the equals sign
+                            String keyAndValue[] = str.split("=");
+                            if(keyAndValue.length == 2)
+                            {
+                                String valueInLine = keyAndValue[1].trim();
+                                if(valueInLine.toLowerCase().contains(value.toLowerCase()))
+                                {
+                                    sc.close();
+                                    str = keyAndValue[0];
+                                    return str.trim();
+                                }
                             }
                         }
                     }
@@ -333,11 +341,13 @@ public class FileProcessor
             {
                 String str = sc.nextLine();
                 str = str.trim();
-                str = removeWhite(str, true);
-                section = removeWhite(section, true);
-                if(str.length() >= (sectionHeader.length() + section.length()) && str.substring(0, sectionHeader.length()).equalsIgnoreCase(sectionHeader) && str.substring(sectionHeader.length(), sectionHeader.length() + section.length()).equalsIgnoreCase(section))
+                if(str.contains("[") && str.contains("]")) //Is a section!
                 {
-                    return true;
+                    String fileSectionName = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                    if(fileSectionName.toLowerCase().equals(section.toLowerCase())) //Then check the inside of the section to the section name
+                    {
+                        return true;
+                    }
                 }
             }
             sc.close();
@@ -368,11 +378,13 @@ public class FileProcessor
             {
                 String str = sc.nextLine();
                 str = str.trim();
-                str = removeWhite(str, true);
-                section = removeWhite(section, true);
-                if(str.length() >= (sectionHeader.length() + section.length()) && str.substring(0, sectionHeader.length()).equalsIgnoreCase(sectionHeader) && str.substring(sectionHeader.length(), sectionHeader.length() + section.length()).equalsIgnoreCase(section))
+                if(str.contains("[") && str.contains("]")) //Is a section!
                 {
-                    return i;
+                    String fileSectionName = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                    if(fileSectionName.toLowerCase().equals(section.toLowerCase())) //Then check the inside of the section to the section name
+                    {
+                        return i;
+                    }
                 }
                 i++;
             }
@@ -469,25 +481,28 @@ public class FileProcessor
             {
                 String str = sc.nextLine();
                 str = str.trim();
-                str = removeWhite(str, removeSpaceWithinString);
                 //If it is the section then find the keys and values
-                if(str.length() >= (sectionHeader.length() + section.length()) && str.substring(0, sectionHeader.length()).equalsIgnoreCase(sectionHeader) && str.substring(sectionHeader.length(), sectionHeader.length() + section.length()).equalsIgnoreCase(section))
+                if(str.contains("[") && str.contains("]")) //Is a section!
                 {
-                    while(sc.hasNextLine()) //Goes through the body of the section:
+                    String fileSectionName = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                    if(fileSectionName.toLowerCase().equals(section.toLowerCase())) //Then check the inside of the section to the section name
                     {
-                        str = sc.nextLine();
-                        str = str.trim();
-                        str = removeWhite(str, removeSpaceWithinString);
-                        String temp[] = str.split("=");
-                        if(temp.length >= 2)
+                        while(sc.hasNextLine()) //Goes through the body of the section:
                         {
-                            temp[0] = temp[0].strip();
-                            temp[1] = temp[1].strip();
-                            allInfo.add(temp);
-                            if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader)) //Stops at the end of the section
+                            str = sc.nextLine();
+                            str = str.trim();
+                            str = removeWhite(str, removeSpaceWithinString);
+                            String temp[] = str.split("=");
+                            if(temp.length >= 2)
                             {
-                                sc.close();
-                                return allInfo;
+                                temp[0] = temp[0].strip();
+                                temp[1] = temp[1].strip();
+                                allInfo.add(temp);
+                                if(str.length() >= 1 && str.substring(0, 1).equals(sectionHeader)) //Stops at the end of the section
+                                {
+                                    sc.close();
+                                    return allInfo;
+                                }
                             }
                         }
                     }

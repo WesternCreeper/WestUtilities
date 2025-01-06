@@ -22,6 +22,7 @@ public class WGToolTip extends WGBox implements TextStyles
     private Paint textColor;
     private double longestStringWidth = 0;
     private int textStyle = 0;
+    private boolean autoResizeText = true;
     /**
      * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
@@ -96,6 +97,64 @@ public class WGToolTip extends WGBox implements TextStyles
     {
         this(widthPercent, heightPercent, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
         this.textStyle = theme.getTextStyle();
+    }
+    /**
+     * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string. And has the ability to specify where the text goes
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param autoResizeText Tells the tool tip to resize or not resize the text (This may lead to the preferred size to not be taken into account)
+     * @param borderSize The size of the border around the object
+     * @param textStyle the style of the text that determines how the text is drawn
+     * @param text The text that will be written on the tooltip, this will be turned into an array when new line characters are found in the string
+     * @param textFont The font that will draw the text
+     * @param backgroundColor The color of the background of the font
+     * @param borderColor The border color of the box
+     * @param textColor The color of the text
+     * @param parent The parent that the object is being drawn on, useful for any click operation
+     * @param listener The listener that makes sure this object is being displayed in the correct location, This is set up for you so no need to set it up (Use the most basic definition)
+     * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    {
+        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        this.autoResizeText = autoResizeText;
+        toolTipText = text.split("\n");
+        toolTipFont = textFont;
+        this.textColor = textColor;
+        if(getParent() != null)
+        {
+            listener.setParentComponent(parent);
+            listener.setParentObject(toolTipOwner);
+            listener.setToolTipObject(this);
+            getParent().addMouseListener(listener);
+            getParent().addMouseMotionListener(listener);
+            toolTipListener = listener;
+            resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+        this.textStyle = textStyle;
+    }
+    /**
+     * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string. And has the ability to specify where the text goes
+     * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
+     * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
+     * @param autoResizeText Tells the tool tip to resize or not resize the text (This may lead to the preferred size to not be taken into account)
+     * @param text The text that will be written on the tooltip, this will be turned into an array when new line characters are found in the string
+     * @param parent The parent that the object is being drawn on, useful for any click operation
+     * @param listener The listener that makes sure this object is being displayed in the correct location, This is set up for you so no need to set it up (Use the most basic definition)
+     * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
+     * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
+     * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
+     */
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, String text, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
+    {
+        this(widthPercent, heightPercent, autoResizeText, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
     }
     
     //Methods
@@ -229,7 +288,10 @@ public class WGToolTip extends WGBox implements TextStyles
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             String longestString = getLongestString();
-            toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getParent(), getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString, 100);
+            if(autoResizeText)
+            {
+                toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getParent(), getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString, 100);
+            }
             
             //Then Find the best X place so the drawing is faster and smoother:
             FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
@@ -238,13 +300,23 @@ public class WGToolTip extends WGBox implements TextStyles
             //Now make the height and width "fit" to the text:
             double textWidth = textFM.stringWidth(longestString);
             double textHeight = textFM.getHeight() * toolTipText.length;
-            if(getWidth() > textWidth) //IF the actual width is greater than the text's width, THEN the it needs to be fixed
+            
+            if(!autoResizeText)
             {
+                //Fit the text into the box (No matter if it is too big or too small):
                 setWidth(textWidth + borderPadding * 2);
-            }
-            if(getHeight() > textHeight) //IF the actual height is greater than the text's height, THEN the it needs to be fixed
-            {
                 setHeight(textHeight + borderPadding * 2);
+            }
+            else
+            {
+                if(getWidth() > textWidth) //IF the actual width is greater than the text's width, THEN the it needs to be fixed
+                {
+                    setWidth(textWidth + borderPadding * 2);
+                }
+                if(getHeight() > textHeight) //IF the actual height is greater than the text's height, THEN the it needs to be fixed
+                {
+                    setHeight(textHeight + borderPadding * 2);
+                }
             }
 
             //Now fix the colors of this object:
