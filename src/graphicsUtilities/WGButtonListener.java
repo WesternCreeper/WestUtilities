@@ -16,7 +16,7 @@ import java.awt.event.MouseWheelListener;
  */
 public class WGButtonListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
-    private boolean cursorSet = false;
+    protected boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */

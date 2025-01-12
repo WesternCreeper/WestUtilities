@@ -89,17 +89,21 @@ public abstract class WGDrawingObject
     }
     protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference, MouseEvent e)
     {
+        return fixPaintBounds(paint, gradientOrientationPreference, e, getX(), getY(), getWidth(), getHeight());
+    }
+    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
+    {
         Paint newPaint;
         if(paint instanceof GradientPaint)
         {
             GradientPaint oldPaint = (GradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e);
+            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e, x, y, width, height);
             newPaint = new GradientPaint(points[0], oldPaint.getColor1(), points[1], oldPaint.getColor2());
         }
         else if(paint instanceof RadialGradientPaint)
         {
             RadialGradientPaint oldPaint = (RadialGradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e);
+            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e, x, y, width, height);
             newPaint = new RadialGradientPaint(points[0], (float)points[1].getX(), oldPaint.getFractions(), oldPaint.getColors());
         }
         else
@@ -111,23 +115,25 @@ public abstract class WGDrawingObject
     /**
      * This function gets the points relative to this drawing object for the gradient to render correctly
      * @param gradientOrientationPreference The gradient orientation that determines how the points are created relative to the location of this object
+     * @param width The width of the object
+     * @param height The height of the object
      * @return the points that help define this gradient so that it follows the proper orientation.
      */
-    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference, MouseEvent e)
+    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
     {
         Point2D.Double[] points = new Point2D.Double[2];
         
         switch(gradientOrientationPreference)
         {
             case VERTICAL_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(getX(), getY());
-                points[1] = new Point2D.Double(getX(), getY() + getHeight());
+                points[0] = new Point2D.Double(x, y);
+                points[1] = new Point2D.Double(x, y + height);
                 break;
             case RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(getX() + (getWidth()/2), getY() + (getHeight()/2));
+                points[0] = new Point2D.Double(x + (width/2), y + (height/2));
                 
-                double radius = (getWidth()/2);
-                double heightRadius = (getHeight()/2);
+                double radius = (width/2);
+                double heightRadius = (height/2);
                 if(radius > heightRadius)
                 {
                     radius = heightRadius;
@@ -146,11 +152,11 @@ public abstract class WGDrawingObject
                 }
                 else
                 {
-                    points[0] = new Point2D.Double(getX() + (getWidth()/2), getY() + (getHeight()/2));
+                    points[0] = new Point2D.Double(x + (width/2), y + (height/2));
                 }
                 
-                radius = (getWidth()/2);
-                heightRadius = (getHeight()/2);
+                radius = (width/2);
+                heightRadius = (height/2);
                 if(radius > heightRadius)
                 {
                     radius = heightRadius;
@@ -163,8 +169,8 @@ public abstract class WGDrawingObject
                 points[1] = new Point2D.Double(radius, 0);
                 break;
             default:
-                points[0] = new Point2D.Double(getX(), getY());
-                points[1] = new Point2D.Double(getX(), getY());
+                points[0] = new Point2D.Double(x, y);
+                points[1] = new Point2D.Double(x, y);
                 break;
         }
         

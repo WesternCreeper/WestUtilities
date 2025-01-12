@@ -143,6 +143,10 @@ public class WestGraphics
             {
                 drawTextImage((WGTextImage)obj);
             }
+            else if(obj instanceof WGDropDown)
+            {
+                drawDropDown((WGDropDown)obj);
+            }
             
             //Now make sure to draw the tool tip that is part of this object:
             if(drawToolTip)
@@ -749,5 +753,82 @@ public class WestGraphics
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());
         g2.drawString(textImage.getImageText(), (float)(textImage.getX() + textX + textImage.getImageOffSetX()), (float)(textImage.getY() + textY + textImage.getImageOffSetY()));
+    }
+    private void drawDropDown(WGDropDown dropDown)
+    {
+        //Save the original stroke in case the user wanted that one
+        Stroke oldStroke = g2.getStroke();
+        
+        if(!dropDown.isDroppedDown())
+        {
+            //Simple to draw:
+
+            //Draw the button
+            Rectangle2D.Double buttonRect = dropDown.getBounds();
+            if(dropDown.isHovered())
+            {
+                g2.setPaint(dropDown.getHoverBackgroundColor());
+            }
+            else
+            {
+                g2.setPaint(dropDown.getBackgroundColor());
+            }
+            g2.fill(buttonRect);
+            g2.setPaint(dropDown.getBorderColor());
+            g2.setStroke(new BasicStroke((float)dropDown.getBorderSize()));
+            g2.draw(buttonRect);
+
+            //Draw the text:
+            g2.setPaint(dropDown.getTextColor());
+            FontMetrics textFM = g2.getFontMetrics(dropDown.getTextFont());
+            String text = dropDown.getSelectedChoiceText();
+            double textX = dropDown.getX() + ((dropDown.getWidth() - textFM.stringWidth(text)) / 2);
+            double textY = dropDown.getY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getHeight()) / 2);
+            g2.setFont(dropDown.getTextFont());
+            g2.drawString(text, (float)textX, (float)textY);
+        }
+        else
+        {
+            //More complex to draw:
+            
+            //Start by breaking the whole entire object into the individual buttons that make it up:
+            double buttonX = dropDown.getX();
+            double buttonY = dropDown.getY();
+            String[] choices = dropDown.getChoices();
+            Paint[] textColors = dropDown.getTextColors();
+            for(int i = 0 ; i < choices.length ; i++)
+            {
+                Rectangle2D.Double buttonBounds = new Rectangle2D.Double(buttonX, buttonY, dropDown.getButtonWidth(), dropDown.getButtonHeight());
+                
+                //Draw the button:
+                if(dropDown.isHovered() && dropDown.getHoveredIndex() == i)
+                {
+                    g2.setPaint(dropDown.getHoverBackgroundColor());
+                }
+                else
+                {
+                    g2.setPaint(dropDown.getBackgroundColor());
+                }
+                g2.fill(buttonBounds);
+                g2.setPaint(dropDown.getBorderColor());
+                g2.setStroke(new BasicStroke((float)dropDown.getBorderSize()));
+                g2.draw(buttonBounds);
+                
+                //Draw the text:
+                g2.setPaint(textColors[i]);
+                FontMetrics textFM = g2.getFontMetrics(dropDown.getTextFont());
+                String text = choices[i];
+                double textX = buttonBounds.getX() + ((dropDown.getButtonWidth() - textFM.stringWidth(text)) / 2);
+                double textY = buttonBounds.getY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getButtonHeight()) / 2);
+                g2.setFont(dropDown.getTextFont());
+                g2.drawString(text, (float)textX, (float)textY);
+                
+                //Now set up the next button's starting point:
+                buttonY += dropDown.getButtonHeight();
+            }
+        }
+        
+        //And reload it at the end
+        g2.setStroke(oldStroke);
     }
 }
