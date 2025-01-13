@@ -37,6 +37,7 @@ public abstract class WGDrawingObject
     private double height;
     private float borderSize = 1;
     private boolean isShown = true;
+    private WGTheme currentTheme;
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
      * @param x The X that starts the object
@@ -67,6 +68,26 @@ public abstract class WGDrawingObject
         this.borderSize  = borderSize;
         this.parent = parent;
     }
+    /**
+     * This defines a more advanced and capable WGDrawingObject. Specifically this defines the X, Y, Width, Height, Border Size, and the Parent Component of a drawable object
+     * @param x The X that starts the object
+     * @param y The Y that starts the object
+     * @param width The width of the object (In general this is the total width of the object because there may be other widths further defined inside the object)
+     * @param height The height of the object (In general this is the total height of the object because there may be other heights further defined inside the object)
+     * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
+     * @param parent The component that the object is on, and is used to determine how big this object is
+     * @param currentTheme The theme that is currently being used. This is for background operations, like gradients to work properly
+     */
+    protected WGDrawingObject(double x, double y, double width, double height, float borderSize, Component parent, WGTheme currentTheme)
+    {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.borderSize  = borderSize;
+        this.parent = parent;
+        this.currentTheme = currentTheme;
+    }
     
     //Methods:
     public abstract Rectangle2D.Double getBounds();
@@ -77,33 +98,43 @@ public abstract class WGDrawingObject
     
     public abstract void removeListeners();
     
-    public abstract void setTheme(WGTheme theme);
+    public void setTheme(WGTheme theme)
+    {
+        currentTheme = theme;
+    }
     
     protected Paint fixPaintBounds(Paint paint)
     {
         return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE, null);
     }
-    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference)
+    protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference)
     {
         return fixPaintBounds(paint, gradientOrientationPreference, null);
     }
-    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference, MouseEvent e)
+    protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference, MouseEvent e)
     {
         return fixPaintBounds(paint, gradientOrientationPreference, e, getX(), getY(), getWidth(), getHeight());
     }
-    protected Paint fixPaintBounds(Paint paint, int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
+    protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
     {
+        //First convert the gradientOrientation into a usable form:
+        int gradOrient = 0;
+        if(gradientOrientationPreference != null)
+        {
+            gradOrient = (int)gradientOrientationPreference;
+        }
+        
         Paint newPaint;
         if(paint instanceof GradientPaint)
         {
             GradientPaint oldPaint = (GradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e, x, y, width, height);
+            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
             newPaint = new GradientPaint(points[0], oldPaint.getColor1(), points[1], oldPaint.getColor2());
         }
         else if(paint instanceof RadialGradientPaint)
         {
             RadialGradientPaint oldPaint = (RadialGradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradientOrientationPreference, e, x, y, width, height);
+            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
             newPaint = new RadialGradientPaint(points[0], (float)points[1].getX(), oldPaint.getFractions(), oldPaint.getColors());
         }
         else
@@ -249,6 +280,10 @@ public abstract class WGDrawingObject
     public void setToolTip(WGToolTip toolTip) {
         this.toolTip = toolTip;
     }
+
+    protected void setCurrentTheme(WGTheme currentTheme) {
+        this.currentTheme = currentTheme;
+    }
     
     //Getters:
     public boolean isShown() {
@@ -293,5 +328,9 @@ public abstract class WGDrawingObject
 
     public WGToolTip getToolTip() {
         return toolTip;
+    }
+
+    public WGTheme getCurrentTheme() {
+        return currentTheme;
     }
 }

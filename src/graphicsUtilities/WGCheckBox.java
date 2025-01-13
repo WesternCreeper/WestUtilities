@@ -83,6 +83,7 @@ public class WGCheckBox extends WGBox
     public WGCheckBox(Rectangle2D.Double bounds, boolean checked, WGCheckBoxClickListener clickListener, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), checked, theme.getBackgroundColor(), theme.getBorderColor(), theme.getCheckColor(), clickListener, parent);
+        setCurrentTheme(theme);
     }
     
     /**
@@ -156,9 +157,12 @@ public class WGCheckBox extends WGBox
             setHeight(getHeightPercent() * parentHeight);
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            checkColor = fixPaintBounds(checkColor);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find("CheckColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

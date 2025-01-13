@@ -93,6 +93,7 @@ public class WGLoadingBar extends WGBox
     public WGLoadingBar(Rectangle.Double bounds, String title, boolean showPercentage, double percentFilled, boolean isHorizontal, Component parent, WGTheme theme)
     {
         this(bounds, theme.getBorderSize(), title, showPercentage, theme.getTextFont(), percentFilled, isHorizontal, theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getBarColor(), parent);
+        setCurrentTheme(theme);
     }
 
     
@@ -223,10 +224,13 @@ public class WGLoadingBar extends WGBox
             titleFont = WGFontHelper.getFittedFontForBox(titleFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, title, 100);
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            titleColor = fixPaintBounds(titleColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
-            barColor = fixPaintBounds(barColor);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find("TitleColor"));
+                barColor = fixPaintBounds(barColor, getCurrentTheme().getGradientOrientationPreferences().find("BarColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

@@ -91,6 +91,7 @@ public class WGKeyInput extends WGBox
     public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, parentAnimationManager);
+        setCurrentTheme(theme);
     }
     
     
@@ -168,6 +169,7 @@ public class WGKeyInput extends WGBox
     public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, parentAnimationManager, textClickListener, textKeyListener);
+        setCurrentTheme(theme);
     }
     
     //Methods:
@@ -310,9 +312,13 @@ public class WGKeyInput extends WGBox
             setUpFont();
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find("FocusedBackgroundColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

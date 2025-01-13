@@ -94,6 +94,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     public WGTextArea(Rectangle2D.Double bounds, String[] text, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), theme.getTextColor(), parent);
+        setCurrentTheme(theme);
     }
     /**
      * The standard scrollable constructor that holds multiple lines of text in an invisible box. NOTE: This function does NOT change the size of the font based on the size of the object. So make sure the Font object has the size you wanted
@@ -173,6 +174,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     public WGTextArea(Rectangle2D.Double bounds, String[] text, boolean textWrapped, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), textWrapped, theme.getTextColor(), theme.getScrollBarColor(), parent);
+        setCurrentTheme(theme);
     }
     
     @Override
@@ -192,6 +194,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     }
     public void setTheme(WGTheme theme)
     {
+        super.setTheme(theme);
         setBorderSize(theme.getBorderSize());
         this.textFont = theme.getTextFont();
         this.textColor = theme.getTextColor();
@@ -435,7 +438,11 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
             stringYOffset = 0;
 
             //Now fix the colors of this object:
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find("ScrollBarColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

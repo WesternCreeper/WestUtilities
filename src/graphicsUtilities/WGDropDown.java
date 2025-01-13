@@ -51,7 +51,7 @@ public class WGDropDown extends WGBox
     
     public WGDropDown(Rectangle2D.Double bounds, String[] choices, int selectedChoice, Component parent, WGTheme theme) throws WGNullParentException
     {
-        super(theme.getBorderSize(), theme.getBackgroundColor(), WGTheme.getHoverBackgroundColor(theme.getBackgroundColor()), theme.getBorderColor(), parent);
+        super(theme.getBorderSize(), theme.getBackgroundColor(), WGTheme.getHoverBackgroundColor(theme.getBackgroundColor()), theme.getBorderColor(), parent, theme);
         this.choices = choices;
         this.selectedChoice = selectedChoice;
         this.textFont = theme.getTextFont();
@@ -87,6 +87,13 @@ public class WGDropDown extends WGBox
         WGButtonListener buttoner = (WGDropDownListener)(getClickListener());
         getParent().removeMouseListener(buttoner);
         getParent().removeMouseMotionListener(buttoner);
+    }
+    
+    public void setTheme(WGTheme theme)
+    {
+        super.setTheme(theme);
+        textFont = theme.getTextFont();
+        textColor = theme.getTextColor();
     }
     
     
@@ -200,21 +207,42 @@ public class WGDropDown extends WGBox
             }
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            if(!droppedDown)
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                if(!droppedDown)
+                {
+                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                }
+                else
+                {
+                    textColors = new Paint[choices.length];
+                    double x = getX();
+                    double y = getY();
+                    for(int i = 0 ; i < textColors.length ; i++)
+                    {
+                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"), null, x, y, buttonWidth, buttonHeight);
+                        y += buttonHeight;
+                    }
+                }
             }
             else
             {
-                textColors = new Paint[choices.length];
-                double x = getX();
-                double y = getY();
-                for(int i = 0 ; i < textColors.length ; i++)
+                if(!droppedDown)
                 {
-                    textColors[i] = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
-                    y += buttonHeight;
+                    textColor = fixPaintBounds(textColor);
+                }
+                else
+                {
+                    textColors = new Paint[choices.length];
+                    double x = getX();
+                    double y = getY();
+                    for(int i = 0 ; i < textColors.length ; i++)
+                    {
+                        textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
+                        y += buttonHeight;
+                    }
                 }
             }
             

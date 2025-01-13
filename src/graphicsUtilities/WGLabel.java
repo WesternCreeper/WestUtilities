@@ -80,6 +80,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
     public WGLabel(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getTextColor(), parent);
+        setCurrentTheme(theme);
     }
     
     
@@ -100,6 +101,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
     }
     public void setTheme(WGTheme theme)
     {
+        super.setTheme(theme);
         this.textFont = theme.getTextFont();
         this.textColor = theme.getTextColor();
         this.textStyle = theme.getTextStyle();
@@ -176,7 +178,10 @@ public class WGLabel extends WGDrawingObject implements TextStyles
             textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
             
             //Now fix the colors of this object:
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

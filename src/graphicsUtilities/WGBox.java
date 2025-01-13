@@ -20,10 +20,17 @@ public abstract class WGBox extends WGDrawingObject
     private boolean isHovered = false;
     private Paint hoverBackgroundColor;
     
-    
     protected WGBox(float borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Component parent)
     {
         super(0, 0, 0, 0, borderSize, parent);
+        this.backgroundColor = backgroundColor;
+        this.hoverBackgroundColor = hoverBackgroundColor;
+        this.borderColor = borderColor;
+    }
+    
+    protected WGBox(float borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Component parent, WGTheme theme)
+    {
+        super(0, 0, 0, 0, borderSize, parent, theme);
         this.backgroundColor = backgroundColor;
         this.hoverBackgroundColor = hoverBackgroundColor;
         this.borderColor = borderColor;
@@ -45,6 +52,7 @@ public abstract class WGBox extends WGDrawingObject
     }
     public void setTheme(WGTheme theme)
     {
+        super.setTheme(theme);
         setBorderSize(theme.getBorderSize());
         setBackgroundColor(theme.getBackgroundColor());
         hoverBackgroundColor = WGTheme.getHoverBackgroundColor(theme.getBackgroundColor());

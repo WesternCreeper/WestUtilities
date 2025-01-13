@@ -92,6 +92,7 @@ public class WGPane extends WGBox
     public WGPane(Rectangle2D.Double bounds, boolean scrollable, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), scrollable, theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
+        setCurrentTheme(theme);
     }
     
     /**
@@ -153,6 +154,7 @@ public class WGPane extends WGBox
     public WGPane(Rectangle2D.Double bounds, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent, clickListener);
+        setCurrentTheme(theme);
     }
     
     
@@ -379,9 +381,12 @@ public class WGPane extends WGBox
             setHeight(getHeightPercent() * parentHeight);
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            scrollBarColor = fixPaintBounds(scrollBarColor);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find("ScrollBarColor"));
+            }
             
             //Wait for all of the components added to this object to finish setting up:
             for(int i = 0 ; i < containedObjects.size() ; i++)

@@ -158,6 +158,7 @@ public class WGTextImage extends WGDrawingObject
     public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, displayedImage, allowImageResize, text, theme.getTextPosition(), theme.getTextXSizePercent(), theme.getTextYSizePercent(), theme.getTextFont(), theme.getTextColor(), parent);
+        setCurrentTheme(theme);
     }
     
     @Override
@@ -187,6 +188,7 @@ public class WGTextImage extends WGDrawingObject
     }
     public void setTheme(WGTheme theme)
     {
+        super.setTheme(theme);
         this.textPosition = theme.getTextPosition();
         this.textXSizePercent = theme.getTextXSizePercent();
         this.textYSizePercent = theme.getTextYSizePercent();
@@ -336,7 +338,10 @@ public class WGTextImage extends WGDrawingObject
             }
 
             //Now fix the colors of this object:
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

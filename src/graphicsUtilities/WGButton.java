@@ -97,6 +97,7 @@ public class WGButton extends WGBox
     public WGButton(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
+        setCurrentTheme(theme);
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -176,6 +177,7 @@ public class WGButton extends WGBox
         {
             throw new WGNullParentException();
         }
+        setCurrentTheme(theme);
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -236,6 +238,7 @@ public class WGButton extends WGBox
         this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;
         resizer.resizeComps();
+        setCurrentTheme(theme);
     }
     
     @Override
@@ -500,9 +503,12 @@ public class WGButton extends WGBox
             }
             
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

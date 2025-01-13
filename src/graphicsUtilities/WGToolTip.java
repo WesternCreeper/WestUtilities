@@ -97,6 +97,7 @@ public class WGToolTip extends WGBox implements TextStyles
     {
         this(widthPercent, heightPercent, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
         this.textStyle = theme.getTextStyle();
+        setCurrentTheme(theme);
     }
     /**
      * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string. And has the ability to specify where the text goes
@@ -155,6 +156,7 @@ public class WGToolTip extends WGBox implements TextStyles
     public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, String text, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
     {
         this(widthPercent, heightPercent, autoResizeText, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
+        setCurrentTheme(theme);
     }
     
     //Methods
@@ -320,9 +322,12 @@ public class WGToolTip extends WGBox implements TextStyles
             }
 
             //Now fix the colors of this object:
-            setBackgroundColor(fixPaintBounds(getBackgroundColor()));
-            setBorderColor(fixPaintBounds(getBorderColor()));
-            textColor = fixPaintBounds(textColor, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+            }
             
             //Then repaint the parent to make sure the parent sees the change
             getParent().repaint();

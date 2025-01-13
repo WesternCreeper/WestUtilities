@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import dataStructures.HashTable;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Font;
@@ -17,6 +18,13 @@ import java.awt.Font;
  */
 public class WGTheme implements TextStyles
 {
+    public static final HashTable DEFAULT_PREFERRENCES = new HashTable(20, HashTable.HASHING_OPTION_LINEAR, 22);
+    //Create the preferrences from above:
+    static
+    {
+        DEFAULT_PREFERRENCES.insert("TextColor", WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+    }
+    
     private int textStyle;
     private int textPosition;
     private double textXSizePercent;
@@ -31,7 +39,12 @@ public class WGTheme implements TextStyles
     private Paint scrollBarColor;
     private Paint barColor;
     private Font textFont;
+    private HashTable gradientOrientationPreferences;
     public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
+    {
+        this(borderSize, textStyle, textPosition, textXSizePercent, textYSizePercent, backgroundColor, borderColor, textColor, scrollBarColor, cursorColor, highlightColor, barColor, checkColor, textFont, DEFAULT_PREFERRENCES);
+    }
+    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont, HashTable gradientOrientationPreferences)
     {
         this.textFont = textFont;
         this.textPosition = textPosition;
@@ -47,6 +60,7 @@ public class WGTheme implements TextStyles
         this.highlightColor = highlightColor;
         this.barColor = barColor;
         this.checkColor = checkColor;
+        this.gradientOrientationPreferences = gradientOrientationPreferences;
     }
     /**
      * This is the more advanced constructor, which allows for using an old theme as a palette to creating new themes
@@ -134,6 +148,10 @@ public class WGTheme implements TextStyles
     public void setTextYSizePercent(double textYSizePercent) {
         this.textYSizePercent = textYSizePercent;
     }
+
+    public void setGradientOrientationPreferences(HashTable gradientOrientationPreferences) {
+        this.gradientOrientationPreferences = gradientOrientationPreferences;
+    }
     
     
     //Getters:
@@ -191,5 +209,9 @@ public class WGTheme implements TextStyles
 
     public double getTextYSizePercent() {
         return textYSizePercent;
+    }
+
+    public HashTable getGradientOrientationPreferences() {
+        return gradientOrientationPreferences;
     }
 }
