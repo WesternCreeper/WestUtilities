@@ -39,6 +39,8 @@ public class WGDropDownListener extends WGButtonListener
         if(parent.isDroppedDown() && !isWithinBounds(e))
         {
             parent.setDroppedDown(false);
+            //Force the pane owner to update!
+            getParentOwningPane().changeScrollBounds(false);
         }
     }
     
@@ -51,6 +53,8 @@ public class WGDropDownListener extends WGButtonListener
             //Tell the drop down that it is focused:
             parent.setDroppedDown(true);
             parent.setHoveredIndex(0);
+            //Force the pane owner to update!
+            getParentOwningPane().changeScrollBounds(true);
         }
         else
         {
@@ -67,6 +71,8 @@ public class WGDropDownListener extends WGButtonListener
             
             parent.setDroppedDown(false);
             parent.setSelectedChoice(choice);
+            //Force the pane owner to update!
+            getParentOwningPane().changeScrollBounds(false);
             
             //Reset the cursor and the background:
             if(choice > 0)

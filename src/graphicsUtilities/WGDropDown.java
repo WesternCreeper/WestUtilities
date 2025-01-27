@@ -115,12 +115,12 @@ public class WGDropDown extends WGBox
 
     public void setSelectedChoice(int selectedChoice) {
         this.selectedChoice = selectedChoice;
-        resizer.resizeComps();
+        ((ButtonResizeListener)resizer).resizeComps(false);
     }
 
     public void setDroppedDown(boolean droppedDown) {
         this.droppedDown = droppedDown;
-        resizer.resizeComps();
+        ((ButtonResizeListener)resizer).resizeComps(false);
     }
 
     public void setHoveredIndex(int hoveredIndex) {
@@ -181,13 +181,20 @@ public class WGDropDown extends WGBox
         }
         public void resizeComps()
         {
+            resizeComps(true);
+        }
+        public void resizeComps(boolean doXYLocation)
+        {
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getSize().getWidth();
             double parentHeight = getParent().getSize().getHeight();
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
+            if(doXYLocation)
+            {
+                setX(getXPercent() * parentWidth);
+                setY(getYPercent() * parentHeight);
+            }
             buttonWidth = getWidthPercent() * parentWidth;
             buttonHeight = getHeightPercent() * parentHeight;
             if(!droppedDown)

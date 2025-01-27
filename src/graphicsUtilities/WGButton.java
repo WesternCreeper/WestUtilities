@@ -98,6 +98,7 @@ public class WGButton extends WGBox
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
+        resizer.resizeComps();
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -178,6 +179,7 @@ public class WGButton extends WGBox
             throw new WGNullParentException();
         }
         setCurrentTheme(theme);
+        resizer.resizeComps();
     }
     /**
      * This will create a normal baseline WGButton, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -237,8 +239,8 @@ public class WGButton extends WGBox
         this.imagePlacementPeference = imagePlacementPeference;
         this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;
-        resizer.resizeComps();
         setCurrentTheme(theme);
+        resizer.resizeComps();
     }
     
     @Override

@@ -90,7 +90,7 @@ public class FileProcessor
                             if(keyAndValue.length == 2)
                             {
                                 String keyInLine = keyAndValue[0].trim();
-                                if(keyInLine.toLowerCase().equals(key.toLowerCase()))
+                                if(keyInLine.toLowerCase().equals(removeWhite(key, removeSpaceWithinString).toLowerCase()))
                                 {
                                     sc.close();
                                     str = keyAndValue[1];
@@ -139,7 +139,7 @@ public class FileProcessor
                     if(keyAndValue.length == 2)
                     {
                         String keyInLine = keyAndValue[0].trim();
-                        if(keyInLine.toLowerCase().equals(key.toLowerCase()))
+                        if(keyInLine.toLowerCase().equals(removeWhite(key, removeSpaceWithinString).toLowerCase()))
                         {
                             sc.close();
                             str = keyAndValue[1];
@@ -198,7 +198,7 @@ public class FileProcessor
                             if(keyAndValue.length == 2)
                             {
                                 String valueInLine = keyAndValue[1].trim();
-                                if(valueInLine.toLowerCase().contains(value.toLowerCase()))
+                                if(valueInLine.toLowerCase().contains(removeWhite(value, removeSpaceWithinString).toLowerCase()))
                                 {
                                     sc.close();
                                     str = keyAndValue[0];
@@ -248,7 +248,7 @@ public class FileProcessor
                     if(keyAndValue.length == 2)
                     {
                         String keyInLine = keyAndValue[1].trim();
-                        if(keyInLine.toLowerCase().contains(value.toLowerCase()))
+                        if(keyInLine.toLowerCase().contains(removeWhite(value, removeSpaceWithinString).toLowerCase()))
                         {
                             sc.close();
                             str = keyAndValue[0];

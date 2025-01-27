@@ -27,6 +27,8 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
     private double scrollBarHeight = 0;
     private double scrollBarY = 0;
     private double yStart = 0;
+    private double oldTotalArea = 0;
+    private double oldScrollY = 0;
     private boolean vertical = true;
     private boolean shown = false;
     private boolean preferred = true;
@@ -132,6 +134,13 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             double biggestY = 0;
             for(int i = 0 ; i < components.size() ; i++)
             {
+                //Make sure to close all dropdowns that are within this object:
+                if(components.get(i) instanceof WGDropDown)
+                {
+                    WGDropDown dropDown = (WGDropDown)components.get(i);
+                    dropDown.setDroppedDown(false);
+                }
+                
                 double newSmallestY = components.get(i).getY();
                 double newbiggestY = newSmallestY + components.get(i).getHeight() - parentPane.getY();
                 if(newSmallestY < smallestY)
@@ -156,6 +165,13 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             double biggestX = 0;
             for(int i = 0 ; i < components.size() ; i++)
             {
+                //Make sure to close all dropdowns that are within this object:
+                if(components.get(i) instanceof WGDropDown)
+                {
+                    WGDropDown dropDown = (WGDropDown)components.get(i);
+                    dropDown.setDroppedDown(false);
+                }
+                
                 double newSmallestX = components.get(i).getX();
                 double newbiggestX = newSmallestX + components.get(i).getWidth() - parentPane.getX();
                 if(newSmallestX < smallestX)
@@ -171,6 +187,111 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             scrollBarHeight = seeableArea / totalArea * seeableArea;
             scrollY = 0;
             scrollBarY = 0;
+        }
+        shown = totalArea > seeableArea;
+    }
+    /**
+     * Forces the bounds of the scrollbar to change, but does not update positions or where everything is
+     * @param vertical Tells wether it scrolls vertically or horizontally
+     * @param components The list of components that are part of the pane
+     * @param expanding Whether the new bounds are larger or smaller than the old ones
+     */
+    public void changeScrollBounds(boolean vertical, ArrayList<WGDrawingObject> components, boolean expanding)
+    {
+        this.vertical = vertical;
+        if(vertical)
+        {
+            seeableArea = parentPane.getHeight();
+            //Finds the totalArea
+            double smallestY = 0;
+            double biggestY = 0;
+            for(int i = 0 ; i < components.size() ; i++)
+            {
+                double newSmallestY = components.get(i).getY();
+                double newbiggestY = newSmallestY + components.get(i).getHeight() - parentPane.getY();
+                if(newSmallestY < smallestY)
+                {
+                    smallestY = newSmallestY;
+                }
+                if(newbiggestY > biggestY)
+                {
+                    biggestY = newbiggestY;
+                }
+            }
+            double oldTotalArea2 = totalArea;
+            totalArea = biggestY - smallestY;
+            if(expanding)
+            {
+                oldTotalArea = oldTotalArea2;
+                oldScrollY = scrollY;
+                totalArea = biggestY - smallestY + scrollY;
+                //Update the total area to factor in the fact that we have already moved all of these y-blocks up, so push it down
+                scrollBarHeight = seeableArea / totalArea * seeableArea;
+                //Update the old scrollY into the new one:
+                scrollBarY = scrollBarY / oldTotalArea2 * totalArea;
+            }
+            else //Now the problem occures, when the new area is smaller than the old. In this case we will just move everything down by the amount moved over the total area:
+            {
+                //We move ourselves up by the amount we are over:
+                double overAmount = scrollY - oldScrollY;
+                //Then update everything with the proper areas:
+                totalArea = oldTotalArea;
+                //Update the total area to factor in the fact that we have already moved all of these y-blocks up, so push it down
+                scrollBarHeight = seeableArea / totalArea * seeableArea;
+                //Update the old scrollY into the new one:
+                scrollBarY = scrollY * seeableArea / totalArea;
+                doScroll(parentPane, overAmount * -1, false);
+                
+                oldTotalArea = 0;
+                oldScrollY = 0;
+            }
+        }
+        else
+        {
+            seeableArea = parentPane.getWidth();
+            //Finds the totalArea
+            double smallestX = 0;
+            double biggestX = 0;
+            for(int i = 0 ; i < components.size() ; i++)
+            {
+                double newSmallestX = components.get(i).getX();
+                double newbiggestX = newSmallestX + components.get(i).getWidth() - parentPane.getX();
+                if(newSmallestX < smallestX)
+                {
+                    smallestX = newSmallestX;
+                }
+                if(newbiggestX > biggestX)
+                {
+                    biggestX = newbiggestX;
+                }
+            }
+            double oldTotalArea2 = totalArea;
+            totalArea = biggestX - smallestX;
+            if(totalArea >= oldTotalArea2)
+            {
+                oldTotalArea = oldTotalArea2;
+                oldScrollY = scrollY;
+                totalArea = biggestX - smallestX + scrollY;
+                //Update the total area to factor in the fact that we have already moved all of these y-blocks up, so push it down
+                scrollBarHeight = seeableArea / totalArea * seeableArea;
+                //Update the old scrollY into the new one:
+                scrollBarY = scrollBarY / oldTotalArea2 * totalArea;
+            }
+            else //Now the problem occures, when the new area is smaller than the old. In this case we will just move everything down by the amount moved over the total area:
+            {
+                //We move ourselves up by the amount we are over:
+                double overAmount = scrollY - oldScrollY;
+                //Then update everything with the proper areas:
+                totalArea = oldTotalArea;
+                //Update the total area to factor in the fact that we have already moved all of these y-blocks up, so push it down
+                scrollBarHeight = seeableArea / totalArea * seeableArea;
+                //Update the old scrollY into the new one:
+                scrollBarY = scrollY * seeableArea / totalArea;
+                doScroll(parentPane, overAmount * -1, false);
+                
+                oldTotalArea = 0;
+                oldScrollY = 0;
+            }
         }
         shown = totalArea > seeableArea;
     }

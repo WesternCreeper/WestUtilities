@@ -286,6 +286,19 @@ public class WGPane extends WGBox
             horizontalScroll.setUpScroll(false, containedObjects);
         }
     }
+    
+    /**
+     * This sets up the scroll so that the current area can scroll properly
+     * @param expanding Whether the new bounds are larger or smaller than the old ones
+     */
+    public void changeScrollBounds(boolean expanding)
+    {
+        if(scrollable && verticalScroll != null && horizontalScroll != null)
+        {
+            verticalScroll.changeScrollBounds(true, containedObjects, expanding);
+            horizontalScroll.changeScrollBounds(false, containedObjects, expanding);
+        }
+    }
     /**
      * This sets the preference of the scrollbars. Either true or false based on the preference
      * @param preferred The preferred scrollbar. True is the vertical one, while false is the horizontal one

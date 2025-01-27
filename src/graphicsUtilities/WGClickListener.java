@@ -137,6 +137,10 @@ public class WGClickListener implements MouseListener
         return parentObject;
     }
 
+    protected WGPane getParentOwningPane() {
+        return parentOwningPane;
+    }
+
     public void setParentComponent(Component parentComponent) {
         this.parentComponent = parentComponent;
     }
