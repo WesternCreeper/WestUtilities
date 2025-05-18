@@ -27,7 +27,7 @@ public class WGDropDown extends WGBox
     
     public WGDropDown(Rectangle2D.Double bounds, float borderSize, String[] choices, int selectedChoice, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.choices = choices;
         this.selectedChoice = selectedChoice;
         this.textFont = textFont;
@@ -51,7 +51,7 @@ public class WGDropDown extends WGBox
     
     public WGDropDown(Rectangle2D.Double bounds, String[] choices, int selectedChoice, Component parent, WGTheme theme) throws WGNullParentException
     {
-        super(theme.getBorderSize(), theme.getBackgroundColor(), WGTheme.getHoverBackgroundColor(theme.getBackgroundColor()), theme.getBorderColor(), parent, theme);
+        super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getHoverBackgroundColor(), theme.getBorderColor(), parent, theme);
         this.choices = choices;
         this.selectedChoice = selectedChoice;
         this.textFont = theme.getTextFont();
@@ -216,11 +216,12 @@ public class WGDropDown extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
                 if(!droppedDown)
                 {
-                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 }
                 else
                 {
@@ -229,7 +230,7 @@ public class WGDropDown extends WGBox
                     double y = getY();
                     for(int i = 0 ; i < textColors.length ; i++)
                     {
-                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"), null, x, y, buttonWidth, buttonHeight);
+                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
                         y += buttonHeight;
                     }
                 }

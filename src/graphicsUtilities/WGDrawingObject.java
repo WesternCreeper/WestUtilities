@@ -9,9 +9,11 @@ import java.awt.Cursor;
 import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.awt.RadialGradientPaint;
+import java.awt.TexturePaint;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -24,6 +26,9 @@ public abstract class WGDrawingObject
     public final static int VERTICAL_GRADIENT_ORIENTATION_PREFERENCE = 1;
     public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE = 2;
     public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE = 3;
+    public final static int HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE = 4;
+    public final static int DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT_GRADIENT_ORIENTATION_PREFERENCE = 5;
+    public final static int DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE = 6;
     
     
     private Component parent;
@@ -137,6 +142,15 @@ public abstract class WGDrawingObject
             Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
             newPaint = new RadialGradientPaint(points[0], (float)points[1].getX(), oldPaint.getFractions(), oldPaint.getColors());
         }
+        else if(paint instanceof TexturePaint)
+        {
+            TexturePaint oldPaint = (TexturePaint)paint;
+            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
+            BufferedImage image = oldPaint.getImage();
+            int imageWidth = image.getWidth();
+            int imageHeight = image.getHeight();
+            newPaint = new TexturePaint(image, new Rectangle2D.Double(points[0].getX(), points[0].getY(), imageWidth, imageHeight));
+        }
         else
         {
             newPaint = paint;
@@ -198,6 +212,18 @@ public abstract class WGDrawingObject
                 }
                 
                 points[1] = new Point2D.Double(radius, 0);
+                break;
+            case HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = new Point2D.Double(x, y);
+                points[1] = new Point2D.Double(x + width, y);
+                break;
+            case DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = new Point2D.Double(x, y);
+                points[1] = new Point2D.Double(x + width, y + height);
+                break;
+            case DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = new Point2D.Double(x, y + height);
+                points[1] = new Point2D.Double(x + width, y);
                 break;
             default:
                 points[0] = new Point2D.Double(x, y);
@@ -283,6 +309,7 @@ public abstract class WGDrawingObject
 
     protected void setCurrentTheme(WGTheme currentTheme) {
         this.currentTheme = currentTheme;
+        setTheme(currentTheme);
     }
     
     //Getters:

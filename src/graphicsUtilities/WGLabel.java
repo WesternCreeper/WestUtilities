@@ -180,7 +180,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change

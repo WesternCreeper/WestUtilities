@@ -255,6 +255,29 @@ public class HashTable<E extends Object>
             allObjects[hashIndex] = newValue;
         }
     }
+    
+    public int size()
+    {
+        return allKeys.length;
+    }
+    
+    public Object get(int index)
+    {
+        if(index < 0 || index >= allObjects.length)
+        {
+            return null;
+        }
+        return allObjects[index];
+    }
+    
+    public String getKey(int index)
+    {
+        if(index < 0 || index >= allObjects.length)
+        {
+            return null;
+        }
+        return allKeys[index];
+    }
 
     public double getLoadFactor()
     {

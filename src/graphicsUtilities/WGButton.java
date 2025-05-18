@@ -25,6 +25,7 @@ public class WGButton extends WGBox
     public final static int IMAGE_BOTTOM_RIGHT_CORNER_PLACEMENT = 4;
     public final static int IMAGE_NORMAL_SCALE = 0;
     public final static int IMAGE_SCALE_TO_FIT = 1;
+    private boolean usesText = true;
     private double imageX;
     private double imageY;
     private double imageXScale;
@@ -53,7 +54,7 @@ public class WGButton extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
     }
@@ -69,9 +70,9 @@ public class WGButton extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
+    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = text;
         this.textFont = textFont;
         this.textColor = textColor;
@@ -96,7 +97,7 @@ public class WGButton extends WGBox
      */
     public WGButton(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), Color.red, theme.getBorderColor(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
         resizer.resizeComps();
     }
@@ -116,7 +117,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, clickListener);
     }
@@ -133,7 +134,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(Rectangle2D.Double bounds, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
@@ -164,7 +165,7 @@ public class WGButton extends WGBox
      */
     public WGButton(Rectangle2D.Double bounds, String text, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent);
+        this(bounds, theme.getBorderSize(), text, theme.getTextFont(), Color.red, theme.getBorderColor(), theme.getTextColor(), parent);
         if(getParent() != null)
         {
             super.setClickListener(clickListener);
@@ -197,7 +198,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, buttonImage, imagePlacementPeference, imageScalePeference, backgroundColor, borderColor, parent, clickListener);
     }
@@ -214,12 +215,13 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(Rectangle2D.Double bounds, float borderSize, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, null, null, backgroundColor, borderColor, null, parent, clickListener);
         this.imagePlacementPeference = imagePlacementPeference;
         this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;
+        usesText = false;
         resizer.resizeComps();
     }
     /**
@@ -235,10 +237,11 @@ public class WGButton extends WGBox
      */
     public WGButton(Rectangle2D.Double bounds, BufferedImage buttonImage, int imagePlacementPeference, int imageScalePeference, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), null, null, theme.getBackgroundColor(), theme.getBorderColor(), null, parent, clickListener);
+        this(bounds, theme.getBorderSize(), null, null, Color.red, theme.getBorderColor(), null, parent, clickListener);
         this.imagePlacementPeference = imagePlacementPeference;
         this.imageScalePeference = imageScalePeference;
         displayedImage = buttonImage;
+        usesText = false;
         setCurrentTheme(theme);
         resizer.resizeComps();
     }
@@ -495,11 +498,14 @@ public class WGButton extends WGBox
             setY(getYPercent() * parentHeight);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
-            if(displayedImage != null) //If there is an image on the button instead of text:
+            if(!usesText) //If there is an image on the button instead of text:
             {
-                setUpImage();
+                if(displayedImage != null)
+                {
+                    setUpImage();
+                }
             }
-            else if(textFont != null) 
+            else if(textFont != null)
             {
                 textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
             }
@@ -507,9 +513,10 @@ public class WGButton extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change

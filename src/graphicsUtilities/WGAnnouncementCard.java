@@ -286,11 +286,11 @@ public class WGAnnouncementCard extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
-                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find("titleColor"));
-                splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find("splitColor"));
-                subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find("subTitleColor"));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TITLE_COLOR));
+                splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SPLIT_COLOR));
+                subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SUBTITLE_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change

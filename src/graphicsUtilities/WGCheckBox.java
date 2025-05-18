@@ -50,7 +50,7 @@ public class WGCheckBox extends WGBox
     */
     public WGCheckBox(Rectangle2D.Double bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.checked = checked;
         this.checkColor = checkColor;
         if(getParent() != null)
@@ -159,9 +159,10 @@ public class WGCheckBox extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
-                checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find("CheckColor"));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CHECK_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change

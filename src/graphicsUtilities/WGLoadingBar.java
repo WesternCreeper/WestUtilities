@@ -64,7 +64,7 @@ public class WGLoadingBar extends WGBox
      */
     public WGLoadingBar(Rectangle.Double bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Component parent)
     {
-        super(borderSize, barBackgroundColor, WGTheme.getHoverBackgroundColor(barBackgroundColor), barBorderColor, parent);
+        super(borderSize, barBackgroundColor, barBackgroundColor, barBorderColor, parent);
         originalTitle = title;
         this.title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
         this.showPercentage = showPercentage;
@@ -226,10 +226,10 @@ public class WGLoadingBar extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
-                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find("TitleColor"));
-                barColor = fixPaintBounds(barColor, getCurrentTheme().getGradientOrientationPreferences().find("BarColor"));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+                barColor = fixPaintBounds(barColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BAR_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change

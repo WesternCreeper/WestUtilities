@@ -196,6 +196,26 @@ public class WestGraphics
     }
     
     /**
+     * This draws an image with a shader along with a bunch of rescales using the WGRescaleOptions object
+     * @param image The image to be drawn
+     * @param imageOps The shader
+     * @param x The x location
+     * @param y The y location
+     * @param rotation The rotation of the image
+     * @param rescaleOptions The options for rescaling the image
+     */
+    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double rotation, WGRescaleOptions rescaleOptions)
+    {
+        AffineTransform originalTransform = g2.getTransform();
+        AffineTransform currentTransform = new AffineTransform(rescaleOptions.getWidthRescale(),0,0,rescaleOptions.getHeightRescale(), x * rescaleOptions.getXRescale(), y * rescaleOptions.getYRescale());
+        currentTransform.rotate(rotation);
+        g2.transform(currentTransform);
+        
+        g2.drawImage(image, imageOps, 0, 0);
+        g2.setTransform(originalTransform);
+    }
+    
+    /**
      * This function draws out a loading bar based on a WGLoadingBar Object, which allows for certain defaults to exist
      * @param loadingBar The Object representation of the loading bar to be drawn
      */

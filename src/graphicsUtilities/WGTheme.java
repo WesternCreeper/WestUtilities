@@ -18,11 +18,30 @@ import java.awt.Font;
  */
 public class WGTheme implements TextStyles
 {
+    public static final String TEXT_FONT = "Text Font";
+    public static final String TEXT_POSITION = "Text Position";
+    public static final String TEXT_STYLE = "Text Style";
+    public static final String TEXT_X_SIZE_PERCENT = "Text X Size Percent";
+    public static final String TEXT_Y_SIZE_PERCENT = "Text Y Size Percent";
+    public static final String BORDER_SIZE = "Border Size";
+    public static final String TEXT_COLOR = "Text Color";
+    public static final String BORDER_COLOR = "Border Color";
+    public static final String BACKGROUND_COLOR = "Background Color";
+    public static final String SCROLL_BAR_COLOR = "Scrollbar Color";
+    public static final String TITLE_COLOR = "Title Color";
+    public static final String SPLIT_COLOR = "Split Color";
+    public static final String SUBTITLE_COLOR = "Subtitle Color";
+    public static final String CHECK_COLOR = "Check Color";
+    public static final String FOCUSED_BACKGROUND_COLOR = "Focused Background Color";
+    public static final String HOVER_BACKGROUND_COLOR = "Hover Background Color";
+    public static final String BAR_COLOR = "Bar Color";
+    public static final String CURSOR_COLOR = "Cursor Color";
+    public static final String HIGHLIGHT_COLOR = "Highlight Color";
     public static final HashTable DEFAULT_PREFERRENCES = new HashTable(20, HashTable.HASHING_OPTION_LINEAR, 22);
     //Create the preferrences from above:
     static
     {
-        DEFAULT_PREFERRENCES.insert("TextColor", WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
+        DEFAULT_PREFERRENCES.insert(TEXT_COLOR, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
     }
     
     private int textStyle;
@@ -31,6 +50,8 @@ public class WGTheme implements TextStyles
     private double textYSizePercent;
     private float borderSize;
     private Paint backgroundColor;
+    private Paint hoverBackgroundColor;
+    private Paint focusedBackgroundColor;
     private Paint borderColor;
     private Paint textColor;
     private Paint checkColor;
@@ -62,12 +83,47 @@ public class WGTheme implements TextStyles
         this.checkColor = checkColor;
         this.gradientOrientationPreferences = gradientOrientationPreferences;
     }
+    public WGTheme(HashTable themeData, HashTable gradientOrientationPreferences)
+    {
+        this.textFont = toFont(themeData.find(WGTheme.TEXT_FONT));
+        this.textPosition = toInt(themeData.find(WGTheme.TEXT_POSITION));
+        this.textXSizePercent = toDouble(themeData.find(WGTheme.TEXT_X_SIZE_PERCENT));
+        this.textYSizePercent = toDouble(themeData.find(WGTheme.TEXT_Y_SIZE_PERCENT));
+        this.textStyle = toInt(themeData.find(WGTheme.TEXT_STYLE));
+        this.borderSize = toFloat(themeData.find(WGTheme.BORDER_SIZE));
+        this.backgroundColor = toPaint(themeData.find(WGTheme.BACKGROUND_COLOR));
+        this.borderColor = toPaint(themeData.find(WGTheme.BORDER_COLOR));
+        this.textColor = toPaint(themeData.find(WGTheme.TEXT_COLOR));
+        this.scrollBarColor = toPaint(themeData.find(WGTheme.SCROLL_BAR_COLOR));
+        this.cursorColor = toPaint(themeData.find(WGTheme.CURSOR_COLOR));
+        this.highlightColor = toPaint(themeData.find(WGTheme.HIGHLIGHT_COLOR));
+        this.barColor = toPaint(themeData.find(WGTheme.BAR_COLOR));
+        this.checkColor = toPaint(themeData.find(WGTheme.CHECK_COLOR));
+        this.hoverBackgroundColor = toPaint(themeData.find(WGTheme.HOVER_BACKGROUND_COLOR));
+        this.focusedBackgroundColor = toPaint(themeData.find(WGTheme.FOCUSED_BACKGROUND_COLOR));
+        this.gradientOrientationPreferences = gradientOrientationPreferences;
+        
+        if(hoverBackgroundColor == null)
+        {
+            if(backgroundColor instanceof Color)
+            {
+                hoverBackgroundColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
+            }
+            else
+            {
+                hoverBackgroundColor = backgroundColor;
+            }
+        }
+    }
     /**
      * This is the more advanced constructor, which allows for using an old theme as a palette to creating new themes
      * @param oldTheme The old theme from which to copy
      */
     public WGTheme(WGTheme oldTheme)
     {
+        this.textPosition = oldTheme.getTextPosition();
+        this.textXSizePercent = oldTheme.getTextXSizePercent();
+        this.textYSizePercent = oldTheme.getTextYSizePercent();
         this.textFont = oldTheme.getTextFont();
         this.textStyle = oldTheme.getTextStyle();
         this.borderSize = oldTheme.getBorderSize();
@@ -79,16 +135,58 @@ public class WGTheme implements TextStyles
         this.highlightColor = oldTheme.getHighlightColor();
         this.barColor = oldTheme.getBarColor();
         this.checkColor = oldTheme.getCheckColor();
+        this.hoverBackgroundColor = oldTheme.getHoverBackgroundColor();
+        this.focusedBackgroundColor = oldTheme.getFocusedBackgroundColor();
+        this.gradientOrientationPreferences = oldTheme.getGradientOrientationPreferences();
     }
     
     //Methods:
-    public static Paint getHoverBackgroundColor(Paint backgroundColor)
+    private Font toFont(Object obj)
     {
-        if(backgroundColor instanceof Color)
+        if(obj != null)
         {
-            return WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
+            return (Font)obj;
         }
-        return backgroundColor;
+        return null;
+    }
+    private int toInt(Object obj)
+    {
+        if(obj != null)
+        {
+            return (int)obj;
+        }
+        return 0;
+    }
+    private double toDouble(Object obj)
+    {
+        if(obj != null)
+        {
+            return (double)obj;
+        }
+        return 0;
+    }
+    private float toFloat(Object obj)
+    {
+        if(obj != null)
+        {
+            if(obj instanceof Float)
+            {
+                return (float)obj;
+            }
+            else if(obj instanceof Integer)
+            {
+                return (int)obj;
+            }
+        }
+        return 0;
+    }
+    private Paint toPaint(Object obj)
+    {
+        if(obj != null)
+        {
+            return (Paint)obj;
+        }
+        return null;
     }
     
     
@@ -152,6 +250,14 @@ public class WGTheme implements TextStyles
     public void setGradientOrientationPreferences(HashTable gradientOrientationPreferences) {
         this.gradientOrientationPreferences = gradientOrientationPreferences;
     }
+
+    public void setHoverBackgroundColor(Paint hoverBackgroundColor) {
+        this.hoverBackgroundColor = hoverBackgroundColor;
+    }
+
+    public void setFocusedBackgroundColor(Paint focusedBackgroundColor) {
+        this.focusedBackgroundColor = focusedBackgroundColor;
+    }
     
     
     //Getters:
@@ -213,5 +319,13 @@ public class WGTheme implements TextStyles
 
     public HashTable getGradientOrientationPreferences() {
         return gradientOrientationPreferences;
+    }
+
+    public Paint getHoverBackgroundColor() {
+        return hoverBackgroundColor;
+    }
+
+    public Paint getFocusedBackgroundColor() {
+        return focusedBackgroundColor;
     }
 }

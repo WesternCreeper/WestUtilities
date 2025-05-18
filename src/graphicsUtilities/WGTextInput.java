@@ -58,7 +58,7 @@ public class WGTextInput extends WGBox
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
         this.textFont = textFont;
         this.textColor = textColor;
@@ -138,7 +138,7 @@ public class WGTextInput extends WGBox
      */
     public WGTextInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Component parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
-        super(borderSize, backgroundColor, WGTheme.getHoverBackgroundColor(backgroundColor), borderColor, parent);
+        super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
         this.textFont = textFont;
         this.textColor = textColor;
@@ -476,12 +476,13 @@ public class WGTextInput extends WGBox
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
             {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find("BackgroundColor")));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find("BorderColor")));
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find("TextColor"));
-                cursorColor = fixPaintBounds(cursorColor, getCurrentTheme().getGradientOrientationPreferences().find("CursorColor"));
-                highlightColor = fixPaintBounds(highlightColor, getCurrentTheme().getGradientOrientationPreferences().find("HighlightColor"));
-                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find("FocusedBackgroundColor"));
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+                cursorColor = fixPaintBounds(cursorColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CURSOR_COLOR));
+                highlightColor = fixPaintBounds(highlightColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HIGHLIGHT_COLOR));
+                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
             }
             
             //Then repaint the parent to make sure the parent sees the change
