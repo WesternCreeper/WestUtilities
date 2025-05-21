@@ -53,7 +53,7 @@ public class WGKeyInputKeyListener implements KeyListener
             e.consume();
             parent.setFocused(false);
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
     
     protected synchronized void keyCodeEvent(KeyEvent e) 

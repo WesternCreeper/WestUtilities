@@ -255,7 +255,7 @@ public class WGDropDown extends WGBox
             }
             
             //Then repaint the parent to make sure the parent sees the change
-            getParent().repaint();
+            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

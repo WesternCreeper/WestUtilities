@@ -140,6 +140,6 @@ public class WGDropDownListener extends WGButtonListener
                 e.consume();
             }
         }
-        getParentObject().getParent().repaint();
+        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
 }

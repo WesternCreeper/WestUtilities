@@ -162,12 +162,12 @@ public class WGLoadingBar extends WGBox
 
     public void setTitleColor(Paint titleColor) {
         this.titleColor = titleColor;
-        getParent().repaint();
+        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setBarColor(Paint barColor) {
         this.barColor = barColor;
-        getParent().repaint();
+        WestGraphics.doRepaintJob(getParent());
     }
     
     
@@ -233,7 +233,7 @@ public class WGLoadingBar extends WGBox
             }
             
             //Then repaint the parent to make sure the parent sees the change
-            getParent().repaint();
+            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

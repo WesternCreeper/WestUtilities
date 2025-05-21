@@ -132,7 +132,7 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
                 e.consume();
             }
         }
-        getParentObject().getParent().repaint();
+        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     @Override
     public void setParentObject(WGDrawingObject obj)

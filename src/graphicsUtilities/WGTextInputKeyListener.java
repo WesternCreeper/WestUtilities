@@ -67,7 +67,7 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
 
     @Override
@@ -112,7 +112,7 @@ public class WGTextInputKeyListener implements KeyListener
             }
             e.consume();
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
     /**
      * This is an override-able function that gets called whenever ANY KEY is pressed

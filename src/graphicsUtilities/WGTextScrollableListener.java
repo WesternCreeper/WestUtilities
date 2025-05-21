@@ -174,7 +174,7 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
             parentTextArea.setStringYOffset(minY);
             scrollY = minY;
             scrollBarY = 0;
-            parent.repaint();
+            WestGraphics.doRepaintJob(parent);
             return;
         }
         else if(scrollY + movement > maxY)
@@ -183,7 +183,7 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
             parentTextArea.setStringYOffset(maxY);
             scrollY = maxY;
             scrollBarY = seeableArea - scrollBarHeight;
-            parent.repaint();
+            WestGraphics.doRepaintJob(parent);
             return;
         }
         //Now scroll:
@@ -195,7 +195,7 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         //Now set all of the components to the correct location:
         parentTextArea.setStringYOffset(scrollY);
         shown = totalArea > seeableArea;
-        parent.repaint();
+        WestGraphics.doRepaintJob(parent);
     }
     
     //Getters:

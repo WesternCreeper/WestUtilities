@@ -6,6 +6,7 @@ package graphicsUtilities.WGAnimation;
 
 import graphicsUtilities.WGDrawingObject;
 import graphicsUtilities.WGButton;
+import graphicsUtilities.WestGraphics;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -52,7 +53,7 @@ public class WGAPopupAnimationListener implements ActionListener
                 colorAnimator.fadeFrom(fullTransparentColor);
                 setColorsForParent();
             }
-            parent.repaint();
+            WestGraphics.doRepaintJob(parent);
         }
         else
         {

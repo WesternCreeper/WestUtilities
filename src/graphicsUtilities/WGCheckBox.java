@@ -106,7 +106,7 @@ public class WGCheckBox extends WGBox
     //Setters:
     public void setChecked(boolean checked) {
         this.checked = checked;
-        getParent().repaint();
+        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setCheckColor(Paint checkColor) {
@@ -166,7 +166,7 @@ public class WGCheckBox extends WGBox
             }
             
             //Then repaint the parent to make sure the parent sees the change
-            getParent().repaint();
+            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

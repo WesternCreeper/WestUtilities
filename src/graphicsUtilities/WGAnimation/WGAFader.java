@@ -4,6 +4,7 @@
  */
 package graphicsUtilities.WGAnimation;
 
+import graphicsUtilities.WestGraphics;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -45,7 +46,7 @@ public abstract class WGAFader implements ActionListener
                 isDone = true;
             }
         }
-        parent.repaint();
+        WestGraphics.doRepaintJob(parent);
     }
     public synchronized void reset()
     {

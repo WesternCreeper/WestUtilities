@@ -72,7 +72,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
         {
             parent.setFocused(false);
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             parent.setHighlightEnd(getCursorPosition(e));
             parent.setHighlightShown(true);
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
 
     @Override
@@ -139,7 +139,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                 e.consume();
             }
         }
-        getParentObject().getParent().repaint();
+        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     
     @Override
@@ -159,7 +159,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             int cursorPos = getCursorPosition(e);
             parent.setHighlightStart(cursorPos);
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
     
     @Override

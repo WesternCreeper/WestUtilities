@@ -114,12 +114,12 @@ public abstract class WGBox extends WGDrawingObject
         {
             hoverBackgroundColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
         }
-        getParent().repaint();
+        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setBorderColor(Paint borderColor) {
         this.borderColor = borderColor;
-        getParent().repaint();
+        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setHovered(boolean isHovered) {

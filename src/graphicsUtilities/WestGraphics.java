@@ -9,6 +9,7 @@ import java.awt.geom.*;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Paint;
 import java.awt.Cursor;
 import java.awt.Shape;
@@ -31,6 +32,7 @@ public class WestGraphics
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
     private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
     private static Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);
+    private static boolean allowComponentsToRepaint = true;
     
     /**
      * This function sets up the cursors to the default values
@@ -42,6 +44,8 @@ public class WestGraphics
         textCursor = new Cursor(Cursor.TEXT_CURSOR);
     }
     
+    
+    //Static methods:
     /**
      * Sets up the cursor to the given cursors
      * @param defaultCursor The default cursor
@@ -54,8 +58,31 @@ public class WestGraphics
         WestGraphics.hoverCursor = hoverCursor;
         WestGraphics.textCursor = textCursor;
     }
-
+    
+    /**
+     * This is an internal method that allows for the given parent to be repainted, assuming West Graphics is allowed to repaint.
+     * @param parent
+     */
+    public static void doRepaintJob(Component parent)
+    {
+        if(allowComponentsToRepaint)
+        {
+            parent.repaint();
+        }
+    }
+    
+    
+    //Static setters:
+    public static void setAllowComponentsToRepaint(boolean allowComponentsToRepaint) {
+        WestGraphics.allowComponentsToRepaint = allowComponentsToRepaint;
+    }
+    
+    
     //Static getters
+    public static boolean isAllowComponentsToRepaint() {
+        return allowComponentsToRepaint;
+    }
+    
     public static Cursor getDefaultCursor() {
         return defaultCursor;
     }

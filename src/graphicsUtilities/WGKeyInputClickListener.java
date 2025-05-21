@@ -78,7 +78,7 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
         {
             parent.setFocused(false);
         }
-        parent.getParent().repaint();
+        WestGraphics.doRepaintJob(parent.getParent());
     }
 
     @Override
@@ -126,7 +126,7 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
                 e.consume();
             }
         }
-        getParentObject().getParent().repaint();
+        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     
     @Override
