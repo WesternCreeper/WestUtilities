@@ -65,6 +65,7 @@ public class WGCheckBox extends WGBox
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGCheckBoxClickListener)getClickListener());
             getParent().addMouseWheelListener((WGCheckBoxClickListener)getClickListener());
+            WestGraphics.add(this);
         }
         else
         {
@@ -101,6 +102,7 @@ public class WGCheckBox extends WGBox
         getParent().removeMouseListener(buttoner);
         getParent().removeMouseMotionListener(buttoner);
         getParent().removeMouseWheelListener(buttoner);
+        WestGraphics.remove(this);
     }
     
     //Setters:

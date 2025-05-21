@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
@@ -56,7 +57,6 @@ public class WGClickListener implements MouseListener
      */
     public void mouseClicked(MouseEvent e) 
     {
-        setLastMouseEvent(e);
         if(isWithinBounds(e) && !e.isConsumed() && parentObject.isShown())
         {
             if(parentOwningPane != null && !parentOwningPane.isShown())
@@ -76,6 +76,9 @@ public class WGClickListener implements MouseListener
                 clickEvent(e);
                 e.consume();
             }
+            //Cursor:
+            WestGraphics.checkCursor(e, getParentComponent(), parentObject);
+            WestGraphics.doRepaintJob(getParentObject().getParent());
         }
     }
 
@@ -129,6 +132,11 @@ public class WGClickListener implements MouseListener
         return result;
     }
     
+    protected Cursor getCursorType()
+    {
+        return WestGraphics.getHoverCursor();
+    }
+    
     public Component getParentComponent() {
         return parentComponent;
     }
@@ -137,7 +145,7 @@ public class WGClickListener implements MouseListener
         return parentObject;
     }
 
-    protected WGPane getParentOwningPane() {
+    public WGPane getParentOwningPane() {
         return parentOwningPane;
     }
 
@@ -154,14 +162,6 @@ public class WGClickListener implements MouseListener
     }
     
     public void clickEvent(MouseEvent e) {}
-    
-    public void setLastMouseEvent(MouseEvent e)
-    {
-        if(e != WestGraphics.lastMouseEvent)
-        {
-            WestGraphics.lastMouseEvent = e;
-        }
-    }
     
     //Classes:
     private class PaneWorker extends SwingWorker

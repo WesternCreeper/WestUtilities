@@ -118,6 +118,7 @@ public class WGPane extends WGBox
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
             getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+            WestGraphics.add(this);
         }
         else
         {
@@ -214,6 +215,7 @@ public class WGPane extends WGBox
         WGButtonListener buttoner = (WGButtonListener)(getClickListener());
         getParent().removeMouseListener(buttoner);
         getParent().removeMouseMotionListener(buttoner);
+        WestGraphics.remove(this);
     }
     
     /**
@@ -242,14 +244,11 @@ public class WGPane extends WGBox
         }
         
         //Remove all listeners, as they will still listen even after the object disappears
-        for(int i = 0 ; i < containedObjects.size() ; i++)
+        for(int i = containedObjects.size()-1 ; i > 0 ; i--)
         {
-            WGDrawingObject obj = containedObjects.get(i);
+            WGDrawingObject obj = containedObjects.remove(i);
             obj.removeListeners();
         }
-        
-        //Now remove the actual objects now that the listeners have been removed
-        containedObjects.removeAll(containedObjects);
     }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects. Doesn't remove the listeners of the removed objects

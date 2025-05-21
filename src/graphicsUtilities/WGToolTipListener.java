@@ -88,14 +88,14 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
                 waitTimer.stop();
                 entered = false;
             }
-            toolTipObject.setShown(false, false);
+            toolTipObject.setShown(false);
         }
     }
     
     //Setter:
     public void setToolTipObject(WGToolTip toolTipObject) {
         this.toolTipObject = toolTipObject;
-        toolTipObject.setShown(false, false);
+        toolTipObject.setShown(false);
     }
     
     
@@ -113,7 +113,7 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
         {
             if(entered)
             {
-                toolTipObject.setShown(true, false);
+                toolTipObject.setShown(true);
             }
         }
     }

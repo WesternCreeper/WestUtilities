@@ -75,6 +75,7 @@ public class WGTextInput extends WGBox
             clickListener.setOriginalBackgroundColor(backgroundColor);
             keyListener = new WGTextInputKeyListener(this);
             getParent().addKeyListener(keyListener);
+            WestGraphics.add(this);
         }
         else
         {
@@ -158,6 +159,7 @@ public class WGTextInput extends WGBox
             keyListener = textKeyListener;
             keyListener.setParent(this);
             getParent().addKeyListener(keyListener);
+            WestGraphics.add(this);
         }
         else
         {
@@ -247,6 +249,7 @@ public class WGTextInput extends WGBox
         getParent().removeKeyListener(keyer);
         getParent().removeMouseListener(clicker);
         getParent().removeMouseMotionListener(clicker);
+        WestGraphics.remove(this);
     }
     
     

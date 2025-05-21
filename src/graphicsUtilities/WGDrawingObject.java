@@ -97,6 +97,11 @@ public abstract class WGDrawingObject
     //Methods:
     public abstract Rectangle2D.Double getBounds();
     
+    public Rectangle2D.Double getRelativeBounds()
+    {
+        return new Rectangle2D.Double(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent());
+    }
+    
     public abstract void setUpBounds();
     
     public abstract void setBounds(Rectangle2D.Double newBounds);
@@ -238,34 +243,9 @@ public abstract class WGDrawingObject
     //Setters:
     public void setShown(boolean isShown) 
     {
-        setShown(isShown, true);
-    }
-    /**
-     * This sets whether the component is shown or not and sets the cursor based on the second variable
-     * @param isShown Shows or hides the component
-     * @param setCursor Sets or doesn't the cursor
-     */
-    public void setShown(boolean isShown, boolean setCursor) 
-    {
         this.isShown = isShown;
-        if(setCursor)
-        {
-            if(isShown && shownCursor != null)
-            {
-                //Now make sure the last event was within the bounds:
-                if(clickListener != null && WestGraphics.lastMouseEvent != null)
-                {
-                    if(clickListener.isWithinBounds(WestGraphics.lastMouseEvent))
-                    {
-                        parent.setCursor(shownCursor);
-                    }
-                }
-            }
-            else if(!isShown)
-            {
-                parent.setCursor(WestGraphics.getDefaultCursor());
-            }
-        }
+        //Cursor:
+        WestGraphics.checkCursor(parent, this);
     }
 
     protected void setX(double x) {

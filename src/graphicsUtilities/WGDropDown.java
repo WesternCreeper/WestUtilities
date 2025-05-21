@@ -42,6 +42,7 @@ public class WGDropDown extends WGBox
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
             getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            WestGraphics.add(this);
         }
         else
         {
@@ -66,6 +67,7 @@ public class WGDropDown extends WGBox
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
             getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            WestGraphics.add(this);
         }
         else
         {
@@ -87,6 +89,7 @@ public class WGDropDown extends WGBox
         WGButtonListener buttoner = (WGDropDownListener)(getClickListener());
         getParent().removeMouseListener(buttoner);
         getParent().removeMouseMotionListener(buttoner);
+        WestGraphics.remove(this);
     }
     
     public void setTheme(WGTheme theme)

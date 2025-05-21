@@ -4,6 +4,9 @@
  */
 package graphicsUtilities;
 
+import dataStructures.Queue;
+import dataStructures.WGObjectBoundList;
+import dataStructures.WGObjectBoundNode;
 import java.awt.Graphics2D;
 import java.awt.geom.*;
 import java.awt.FontMetrics;
@@ -12,6 +15,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Paint;
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
@@ -28,7 +32,9 @@ import java.util.ArrayList;
 public class WestGraphics
 {
     //Static Package wide important stuff:
-    public static MouseEvent lastMouseEvent;
+    private static Component currentActiveParent;
+    private static MouseEvent lastMouseEvent;
+    private static WGObjectBoundList allClickables = new WGObjectBoundList();
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
     private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
     private static Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);
@@ -71,10 +77,88 @@ public class WestGraphics
         }
     }
     
+    /**
+     * This function adds a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
+     * @param obj The Object to be added
+     */
+    static void add(WGDrawingObject obj)
+    {
+        allClickables.addNode(new WGObjectBoundNode(obj));
+    }
+    
+    /**
+     * This function removes a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
+     * @param obj The Object to be removed
+     */
+    static void remove(WGDrawingObject obj)
+    {
+        allClickables.removeNode(new WGObjectBoundNode(obj));
+    }
+    
+    /**
+     * This function checks the given point to verify that the cursor is in the right form. (This form uses the last mouse event)
+     * @param parent The parent for the Utility to change the cursor of
+     * @param sourceObject The source object that defines whether or not the correct listener does the operation
+     */
+    static void checkCursor(Component parent, WGDrawingObject sourceObject)
+    {
+        if(lastMouseEvent == null || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
+        {
+            return; //We have already set the cursor, no touch!
+        }
+        Point point = lastMouseEvent.getPoint();
+        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+        WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
+        if(clickCursor != null)
+        {
+            if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
+            {
+                parent.setCursor(sourceObject.getClickListener().getCursorType());
+            }
+        }
+        else
+        {
+            parent.setCursor(defaultCursor);
+        }
+    }
+    
+    /**
+     * This function checks the given point to verify that the cursor is in the right form
+     * @param e The mouseEvent that was used for the click process
+     * @param parent The parent for the Utility to change the cursor of
+     * @param sourceObject The source object that defines whether or not the correct listener does the operation
+     */
+    static void checkCursor(MouseEvent e, Component parent, WGDrawingObject sourceObject)
+    {
+        if(lastMouseEvent == e || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
+        {
+            return; //We have already set the cursor, no touch!
+        }
+        Point point = e.getPoint();
+        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+        WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
+        if(clickCursor != null)
+        {
+            if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
+            {
+                lastMouseEvent = e;
+                parent.setCursor(sourceObject.getClickListener().getCursorType());
+            }
+        }
+        else
+        {
+            parent.setCursor(defaultCursor);
+        }
+    }
+    
     
     //Static setters:
     public static void setAllowComponentsToRepaint(boolean allowComponentsToRepaint) {
         WestGraphics.allowComponentsToRepaint = allowComponentsToRepaint;
+    }
+
+    public static void setCurrentActiveParent(Component currentActiveParent) {
+        WestGraphics.currentActiveParent = currentActiveParent;
     }
     
     
@@ -101,6 +185,7 @@ public class WestGraphics
     
     //Individual drawing based stuff:
     private Graphics2D g2;
+    private Queue<WGToolTip> toolTipOrder = new Queue<WGToolTip>();
     /**
      * This constructs a standard WestGraphics object that can then draw the advanced components on the canvas or whatever that the Graphics2D is from.
      * @param g The Graphics supplied from the paintComponent object. (Already casted to Graphics 2D BEFORE construction, as in you have to cast it!)
@@ -181,9 +266,21 @@ public class WestGraphics
                 WGToolTip addedToolTip = obj.getToolTip();
                 if(addedToolTip != null && addedToolTip.isShown())
                 {
-                    drawToolTip(addedToolTip);
+                    //Make sure to add it to the toolTip list so that it can be drawn correctly, over everything else:
+                    toolTipOrder.enqueue(addedToolTip);
                 }
             }
+        }
+    }
+    
+    /**
+     * This function draws all of the tooltips that were found during the drawing process. This allows for tooltips to be on the correct layer
+     */
+    public void drawAllToolTips()
+    {
+        while(!toolTipOrder.isEmpty())
+        {
+            drawToolTip(toolTipOrder.dequeue());
         }
     }
     
@@ -478,10 +575,17 @@ public class WestGraphics
             if(obj instanceof WGPane)
             {
                 drawPane((WGPane)obj, true);
+                //Remember to collect the toolTip:
+                WGToolTip addedToolTip = obj.getToolTip();
+                if(addedToolTip != null && addedToolTip.isShown())
+                {
+                    //Make sure to add it to the toolTip list so that it can be drawn correctly, over everything else:
+                    toolTipOrder.enqueue(addedToolTip);
+                }
             }
             else
             {
-                draw(pane.getComponent(i));
+                draw(obj);
             }
         }
         

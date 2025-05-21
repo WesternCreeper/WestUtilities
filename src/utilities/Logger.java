@@ -13,12 +13,15 @@ import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGTextArea;
 import graphicsUtilities.WestGraphics;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,10 +36,13 @@ import java.util.ArrayList;
  */
 public class Logger extends Console
 {
+    //Static Varibles:
+    private static Component currentParent;
+    
     //Final Variables:
     private final double slotSize = 50; //The standard size of the grid. AKA each slotSize is 1/50th of the screen in both x and y directions
     private final float borderSize = 5; //The standard size of the border. AKA the size of the rims around each object
-    private final int updateTime = 875;
+    private final int updateTime = 437;
     private final String outputFile = "Output Log.txt";
     private final String errorFile = "Error Log.txt";
     
@@ -108,6 +114,7 @@ public class Logger extends Console
         this.backgroundColor = backgroundColor;
         this.passColor = passColor;
         this.failColor = failColor;
+        currentParent = this;
         try
         {
             standardDisplayInformation = new WGTextArea(displayInformationBounds, borderSize, displayInformationText, displayInformationFont, WGTextArea.TEXT_STYLE_LEFT, textColor, this);
@@ -185,6 +192,25 @@ public class Logger extends Console
             g3.draw(unitTestDisplayLabel);
             g3.draw(unitTestDisplay);
         }
+    }
+    
+    @Override
+    public void launchConsole(String title, int width, int height, int closeOperation)
+    {
+        super.launchConsole(title, width, height, closeOperation);
+        getPaneOwner().addWindowListener(new ApplicationListener());
+    }
+    @Override
+    public void launchConsole(String title, int width, int height, int extendedState, int closeOperation)
+    {
+        super.launchConsole(title, width, height, closeOperation, closeOperation);
+        getPaneOwner().addWindowListener(new ApplicationListener());
+    }
+    @Override
+    public void launchConsole(String title, int x, int y, int width, int height, int extendedState, int minimumWidth, int minimumHeight, int closeOperation)
+    {
+        super.launchConsole(title, x, y, width, height, extendedState, minimumWidth, minimumHeight, closeOperation);
+        getPaneOwner().addWindowListener(new ApplicationListener());
     }
     
     public final void logError(Exception e)
@@ -313,6 +339,7 @@ public class Logger extends Console
                 runningTick = 0;
             }
             standardDisplayInformation.setTextLine(1, runningText);
+            repaint();
         }
     }
     //Button classes:
@@ -342,5 +369,21 @@ public class Logger extends Console
                 switchToUnitTestsButton.setShown(false);
             }
         }
+    }
+    private static class ApplicationListener implements WindowListener
+    {
+        public void windowDeactivated(WindowEvent e){}
+        public void windowActivated(WindowEvent e)
+        {
+            WestGraphics.setCurrentActiveParent(currentParent);
+        }
+        public void windowDeiconified(WindowEvent e)
+        {
+            WestGraphics.setCurrentActiveParent(currentParent);
+        }
+        public void windowIconified(WindowEvent e){}
+        public void windowClosed(WindowEvent e){}
+        public void windowOpened(WindowEvent e){}
+        public void windowClosing(WindowEvent e){}
     }
 }

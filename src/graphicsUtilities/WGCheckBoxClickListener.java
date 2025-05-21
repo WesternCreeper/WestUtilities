@@ -20,7 +20,6 @@ import java.awt.event.MouseWheelListener;
 public class WGCheckBoxClickListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
 {
     private Paint originalBackgroundColor;
-    private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -52,15 +51,11 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     }
     
     @Override
-    public void mouseDragged(MouseEvent e) 
-    {
-        setLastMouseEvent(e);
-    }
+    public void mouseDragged(MouseEvent e) {}
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        setLastMouseEvent(e);
         hoverEvent(e);
     }
 
@@ -77,34 +72,14 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
             //The background
             WGCheckBox parent = (WGCheckBox)getParentObject();
             parent.setHovered(true);
-            
-            //The cursor
-            if(isParentShown())
-            {
-                getParentComponent().setCursor(WestGraphics.getHoverCursor());
-                cursorSet = true;
-                e.consume();
-            }
-            else if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
         else
         {
             WGCheckBox parent = (WGCheckBox)getParentObject();
             parent.setHovered(false);
-            
-            //The cursor
-            if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
+        //Cursor:
+        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
     }
     
     public void clickEvent(MouseEvent e) 

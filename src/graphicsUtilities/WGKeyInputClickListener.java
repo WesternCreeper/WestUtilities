@@ -4,10 +4,9 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
-import java.awt.RadialGradientPaint;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -18,7 +17,6 @@ import java.awt.event.MouseMotionListener;
 public class WGKeyInputClickListener extends WGClickListener implements MouseMotionListener
 {
     private Paint originalBackgroundColor;
-    private boolean cursorSet = false;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -33,7 +31,6 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     @Override
     public void mouseClicked(MouseEvent e) 
     {
-        setLastMouseEvent(e);
         WGKeyInput parent = (WGKeyInput)getParentObject();
         if(isWithinBounds(e) && isParentShown())
         {
@@ -42,9 +39,8 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
                 parent.setFocused(true);
                 e.consume();
                 
-                //Now set the cursor
-                getParentComponent().setCursor(WestGraphics.getTextCursor());
-                getParentObject().setShownCursor(WestGraphics.getTextCursor());
+                //Cursor:
+                WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
             }
         }
         else
@@ -56,7 +52,6 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     @Override
     public void mouseDragged(MouseEvent e) 
     {
-        setLastMouseEvent(e);
         if(e.isConsumed())
         {
             return;
@@ -69,9 +64,8 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
                 parent.setFocused(true);
                 e.consume();
                 
-                //Now set the cursor
-                getParentComponent().setCursor(WestGraphics.getTextCursor());
-                getParentObject().setShownCursor(WestGraphics.getTextCursor());
+                //Cursor:
+                WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
             }
         }
         else
@@ -84,48 +78,17 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        setLastMouseEvent(e);
+        WGKeyInput textInput = (WGKeyInput)getParentObject();
         if(isWithinBounds(e))
         {
-            WGKeyInput textInput = (WGKeyInput)getParentObject();
             textInput.setHovered(true);
-            
-            //The cursor
-            if(isParentShown())
-            {
-                if(!textInput.isFocused()) //To press on cursor
-                {
-                    getParentComponent().setCursor(WestGraphics.getHoverCursor());
-                    getParentObject().setShownCursor(WestGraphics.getHoverCursor());
-                }
-                else //To type cursor
-                {
-                    getParentComponent().setCursor(WestGraphics.getTextCursor());
-                    getParentObject().setShownCursor(WestGraphics.getTextCursor());
-                }
-                cursorSet = true;
-                e.consume();
-            }
-            else if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
         else
         {
-            WGKeyInput textInput = (WGKeyInput)getParentObject();
             textInput.setHovered(false);
-            
-            //The cursor
-            if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
+        //Cursor:
+        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     
@@ -134,6 +97,13 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     
     @Override
     public void mouseReleased(MouseEvent e){}
+    
+    @Override
+    protected Cursor getCursorType()
+    {
+        WGKeyInput parent = (WGKeyInput)getParentObject();
+        return parent.isFocused() ? WestGraphics.getTextCursor() : WestGraphics.getHoverCursor();
+    }
     
     //Getters:
     public Paint getOriginalBackgroundColor() {

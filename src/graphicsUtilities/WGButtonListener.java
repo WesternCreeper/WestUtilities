@@ -48,15 +48,11 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) 
-    {
-        setLastMouseEvent(e);
-    }
+    public void mouseDragged(MouseEvent e) {}
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        setLastMouseEvent(e);
         hoverEvent(e);
     }
 
@@ -98,20 +94,6 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
             if(canDoIt)
             {
                 button.setHovered(true);
-
-                //The cursor
-                if(isParentShown())
-                {
-                    getParentComponent().setCursor(WestGraphics.getHoverCursor());
-                    cursorSet = true;
-                    e.consume();
-                }
-                else if(cursorSet && !e.isConsumed())
-                {
-                    getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                    cursorSet = false;
-                    e.consume();
-                }
             }
             else
             {
@@ -123,15 +105,9 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
             //The background
             WGBox button = (WGBox)getParentObject();
             button.setHovered(false);
-            
-            //The cursor
-            if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
+        //Cursor:
+        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     @Override

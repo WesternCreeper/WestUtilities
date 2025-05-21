@@ -74,17 +74,8 @@ public class WGDropDownListener extends WGButtonListener
             //Force the pane owner to update!
             getParentOwningPane().changeScrollBounds(false);
             
-            //Reset the cursor and the background:
-            if(choice > 0)
-            {
-                parent.setHovered(false);
-                if(cursorSet && !e.isConsumed())
-                {
-                    getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                    cursorSet = false;
-                    e.consume();
-                }
-            }
+            //Cursor:
+            WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         }
     }
     public void hoverEvent(MouseEvent e)
@@ -95,20 +86,6 @@ public class WGDropDownListener extends WGButtonListener
             WGDropDown parent = (WGDropDown)getParentObject();
             
             parent.setHovered(true);
-
-            //The cursor
-            if(isParentShown())
-            {
-                getParentComponent().setCursor(WestGraphics.getHoverCursor());
-                cursorSet = true;
-                e.consume();
-            }
-            else if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
             
             //Now if this is dropped down, make sure to make the corrected box be hovered:
             if(parent.isDroppedDown())
@@ -131,15 +108,9 @@ public class WGDropDownListener extends WGButtonListener
             //The background
             WGBox button = (WGBox)getParentObject();
             button.setHovered(false);
-            
-            //The cursor
-            if(cursorSet && !e.isConsumed())
-            {
-                getParentComponent().setCursor(WestGraphics.getDefaultCursor());
-                cursorSet = false;
-                e.consume();
-            }
         }
+        //Cursor:
+        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
     }
 }

@@ -147,6 +147,7 @@ public class WGButton extends WGBox
                 getParent().addMouseListener(getClickListener());
                 getParent().addMouseMotionListener((WGButtonListener)getClickListener());
                 getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+                WestGraphics.add(this);
             }
         }
         else
@@ -174,6 +175,7 @@ public class WGButton extends WGBox
             getParent().addMouseListener(getClickListener());
             getParent().addMouseMotionListener((WGButtonListener)getClickListener());
             getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+            WestGraphics.add(this);
         }
         else
         {
@@ -282,10 +284,15 @@ public class WGButton extends WGBox
         WGButtonListener buttoner = (WGButtonListener)(getClickListener());
         getParent().removeMouseListener(buttoner);
         getParent().removeMouseMotionListener(buttoner);
+        WestGraphics.remove(this);
     }
     
     public void setClickListner(WGClickListener clickListener)
     {
+        if(getClickListener() == null) //Check that this object has not been added already
+        {
+            WestGraphics.add(this);
+        }
         super.setClickListener(clickListener);
         clickListener.setParentComponent(getParent());
         clickListener.setParentObject(this);
