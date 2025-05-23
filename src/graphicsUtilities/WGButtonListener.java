@@ -30,9 +30,6 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     public WGButtonListener(WGBox parentObject) throws WGNullParentException
     {
         super(parentObject);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     /**
      * The necessary components needed to make this object versatile for anything needed to be clicked on. This could be a button, although there is a specific class for those, or any WGDrawingObject, a loading bar or an announcement card. Whatever the need is, this class will be  
@@ -42,9 +39,6 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     public WGButtonListener(WGBox parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
 
     @Override
@@ -64,58 +58,8 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
     
     public void hoverEvent(MouseEvent e)
     {
-        if(isWithinBounds(e))
-        {
-            //The background
-            WGBox button = (WGBox)getParentObject();
-            
-            boolean canDoIt = true;
-            //If it is a Pane, make sure this is not hovering over another object on it
-            if(button instanceof WGPane)
-            {
-                WGPane paneParent = (WGPane)button;
-                for(int i = 0 ; i < paneParent.getComponentNumber() ; i++)
-                {
-                    WGDrawingObject ownedObject = paneParent.getComponent(i);
-
-                    //Now if it has a underling object make sure to test if it is within bounds:
-                    WGClickListener clickListener = ownedObject.getClickListener();
-                    if(clickListener != null)
-                    {
-                        if(clickListener.isWithinBounds(e))
-                        {
-                            canDoIt = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if(canDoIt)
-            {
-                button.setHovered(true);
-            }
-            else
-            {
-                button.setHovered(false);
-            }
-        }
-        else
-        {
-            //The background
-            WGBox button = (WGBox)getParentObject();
-            button.setHovered(false);
-        }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
-    }
-    @Override
-    public void setParentObject(WGDrawingObject obj)
-    {
-        super.setParentObject(obj);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }

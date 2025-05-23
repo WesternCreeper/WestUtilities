@@ -24,9 +24,6 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     public WGKeyInputClickListener (WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     @Override
     public void mouseClicked(MouseEvent e) 
@@ -78,15 +75,6 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        WGKeyInput textInput = (WGKeyInput)getParentObject();
-        if(isWithinBounds(e))
-        {
-            textInput.setHovered(true);
-        }
-        else
-        {
-            textInput.setHovered(false);
-        }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
@@ -113,14 +101,5 @@ public class WGKeyInputClickListener extends WGClickListener implements MouseMot
     //Setters:
     public void setOriginalBackgroundColor(Paint originalBackgroundColor) {
         this.originalBackgroundColor = originalBackgroundColor;
-    }
-    
-    @Override
-    public void setParentObject(WGDrawingObject obj)
-    {
-        super.setParentObject(obj);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }

@@ -33,9 +33,6 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     public WGCheckBoxClickListener(WGDrawingObject parentObject) throws WGNullParentException
     {
         super(parentObject);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     /**
      * The necessary components needed to make this object versatile for anything needed to be clicked on. This could be a button, although there is a specific class for those, or any WGDrawingObject, a loading bar or an announcement card. Whatever the need is, this class will be  
@@ -45,9 +42,6 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     public WGCheckBoxClickListener(WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     
     @Override
@@ -67,17 +61,6 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     
     public void hoverEvent(MouseEvent e)
     {
-        if(isWithinBounds(e))
-        {
-            //The background
-            WGCheckBox parent = (WGCheckBox)getParentObject();
-            parent.setHovered(true);
-        }
-        else
-        {
-            WGCheckBox parent = (WGCheckBox)getParentObject();
-            parent.setHovered(false);
-        }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
     }
@@ -96,14 +79,5 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
     //Getters:
     public Paint getOriginalBackgroundColor() {
         return originalBackgroundColor;
-    }
-    
-    @Override
-    public void setParentObject(WGDrawingObject obj)
-    {
-        super.setParentObject(obj);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }

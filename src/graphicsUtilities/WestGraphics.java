@@ -33,6 +33,7 @@ public class WestGraphics
 {
     //Static Package wide important stuff:
     private static Component currentActiveParent;
+    private static WGBox lastHoverOject;
     private static MouseEvent lastMouseEvent;
     private static WGObjectBoundList allClickables = new WGObjectBoundList();
     private static Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -95,6 +96,33 @@ public class WestGraphics
         allClickables.removeNode(new WGObjectBoundNode(obj));
     }
     
+    static void setProperHoverDuringScroll(Component parent)
+    {
+        if(lastMouseEvent == null)
+        {
+            return;
+        }
+        Point point = lastMouseEvent.getPoint();
+        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+        WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
+        if(lastHoverOject != null && absoluteClickCursor != null && absoluteClickCursor instanceof WGBox)
+        {
+            lastHoverOject.setHovered(false);
+            WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
+            absoluteBoxObject.setHovered(true);
+            lastHoverOject = absoluteBoxObject;
+        }
+        else if(absoluteClickCursor != null && absoluteClickCursor instanceof WGBox)
+        {
+            WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
+            lastHoverOject = absoluteBoxObject;
+        }
+        else if(absoluteClickCursor == null && lastHoverOject != null)
+        {
+            lastHoverOject.setHovered(false); //We went off the object, so make it so
+        }
+    }
+    
     /**
      * This function checks the given point to verify that the cursor is in the right form. (This form uses the last mouse event)
      * @param parent The parent for the Utility to change the cursor of
@@ -104,6 +132,12 @@ public class WestGraphics
     {
         if(lastMouseEvent == null || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
+            //We have also already set the hover, so make sure to remember that:
+            if(sourceObject instanceof WGBox)
+            {
+                WGBox boxObject = (WGBox)sourceObject;
+                boxObject.setHovered(false);
+            }
             return; //We have already set the cursor, no touch!
         }
         Point point = lastMouseEvent.getPoint();
@@ -114,10 +148,32 @@ public class WestGraphics
             if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
             {
                 parent.setCursor(sourceObject.getClickListener().getCursorType());
+                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
+                if(absoluteClickCursor instanceof WGBox)
+                {
+                    WGBox boxObject = (WGBox)clickCursor;
+                    boxObject.setHovered(false);
+                    WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
+                    absoluteBoxObject.setHovered(true);
+                    lastHoverOject = absoluteBoxObject;
+                }
+            }
+            else
+            {
+                if(sourceObject instanceof WGBox)
+                {
+                    WGBox boxObject = (WGBox)sourceObject;
+                    boxObject.setHovered(false);
+                }
             }
         }
         else
         {
+            if(sourceObject instanceof WGBox)
+            {
+                WGBox boxObject = (WGBox)sourceObject;
+                boxObject.setHovered(false);
+            }
             parent.setCursor(defaultCursor);
         }
     }
@@ -132,6 +188,25 @@ public class WestGraphics
     {
         if(lastMouseEvent == e || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
+            //We have also already set the hover, so make sure to remember that:
+            if(sourceObject instanceof WGBox)
+            {
+                //Verify that we can do this:
+                Point point = e.getPoint();
+                Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
+                if(absoluteClickCursor != null)
+                {
+                    WGBox boxObject = (WGBox)absoluteClickCursor;
+                    boxObject.setHovered(true);
+                    lastHoverOject = boxObject;
+                }
+                if(absoluteClickCursor != sourceObject)
+                {
+                    WGBox boxObject = (WGBox)sourceObject;
+                    boxObject.setHovered(false);
+                }
+            }
             return; //We have already set the cursor, no touch!
         }
         Point point = e.getPoint();
@@ -139,14 +214,58 @@ public class WestGraphics
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
+            boolean onPane = clickCursor.getClickListener().getParentOwningPane() != null;
             if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
             {
                 lastMouseEvent = e;
-                parent.setCursor(sourceObject.getClickListener().getCursorType());
+                if(!onPane)
+                {
+                    parent.setCursor(sourceObject.getClickListener().getCursorType());
+                }
+                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
+                if(absoluteClickCursor instanceof WGBox)
+                {
+                    if(clickCursor != absoluteClickCursor)
+                    {
+                        WGBox boxObject = (WGBox)clickCursor;
+                        boxObject.setHovered(false);
+                        WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
+                        absoluteBoxObject.setHovered(true);
+                        lastHoverOject = absoluteBoxObject;
+                    }
+                    else
+                    {
+                        WGBox boxObject = (WGBox)clickCursor;
+                        boxObject.setHovered(true);
+                        lastHoverOject = boxObject;
+                    }
+                }
+                if(onPane && absoluteClickCursor != null)
+                {
+                    //Then make sure to set the click cursor:
+                    parent.setCursor(sourceObject.getClickListener().getCursorType());
+                }
+                else if(onPane)
+                {
+                    parent.setCursor(defaultCursor);
+                }
+            }
+            else
+            {
+                if(sourceObject instanceof WGBox)
+                {
+                    WGBox boxObject = (WGBox)sourceObject;
+                    boxObject.setHovered(false);
+                }
             }
         }
         else
         {
+            if(sourceObject instanceof WGBox)
+            {
+                WGBox boxObject = (WGBox)sourceObject;
+                boxObject.setHovered(false);
+            }
             parent.setCursor(defaultCursor);
         }
     }

@@ -4,12 +4,10 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FontMetrics;
-import java.awt.RadialGradientPaint;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -27,9 +25,6 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     public WGTextInputClickListener (WGDrawingObject parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     @Override
     public void mouseClicked(MouseEvent e) 
@@ -92,17 +87,6 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        WGTextInput textInput = (WGTextInput)getParentObject();
-        if(isWithinBounds(e))
-        {
-            //Background
-            textInput.setHovered(true);
-        }
-        else
-        {
-            //Background
-            textInput.setHovered(false);
-        }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         WestGraphics.doRepaintJob(getParentObject().getParent());
@@ -134,7 +118,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     @Override
     protected Cursor getCursorType()
     {
-        WGKeyInput parent = (WGKeyInput)getParentObject();
+        WGTextInput parent = (WGTextInput)getParentObject();
         return parent.isFocused() ? WestGraphics.getTextCursor() : WestGraphics.getHoverCursor();
     }
     
@@ -211,14 +195,5 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
                 }
             }
         }
-    }
-    
-    @Override
-    public void setParentObject(WGDrawingObject obj)
-    {
-        super.setParentObject(obj);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        obj.setShownCursor(WestGraphics.getHoverCursor());
     }
 }

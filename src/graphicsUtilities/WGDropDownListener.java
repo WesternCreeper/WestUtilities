@@ -21,9 +21,6 @@ public class WGDropDownListener extends WGButtonListener
     public WGDropDownListener(WGBox parentObject, Component parentComponent)
     {
         super(parentObject, parentComponent);
-        
-        //Make sure to set the cursor to the correct one when shown:
-        parentObject.setShownCursor(WestGraphics.getHoverCursor());
     }
     
     /**
@@ -84,9 +81,6 @@ public class WGDropDownListener extends WGButtonListener
         {
             //The background
             WGDropDown parent = (WGDropDown)getParentObject();
-            
-            parent.setHovered(true);
-            
             //Now if this is dropped down, make sure to make the corrected box be hovered:
             if(parent.isDroppedDown())
             {
@@ -102,12 +96,6 @@ public class WGDropDownListener extends WGButtonListener
 
                 parent.setHoveredIndex(index);
             }
-        }
-        else
-        {
-            //The background
-            WGBox button = (WGBox)getParentObject();
-            button.setHovered(false);
         }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());

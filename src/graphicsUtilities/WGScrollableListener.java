@@ -53,6 +53,8 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
         if(preferred && isWithinBounds(e) && !e.isConsumed())
         {
             doScroll(e.getWheelRotation(), true);
+            //Cursor:
+            WestGraphics.setProperHoverDuringScroll(parentPane.getParent());
         }
     }
 
@@ -78,6 +80,8 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 distance /= seeableArea / totalArea;
                 doScroll(distance, false);
             }
+            //Cursor:
+            WestGraphics.checkCursor(e, parentPane.getParent(), parentPane);
         }
     }
 
@@ -102,6 +106,8 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
                 yStart = e.getPoint().getX();
                 allowedToScroll = true;
             }
+            //Cursor:
+            WestGraphics.checkCursor(e, parentPane.getParent(), parentPane);
         }
     }
 

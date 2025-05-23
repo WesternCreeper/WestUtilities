@@ -244,10 +244,15 @@ public class WGPane extends WGBox
         }
         
         //Remove all listeners, as they will still listen even after the object disappears
-        for(int i = containedObjects.size()-1 ; i > 0 ; i--)
+        int count = 0;
+        for(int i = containedObjects.size()-1 ; i >= 0 ; i--)
         {
             WGDrawingObject obj = containedObjects.remove(i);
             obj.removeListeners();
+            if(obj instanceof WGBox)
+            {
+                count++;
+            }
         }
     }
     /**

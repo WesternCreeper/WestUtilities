@@ -125,8 +125,12 @@ public class WGObjectBoundList
             if(searchNode != null && x == searchNode.getRelativeBounds().getX())
             {
                 //Now find our exact location:
-                while(searchNode != null && width < searchNode.getRelativeBounds().getWidth())
+                while(searchNode != null && width <= searchNode.getRelativeBounds().getWidth())
                 {
+                    if(searchNode.equals(node)) //Just in case it shares it's width with another object
+                    {
+                        break;
+                    }
                     isChild = true;
                     prev = searchNode; //All child nodes do not have a prev
                     searchNode = searchNode.getChild();
