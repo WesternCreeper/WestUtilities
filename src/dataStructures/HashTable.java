@@ -292,4 +292,36 @@ public class HashTable<E extends Object>
     {
         return allObjects;
     }
+    public HashTable makeCopy()
+    {
+        HashTable newTable = new HashTable(tableSize, hashingOption, numericSpacing);
+        for(int i = 0 ; i < allKeys.length ; i++)
+        {
+            if(allKeys[i] != null)
+            {
+                newTable.insert(allKeys[i], allObjects[i]);
+            }
+        }
+        return newTable;
+    }
+    @Override
+    public String toString()
+    {
+        String str = "";
+        for(int i = 0 ; i < allKeys.length ; i++)
+        {
+            if(allKeys[i] != null)
+            {
+                if(str.isEmpty())
+                {
+                    str = allKeys[i] + "=" + allObjects[i];
+                }
+                else
+                {
+                    str += "," + allKeys[i] + "=" + allObjects[i];
+                }
+            }
+        }
+        return str;
+    }
 }

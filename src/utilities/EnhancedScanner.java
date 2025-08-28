@@ -32,6 +32,14 @@ public class EnhancedScanner
     {
         return sc.nextLine();
     }
+    public String nextLine(boolean removeComments)
+    {
+        if(removeComments)
+        {
+            return removeComments(sc.nextLine());
+        }
+        return sc.nextLine();
+    }
     public boolean hasNext()
     {
         return sc.hasNext();
@@ -39,6 +47,11 @@ public class EnhancedScanner
     public boolean hasNextLine()
     {
         return sc.hasNextLine();
+    }
+    public String removeComments(String line)
+    {
+        int commentIndex = line.indexOf("//");
+        return line.substring(0, commentIndex);
     }
     /**
      * This closes the Enhanced Scanner, just like a regular scanner so make sure to ONLY call this when you no longer need to use the Enhanced Scanner

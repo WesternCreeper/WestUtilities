@@ -74,6 +74,42 @@ public class WGDropDown extends WGBox
             throw new WGNullParentException();
         }
     }
+    /**
+     * For the custom drop down listener
+     * @param bounds
+     * @param choices
+     * @param selectedChoice
+     * @param listener
+     * @param parent
+     * @param theme
+     * @throws WGNullParentException 
+     */
+    public WGDropDown(Rectangle2D.Double bounds, String[] choices, int selectedChoice, WGDropDownListener listener, Component parent, WGTheme theme) throws WGNullParentException
+    {
+        super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getHoverBackgroundColor(), theme.getBorderColor(), parent, theme);
+        this.choices = choices;
+        this.selectedChoice = selectedChoice;
+        this.textFont = theme.getTextFont();
+        this.textColor = theme.getTextColor();
+        if(getParent() != null)
+        {
+            resizer = new ButtonResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+            getParent().addComponentListener(resizer);
+            resizer.resizeComps();
+            
+            listener.setParentComponent(parent);
+            listener.setParentObject(this);
+            super.setClickListener(listener);
+            getParent().addMouseListener(getClickListener());
+            getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
+            getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            WestGraphics.add(this);
+        }
+        else
+        {
+            throw new WGNullParentException();
+        }
+    }
     
     
     //Methods:

@@ -662,6 +662,10 @@ public class WestGraphics
      */
     private void drawPane(WGPane pane, boolean withinAnotherPane)
     {
+        if(!pane.isShown())
+        {
+            return;
+        }
         //Save the original stroke in case the user wanted that one
         Stroke oldStroke = g2.getStroke();
         

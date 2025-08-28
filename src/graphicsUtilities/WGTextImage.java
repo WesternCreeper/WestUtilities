@@ -17,6 +17,9 @@ import java.awt.image.BufferedImage;
  */
 public class WGTextImage extends WGDrawingObject
 {
+    public static final int RESIZE_OPTION_NONE = 0;
+    public static final int RESIZE_OPTION_ASPECT_SCALED = 1;
+    public static final int RESIZE_OPTION_FULL_RESIZE = 2;
     public static final int TEXT_LOWER_LEFT_CORNER = 0;
     public static final int TEXT_UPPER_LEFT_CORNER = 1;
     public static final int TEXT_UPPER_RIGHT_CORNER = 2;
@@ -34,7 +37,7 @@ public class WGTextImage extends WGDrawingObject
     private double imageXScale;
     private double imageYScale;
     private int textPosition;
-    private boolean allowImageResize;
+    private int imageResizeOption;
     
     /**
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
@@ -43,36 +46,36 @@ public class WGTextImage extends WGDrawingObject
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
      * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
      * @param displayedImage The image to be displayed, this will be the bulk of the object
-     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param imageResizeOption This determines if the image is to be resized or not.
      * @param text The text placed on the image
      * @param textFont The font that will draw the text
      * @param textColor The color of the text
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textFont, textColor, parent);
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textFont, textColor, parent);
     }
     /**
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param displayedImage The image to be displayed, this will be the bulk of the object
-     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param imageResizeOption This determines if the image is to be resized or not.
      * @param text The text placed on the image
      * @param textFont The font that will draw the text
      * @param textColor The color of the text
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
         imageText = text;
         this.textFont = textFont;
         this.textColor = textColor;
-        this.allowImageResize = allowImageResize;
+        this.imageResizeOption = imageResizeOption;
         textPosition = TEXT_LOWER_LEFT_CORNER;
         textXSizePercent = 0.25;
         textYSizePercent = 0.25;
@@ -95,7 +98,7 @@ public class WGTextImage extends WGDrawingObject
      * @param widthPercent The percentage of the parent component that the width of this object. As in 0.4 would mean this object stretches 40% of the screen
      * @param heightPercent The percentage of the parent component that the height of this object. Same idea as the width but with the height component.
      * @param displayedImage The image to be displayed, this will be the bulk of the object
-     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param imageResizeOption This determines if the image is to be resized or not.
      * @param text The text placed on the image
      * @param textPosition This is the position of the text in relation to the image itself.
      * @param textXSizePercent The percent of the image that the text will take up, in the horizontal direction
@@ -105,15 +108,15 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, allowImageResize, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
+        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
     }
     /**
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param displayedImage The image to be displayed, this will be the bulk of the object
-     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param imageResizeOption This determines if the image is to be resized or not.
      * @param text The text placed on the image
      * @param textPosition This is the position of the text in relation to the image itself.
      * @param textXSizePercent The percent of the image that the text will take up, in the horizontal direction
@@ -123,14 +126,14 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
         imageText = text;
         this.textFont = textFont;
         this.textColor = textColor;
-        this.allowImageResize = allowImageResize;
+        this.imageResizeOption = imageResizeOption;
         this.textPosition = textPosition;
         this.textXSizePercent = textXSizePercent;
         this.textYSizePercent = textYSizePercent;
@@ -149,15 +152,15 @@ public class WGTextImage extends WGDrawingObject
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
      * @param bounds The percentage of the parent component, in a rectangle form
      * @param displayedImage The image to be displayed, this will be the bulk of the object
-     * @param allowImageResize This determines if the image is to be resized or not.
+     * @param imageResizeOption This determines if the image is to be resized or not.
      * @param text The text placed on the image
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, Boolean allowImageResize, String text, Component parent, WGTheme theme) throws WGNullParentException
+    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, Component parent, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, displayedImage, allowImageResize, text, theme.getTextPosition(), theme.getTextXSizePercent(), theme.getTextYSizePercent(), theme.getTextFont(), theme.getTextColor(), parent);
+        this(bounds, displayedImage, imageResizeOption, text, theme.getTextPosition(), theme.getTextXSizePercent(), theme.getTextYSizePercent(), theme.getTextFont(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
     }
     
@@ -294,19 +297,36 @@ public class WGTextImage extends WGDrawingObject
             double height = (double)getHeight();
             imageOffSetX = 0;
             imageOffSetY = 0;
-            if(allowImageResize)
+            switch(imageResizeOption)
             {
-                imageXScale = (double)getWidth() / displayImage.getWidth();
-                imageYScale = (double)getHeight() / displayImage.getHeight();
-            }
-            else
-            {
-                imageXScale = 1;
-                imageYScale = 1;
-                imageOffSetX = (width - displayImage.getWidth()) / 2;
-                imageOffSetY = (height - displayImage.getHeight()) / 2;
-                width = displayImage.getWidth();
-                height = displayImage.getHeight();
+                case RESIZE_OPTION_FULL_RESIZE:
+                    imageXScale = (double)getWidth() / displayImage.getWidth();
+                    imageYScale = (double)getHeight() / displayImage.getHeight();
+                    break;
+                case RESIZE_OPTION_ASPECT_SCALED:
+                    imageXScale = (double)getWidth() / displayImage.getWidth();
+                    imageYScale = (double)getHeight() / displayImage.getHeight();
+                    if(imageYScale > imageXScale)
+                    {
+                        imageYScale = imageXScale;
+                    }
+                    else
+                    {
+                        imageXScale = imageYScale;
+                    }
+                    imageOffSetX = (width - displayImage.getWidth() * imageXScale) / 2;
+                    imageOffSetY = (height - displayImage.getHeight() * imageYScale) / 2;
+                    width = displayImage.getWidth();
+                    height = displayImage.getHeight();
+                    break;
+                case RESIZE_OPTION_NONE:
+                    imageXScale = 1;
+                    imageYScale = 1;
+                    imageOffSetX = (width - displayImage.getWidth()) / 2;
+                    imageOffSetY = (height - displayImage.getHeight()) / 2;
+                    width = displayImage.getWidth();
+                    height = displayImage.getHeight();
+                    break;
             }
             
             //Now make sure the image is in the correct location:
