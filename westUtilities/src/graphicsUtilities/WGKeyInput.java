@@ -5,11 +5,14 @@
 package graphicsUtilities;
 
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -38,7 +41,7 @@ public class WGKeyInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGKeyInput(Rectangle2D bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
@@ -46,15 +49,15 @@ public class WGKeyInput extends WGBox
         this.textColor = textColor;
         if(getParent() != null)
         {
-            resizer = new KeyResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new KeyResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = new WGKeyInputClickListener(this, parent);
-            getParent().addMouseListener(this.clickListener);
-            getParent().addMouseMotionListener(this.clickListener);
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
             clickListener.setOriginalBackgroundColor(backgroundColor);
             keyListener = new WGKeyInputKeyListener(this);
-            getParent().addKeyListener(keyListener);
+            getParent().addEventHandler(KeyEvent.ANY, keyListener);
             WestGraphics.add(this);
         }
         else
@@ -77,9 +80,9 @@ public class WGKeyInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager);
     }
     /**
      * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -89,7 +92,7 @@ public class WGKeyInput extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGTheme theme) throws WGNullParentException
+    public WGKeyInput(Rectangle2D bounds, Canvas parent, WGAAnimationManager parentAnimationManager, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, parentAnimationManager);
         setCurrentTheme(theme);
@@ -110,7 +113,7 @@ public class WGKeyInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
+    public WGKeyInput(Rectangle2D bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
     {
         super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
@@ -118,18 +121,18 @@ public class WGKeyInput extends WGBox
         this.textColor = textColor;
         if(getParent() != null)
         {
-            resizer = new KeyResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new KeyResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = textClickListener;
             clickListener.setParentObject(this);
             clickListener.setParentComponent(parent);
-            getParent().addMouseListener(this.clickListener);
-            getParent().addMouseMotionListener(this.clickListener);
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
             clickListener.setOriginalBackgroundColor(backgroundColor);
             keyListener = textKeyListener;
             keyListener.setParent(this);
-            getParent().addKeyListener(keyListener);
+            getParent().addEventHandler(KeyEvent.ANY, keyListener);
             WestGraphics.add(this);
         }
         else
@@ -154,9 +157,9 @@ public class WGKeyInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
+    public WGKeyInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager, textClickListener, textKeyListener);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, parent, parentAnimationManager, textClickListener, textKeyListener);
     }
     /**
      * This will create a normal baseline WGKeyInput, but can fully resize itself and will set up the WGClickListener before it adds it to the component so that it can be added as a parameter, and not after the fact
@@ -168,7 +171,7 @@ public class WGKeyInput extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGKeyInput(Rectangle2D.Double bounds, Component parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener, WGTheme theme) throws WGNullParentException
+    public WGKeyInput(Rectangle2D bounds, Canvas parent, WGAAnimationManager parentAnimationManager, WGKeyInputClickListener textClickListener, WGKeyInputKeyListener textKeyListener, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, parentAnimationManager, textClickListener, textKeyListener);
         setCurrentTheme(theme);
@@ -176,16 +179,16 @@ public class WGKeyInput extends WGBox
     
     //Methods:
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+       Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
     public void setUpBounds()
     {
         resizer.resizeComps();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -195,7 +198,8 @@ public class WGKeyInput extends WGBox
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -203,9 +207,8 @@ public class WGKeyInput extends WGBox
         
         WGKeyInputKeyListener keyer = getKeyListener();
         WGKeyInputClickListener clicker = getClickListener();
-        getParent().removeKeyListener(keyer);
-        getParent().removeMouseListener(clicker);
-        getParent().removeMouseMotionListener(clicker);
+        getParent().addEventHandler(MouseEvent.ANY, clicker);
+        getParent().addEventHandler(KeyEvent.ANY, keyer);
         WestGraphics.remove(this);
     }
     public void setTheme(WGTheme theme)
@@ -305,8 +308,8 @@ public class WGKeyInput extends WGBox
         public void resizeComps()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
             setY(getYPercent() * parentHeight);
@@ -323,9 +326,6 @@ public class WGKeyInput extends WGBox
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
         public void setUpFont()
         {

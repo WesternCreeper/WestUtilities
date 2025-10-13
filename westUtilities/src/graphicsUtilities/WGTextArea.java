@@ -4,12 +4,15 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import utilities.FXFontMetrics;
 
 /**
  *
@@ -40,7 +43,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.textStyle = textStyle;
@@ -48,8 +51,9 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         this.textColor = textColor;
         if(getParent() != null)
         {
-            resizer = new TextAreaResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new TextAreaResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
         }
         else
         {
@@ -79,9 +83,9 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textColor, parent);
     }
     /**
      * The standard non-scrollable constructor that holds multiple lines of text in an invisible box
@@ -91,7 +95,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, String[] text, Component parent, WGTheme theme) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, String[] text, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
@@ -109,7 +113,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         //Create the object
         super(0, 0, 0, 0, borderSize, parent);
@@ -120,12 +124,12 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         this.scrollBarColor = scrollBarColor;
         if(getParent() != null)
         {
-            resizer = new TextAreaResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new TextAreaResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             verticalScroll = new WGTextScrollableListener(this);
-            getParent().addMouseWheelListener(verticalScroll);
-            getParent().addMouseListener(verticalScroll);
-            getParent().addMouseMotionListener(verticalScroll);
+            getParent().addEventHandler(MouseEvent.ANY, verticalScroll);
+            getParent().addEventHandler(ScrollEvent.ANY, verticalScroll);
         }
         else
         {
@@ -157,9 +161,9 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Component parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, scrollBarColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, scrollBarColor, parent);
     }
     
     /**
@@ -171,16 +175,16 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D.Double bounds, String[] text, boolean textWrapped, Component parent, WGTheme theme) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, String[] text, boolean textWrapped, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), text, theme.getTextFont(), theme.getTextStyle(), textWrapped, theme.getTextColor(), theme.getScrollBarColor(), parent);
         setCurrentTheme(theme);
     }
     
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
         return bounds;
     }
 
@@ -188,7 +192,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     public void setUpBounds() {
         resizer.resizeComps();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -207,16 +211,16 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
         }
         
         WGTextScrollableListener scrollerV = getVerticalScroll();
-        getParent().removeMouseListener(scrollerV);
-        getParent().removeMouseMotionListener(scrollerV);
-        getParent().removeMouseWheelListener(scrollerV);
+        getParent().removeEventHandler(MouseEvent.ANY, scrollerV);
+        getParent().removeEventHandler(ScrollEvent.ANY, scrollerV);
     }
     
     public void setTextLine(int index, String information) throws IndexOutOfBoundsException
@@ -348,7 +352,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
                 {
                     ArrayList<String> newList = new ArrayList<String>(text.size());
                     ArrayList<Paint> newColorList = new ArrayList<Paint>(textColors.size());
-                    FontMetrics textFM = getParent().getFontMetrics(textFont);
+                    FXFontMetrics textFM = new FXFontMetrics(textFont);
                     double objectWidth = getWidth();
                     //First copy over the strings:
                     for(int i = 0 ; i < text.size() ; i++)
@@ -443,9 +447,6 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

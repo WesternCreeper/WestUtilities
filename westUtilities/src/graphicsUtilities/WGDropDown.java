@@ -4,10 +4,12 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Paint;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -25,7 +27,7 @@ public class WGDropDown extends WGBox
     private int hoveredIndex = -1;
     private boolean droppedDown = false;
     
-    public WGDropDown(Rectangle2D.Double bounds, float borderSize, String[] choices, int selectedChoice, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent) throws WGNullParentException
+    public WGDropDown(Rectangle2D bounds, float borderSize, String[] choices, int selectedChoice, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.choices = choices;
@@ -34,14 +36,14 @@ public class WGDropDown extends WGBox
         this.textColor = textColor;
         if(getParent() != null)
         {
-            resizer = new ButtonResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
-            getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
+            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
             WestGraphics.add(this);
         }
         else
@@ -50,7 +52,7 @@ public class WGDropDown extends WGBox
         }
     }
     
-    public WGDropDown(Rectangle2D.Double bounds, String[] choices, int selectedChoice, Component parent, WGTheme theme) throws WGNullParentException
+    public WGDropDown(Rectangle2D bounds, String[] choices, int selectedChoice, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getHoverBackgroundColor(), theme.getBorderColor(), parent, theme);
         this.choices = choices;
@@ -59,14 +61,14 @@ public class WGDropDown extends WGBox
         this.textColor = theme.getTextColor();
         if(getParent() != null)
         {
-            resizer = new ButtonResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
-            getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
+            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
             WestGraphics.add(this);
         }
         else
@@ -84,7 +86,7 @@ public class WGDropDown extends WGBox
      * @param theme
      * @throws WGNullParentException 
      */
-    public WGDropDown(Rectangle2D.Double bounds, String[] choices, int selectedChoice, WGDropDownListener listener, Component parent, WGTheme theme) throws WGNullParentException
+    public WGDropDown(Rectangle2D bounds, String[] choices, int selectedChoice, WGDropDownListener listener, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         super(theme.getBorderSize(), theme.getBackgroundColor(), theme.getHoverBackgroundColor(), theme.getBorderColor(), parent, theme);
         this.choices = choices;
@@ -93,16 +95,16 @@ public class WGDropDown extends WGBox
         this.textColor = theme.getTextColor();
         if(getParent() != null)
         {
-            resizer = new ButtonResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             listener.setParentComponent(parent);
             listener.setParentObject(this);
             super.setClickListener(listener);
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGDropDownListener)getClickListener());
-            getParent().addMouseWheelListener((WGDropDownListener)getClickListener());
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
+            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
             WestGraphics.add(this);
         }
         else
@@ -116,15 +118,15 @@ public class WGDropDown extends WGBox
     @Override
     public void removeListeners() 
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
         }
-        
-        WGButtonListener buttoner = (WGDropDownListener)(getClickListener());
-        getParent().removeMouseListener(buttoner);
-        getParent().removeMouseMotionListener(buttoner);
+
+        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
+        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
         WestGraphics.remove(this);
     }
     
@@ -229,8 +231,8 @@ public class WGDropDown extends WGBox
         public void resizeComps(boolean doXYLocation)
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             if(doXYLocation)
@@ -296,9 +298,6 @@ public class WGDropDown extends WGBox
                     }
                 }
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

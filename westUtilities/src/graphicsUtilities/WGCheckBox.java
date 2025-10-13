@@ -4,10 +4,11 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
 
 /**
  *
@@ -32,9 +33,9 @@ public class WGCheckBox extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
+    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, checked, backgroundColor, borderColor, checkColor, clickListener, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, checked, backgroundColor, borderColor, checkColor, clickListener, parent);
     }
     /**
      * 
@@ -48,23 +49,23 @@ public class WGCheckBox extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(Rectangle2D.Double bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Component parent) throws WGNullParentException
+    public WGCheckBox(Rectangle2D bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.checked = checked;
         this.checkColor = checkColor;
         if(getParent() != null)
         {
-            resizer = new CheckBoxResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new CheckBoxResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             setClickListener(clickListener);
             getClickListener().setParentComponent(parent);
             getClickListener().setParentObject(this);
             ((WGCheckBoxClickListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGCheckBoxClickListener)getClickListener());
-            getParent().addMouseWheelListener((WGCheckBoxClickListener)getClickListener());
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
+            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
             WestGraphics.add(this);
         }
         else
@@ -81,7 +82,7 @@ public class WGCheckBox extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(Rectangle2D.Double bounds, boolean checked, WGCheckBoxClickListener clickListener, Component parent, WGTheme theme) throws WGNullParentException
+    public WGCheckBox(Rectangle2D bounds, boolean checked, WGCheckBoxClickListener clickListener, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), checked, theme.getBackgroundColor(), theme.getBorderColor(), theme.getCheckColor(), clickListener, parent);
         setCurrentTheme(theme);
@@ -92,23 +93,21 @@ public class WGCheckBox extends WGBox
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
         }
-        
-        WGCheckBoxClickListener buttoner = (WGCheckBoxClickListener)(getClickListener());
-        getParent().removeMouseListener(buttoner);
-        getParent().removeMouseMotionListener(buttoner);
-        getParent().removeMouseWheelListener(buttoner);
+
+        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
+        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
         WestGraphics.remove(this);
     }
     
     //Setters:
     public void setChecked(boolean checked) {
         this.checked = checked;
-        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setCheckColor(Paint checkColor) {
@@ -150,8 +149,8 @@ public class WGCheckBox extends WGBox
         public void resizeComps()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
             setY(getYPercent() * parentHeight);
@@ -166,9 +165,6 @@ public class WGCheckBox extends WGBox
                 setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
                 checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CHECK_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

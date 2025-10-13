@@ -7,20 +7,19 @@ package graphicsUtilities;
 import dataStructures.Queue;
 import dataStructures.WGObjectBoundList;
 import dataStructures.WGObjectBoundNode;
-import java.awt.Graphics2D;
-import java.awt.geom.*;
-import java.awt.FontMetrics;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Paint;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.transform.Affine;
+import utilities.FXFontMetrics;
+
 import java.util.ArrayList;
 
 /**
@@ -32,13 +31,13 @@ import java.util.ArrayList;
 public class WestGraphics
 {
     //Static Package wide important stuff:
-    private static Component currentActiveParent;
+    private static Canvas currentActiveParent;
     private static WGBox lastHoverOject;
     private static MouseEvent lastMouseEvent;
     private static WGObjectBoundList allClickables = new WGObjectBoundList();
-    private static Cursor defaultCursor = Cursor.getDefaultCursor();
-    private static Cursor hoverCursor = new Cursor(Cursor.HAND_CURSOR);
-    private static Cursor textCursor = new Cursor(Cursor.TEXT_CURSOR);
+    private static Cursor defaultCursor = Cursor.DEFAULT;
+    private static Cursor hoverCursor = Cursor.HAND;
+    private static Cursor textCursor = Cursor.TEXT;
     private static boolean allowComponentsToRepaint = true;
     
     /**
@@ -46,9 +45,9 @@ public class WestGraphics
      */
     public static void setUpCursors()
     {
-        defaultCursor = Cursor.getDefaultCursor();
-        hoverCursor = new Cursor(Cursor.HAND_CURSOR);
-        textCursor = new Cursor(Cursor.TEXT_CURSOR);
+    	defaultCursor = Cursor.DEFAULT;
+    	hoverCursor = Cursor.HAND;
+    	textCursor = Cursor.TEXT;
     }
     
     
@@ -64,18 +63,6 @@ public class WestGraphics
         WestGraphics.defaultCursor = defaultCursor;
         WestGraphics.hoverCursor = hoverCursor;
         WestGraphics.textCursor = textCursor;
-    }
-    
-    /**
-     * This is an internal method that allows for the given parent to be repainted, assuming West Graphics is allowed to repaint.
-     * @param parent
-     */
-    public static void doRepaintJob(Component parent)
-    {
-        if(allowComponentsToRepaint)
-        {
-            parent.repaint();
-        }
     }
     
     /**
@@ -96,15 +83,14 @@ public class WestGraphics
         allClickables.removeNode(new WGObjectBoundNode(obj));
     }
     
-    static void setProperHoverDuringScroll(Component parent)
+    static void setProperHoverDuringScroll(Canvas parent)
     {
         if(lastMouseEvent == null)
         {
             return;
         }
-        Point point = lastMouseEvent.getPoint();
-        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
-        WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
+        Point2D point = new Point2D(lastMouseEvent.getX(), lastMouseEvent.getY());
+        WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(point, parent);
         if(lastHoverOject != null && absoluteClickCursor != null && absoluteClickCursor instanceof WGBox)
         {
             lastHoverOject.setHovered(false);
@@ -128,7 +114,7 @@ public class WestGraphics
      * @param parent The parent for the Utility to change the cursor of
      * @param sourceObject The source object that defines whether or not the correct listener does the operation
      */
-    static void checkCursor(Component parent, WGDrawingObject sourceObject)
+    static void checkCursor(Canvas parent, WGDrawingObject sourceObject)
     {
         if(lastMouseEvent == null || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
@@ -140,8 +126,7 @@ public class WestGraphics
             }
             return; //We have already set the cursor, no touch!
         }
-        Point point = lastMouseEvent.getPoint();
-        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+        Point2D realPoint = new Point2D(lastMouseEvent.getX(), lastMouseEvent.getY());
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
@@ -184,7 +169,7 @@ public class WestGraphics
      * @param parent The parent for the Utility to change the cursor of
      * @param sourceObject The source object that defines whether or not the correct listener does the operation
      */
-    static void checkCursor(MouseEvent e, Component parent, WGDrawingObject sourceObject)
+    static void checkCursor(MouseEvent e, Canvas parent, WGDrawingObject sourceObject)
     {
         if(lastMouseEvent == e || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
@@ -192,8 +177,7 @@ public class WestGraphics
             if(sourceObject instanceof WGBox)
             {
                 //Verify that we can do this:
-                Point point = e.getPoint();
-                Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+                Point2D realPoint = new Point2D(e.getX(), e.getY());
                 WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
                 if(absoluteClickCursor != null)
                 {
@@ -209,8 +193,7 @@ public class WestGraphics
             }
             return; //We have already set the cursor, no touch!
         }
-        Point point = e.getPoint();
-        Point2D.Double realPoint = new Point2D.Double(point.getX(), point.getY());
+        Point2D realPoint = new Point2D(e.getX(), e.getY());
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
@@ -276,7 +259,7 @@ public class WestGraphics
         WestGraphics.allowComponentsToRepaint = allowComponentsToRepaint;
     }
 
-    public static void setCurrentActiveParent(Component currentActiveParent) {
+    public static void setCurrentActiveParent(Canvas currentActiveParent) {
         WestGraphics.currentActiveParent = currentActiveParent;
     }
     
@@ -303,13 +286,13 @@ public class WestGraphics
     
     
     //Individual drawing based stuff:
-    private Graphics2D g2;
+    private GraphicsContext g2;
     private Queue<WGToolTip> toolTipOrder = new Queue<WGToolTip>();
     /**
      * This constructs a standard WestGraphics object that can then draw the advanced components on the canvas or whatever that the Graphics2D is from.
      * @param g The Graphics supplied from the paintComponent object. (Already casted to Graphics 2D BEFORE construction, as in you have to cast it!)
      */
-    public WestGraphics(Graphics2D g)
+    public WestGraphics(GraphicsContext g)
     {
         g2 = g;
     }
@@ -348,7 +331,7 @@ public class WestGraphics
             }
             else if(obj instanceof WGPane)
             {
-                drawPane((WGPane)obj, false);
+                drawPane((WGPane)obj, false, new Rectangle2D(0, 0, g2.getCanvas().getWidth(), g2.getCanvas().getHeight()));
             }
             else if(obj instanceof WGLabel)
             {
@@ -404,91 +387,36 @@ public class WestGraphics
     }
     
     /**
-     * This draws an image with both a shader and a resize
-     * @param image The image to be drawn
-     * @param imageOps The shader
-     * @param x The x location
-     * @param y The y location
-     * @param widthRescale The rescale of the width
-     * @param heightRescale The rescale of the height
-     */
-    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double widthRescale, double heightRescale)
-    {
-        drawImage(image, imageOps, x, y, widthRescale, heightRescale, 0);
-    }
-    
-    /**
-     * This draws an image with both a shader and a resize
-     * @param image The image to be drawn
-     * @param imageOps The shader
-     * @param x The x location
-     * @param y The y location
-     * @param widthRescale The rescale of the width
-     * @param heightRescale The rescale of the height
-     * @param rotation The rotation of the image
-     */
-    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double widthRescale, double heightRescale, double rotation)
-    {
-        AffineTransform originalTransform = g2.getTransform();
-        AffineTransform currentTransform = new AffineTransform(widthRescale,0,0,heightRescale, x * widthRescale, y * heightRescale);
-        currentTransform.rotate(rotation);
-        g2.transform(currentTransform);
-        
-        g2.drawImage(image, imageOps, 0, 0);
-        g2.setTransform(originalTransform);
-    }
-    
-    /**
-     * This draws an image with a shader along with a bunch of rescales using the WGRescaleOptions object
-     * @param image The image to be drawn
-     * @param imageOps The shader
-     * @param x The x location
-     * @param y The y location
-     * @param rotation The rotation of the image
-     * @param rescaleOptions The options for rescaling the image
-     */
-    public void drawImage(BufferedImage image, BufferedImageOp imageOps, int x, int y, double rotation, WGRescaleOptions rescaleOptions)
-    {
-        AffineTransform originalTransform = g2.getTransform();
-        AffineTransform currentTransform = new AffineTransform(rescaleOptions.getWidthRescale(),0,0,rescaleOptions.getHeightRescale(), x * rescaleOptions.getXRescale(), y * rescaleOptions.getYRescale());
-        currentTransform.rotate(rotation);
-        g2.transform(currentTransform);
-        
-        g2.drawImage(image, imageOps, 0, 0);
-        g2.setTransform(originalTransform);
-    }
-    
-    /**
      * This function draws out a loading bar based on a WGLoadingBar Object, which allows for certain defaults to exist
      * @param loadingBar The Object representation of the loading bar to be drawn
      */
     private void drawLoadingBar(WGLoadingBar loadingBar)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
-        FontMetrics titleFM = g2.getFontMetrics(loadingBar.getTitleFont());
+        FXFontMetrics titleFM = new FXFontMetrics(loadingBar.getTitleFont());
         g2.setFont(loadingBar.getTitleFont());
-        Rectangle2D.Double originalBarRect = loadingBar.getBounds();
-        g2.setPaint(loadingBar.getBackgroundColor());
-        g2.fill(originalBarRect);
+        Rectangle2D originalBarRect = loadingBar.getBounds();
+        g2.setFill(loadingBar.getBackgroundColor());
+        fill(originalBarRect);
         
         double percentWidth = originalBarRect.getWidth() * (loadingBar.isHorizontal() ? loadingBar.getPercentFilled() : 1);
         double percentHeight = originalBarRect.getHeight() * (loadingBar.isHorizontal() ? 1 : loadingBar.getPercentFilled());
-        Rectangle2D.Double percentRect = new Rectangle2D.Double(originalBarRect.getX(), originalBarRect.getY(), percentWidth, percentHeight);
-        g2.setPaint(loadingBar.getBarColor());
-        g2.fill(percentRect);
+        Rectangle2D percentRect = new Rectangle2D(originalBarRect.getMinX(), originalBarRect.getMinY(), percentWidth, percentHeight);
+        g2.setFill(loadingBar.getBarColor());
+        fill(percentRect);
         
-        g2.setPaint(loadingBar.getBorderColor());
-        g2.setStroke(new BasicStroke((float)loadingBar.getBorderSize()));
-        g2.draw(originalBarRect);
+        g2.setFill(loadingBar.getBorderColor());
+        g2.setLineWidth(loadingBar.getBorderSize());
+        draw(originalBarRect);
         
-        g2.setPaint(loadingBar.getTitleColor());
+        g2.setFill(loadingBar.getTitleColor());
         String text = loadingBar.getTitle();
-        g2.drawString(text, (float)(originalBarRect.getX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (float)(originalBarRect.getY() + ((titleFM.getAscent() - titleFM.getDescent() + originalBarRect.getHeight()) / 2)));
+        g2.strokeText(text, (originalBarRect.getMinX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (originalBarRect.getMinY() + ((titleFM.getAscent() - titleFM.getDescent() + originalBarRect.getHeight()) / 2)));
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * This creates an announcement card based on the object WGAnnouncementCard given
@@ -497,11 +425,11 @@ public class WestGraphics
     private void drawAnnouncementCard(WGAnnouncementCard announcementCard)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Find the width of the title and the subtitle, whichever is biggest is the total width of the card:
-        FontMetrics titleFM = g2.getFontMetrics(announcementCard.getTitleFont());
-        FontMetrics subTitleFM = g2.getFontMetrics(announcementCard.getSubTitleFont());
+        FXFontMetrics titleFM = new FXFontMetrics(announcementCard.getTitleFont());
+        FXFontMetrics subTitleFM = new FXFontMetrics(announcementCard.getSubTitleFont());
         double titleWidth = titleFM.stringWidth(announcementCard.getTitle());
         double subTitleWidth = subTitleFM.stringWidth(announcementCard.getSubTitle());
         double totalWidth = (titleWidth > subTitleWidth ? titleWidth : subTitleWidth);
@@ -514,44 +442,44 @@ public class WestGraphics
             {
                 totalHeight -= titleFM.getDescent();
             }
-            Rectangle2D.Double backgroundRect = new Rectangle2D.Double(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
-            g2.setPaint(announcementCard.getBackgroundColor());
-            g2.fill(backgroundRect);
-            g2.setPaint(announcementCard.getBorderColor());
-            g2.setStroke(new BasicStroke((float)announcementCard.getBorderSize()));
-            g2.draw(backgroundRect);
+            Rectangle2D backgroundRect = new Rectangle2D(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
+            g2.setFill(announcementCard.getBackgroundColor());
+            fill(backgroundRect);
+            g2.setFill(announcementCard.getBorderColor());
+            g2.setLineWidth(announcementCard.getBorderSize());
+            draw(backgroundRect);
         }
         
         //Now draw the title:
         double titleX = announcementCard.getX() + ((totalWidth - titleWidth) / 2);
         double titleY = announcementCard.getY() + titleFM.getHeight() - subTitleFM.getDescent() - subTitleFM.getLeading() - titleFM.getDescent() - titleFM.getLeading();
-        g2.setPaint(announcementCard.getTitleColor());
+        g2.setFill(announcementCard.getTitleColor());
         g2.setFont(announcementCard.getTitleFont());
-        g2.drawString(announcementCard.getTitle(), (float)titleX, (float)titleY);
+        g2.strokeText(announcementCard.getTitle(), titleX, titleY);
         
         //Now draw the seperator:
         double splitY = titleY;
         if(announcementCard.getSplitHeight() > 0)
         {
             splitY += titleFM.getDescent() + announcementCard.getSplitHeight();
-            g2.setStroke(new BasicStroke((float)announcementCard.getSplitHeight()));
-            Path2D.Double path = new Path2D.Double();
-            path.moveTo(announcementCard.getX(), splitY);
-            path.lineTo(announcementCard.getX() + totalWidth, splitY);
-            path.closePath();
-            g2.setPaint(announcementCard.getSplitColor());
-            g2.draw(path);
+            g2.beginPath();
+            g2.setLineWidth(announcementCard.getSplitHeight());
+            g2.moveTo(announcementCard.getX(), splitY);
+            g2.lineTo(announcementCard.getX() + totalWidth, splitY);
+            g2.closePath();
+            g2.setFill(announcementCard.getSplitColor());
+            g2.stroke();
         }
         
         //Finish with the Subtitle:
         double subTitleX = announcementCard.getX() + ((totalWidth - subTitleWidth) / 2);
         double subTitleY = splitY + subTitleFM.getHeight();
         g2.setFont(announcementCard.getSubTitleFont());
-        g2.setPaint(announcementCard.getSubTitleColor());
-        g2.drawString(announcementCard.getSubTitle(), (float)subTitleX, (float)subTitleY);
+        g2.setFill(announcementCard.getSubTitleColor());
+        g2.strokeText(announcementCard.getSubTitle(), subTitleX, subTitleY);
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * Creates a button based on the parameters given by the WGButton object
@@ -560,29 +488,32 @@ public class WestGraphics
     private void drawButton(WGButton button)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Draw the button
-        Rectangle2D.Double buttonRect = button.getBounds();
+        Rectangle2D buttonRect = button.getBounds();
         if(button.isHovered())
         {
-            g2.setPaint(button.getHoverBackgroundColor());
+            g2.setFill(button.getHoverBackgroundColor());
         }
         else
         {
-            g2.setPaint(button.getBackgroundColor());
+            g2.setFill(button.getBackgroundColor());
         }
-        g2.fill(buttonRect);
-        g2.setPaint(button.getBorderColor());
-        g2.setStroke(new BasicStroke((float)button.getBorderSize()));
-        g2.draw(buttonRect);
+        fill(buttonRect);
+        g2.setFill(button.getBorderColor());
+        g2.setLineWidth(button.getBorderSize());
+        draw(buttonRect);
         
         //Draw the contents:
         if(button.getDisplayedImage() != null)
         {
             //The image:
-            AffineTransform transformation = new AffineTransform(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
-            g2.drawImage(button.getDisplayedImage(), transformation, null);
+            Affine transformation = new Affine(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
+            Affine oldTransform = g2.getTransform();
+            g2.setTransform(transformation);
+            g2.drawImage(button.getDisplayedImage(), 0, 0);
+            g2.setTransform(oldTransform);
             //Draw a faint overlay of the background:
             Paint background = button.getBackgroundColor();
             if(background instanceof Color)
@@ -593,23 +524,23 @@ public class WestGraphics
                     backgroundColor = (Color)button.getHoverBackgroundColor();
                 }
                 Paint pictureOverlay = new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 70);
-                g2.setPaint(pictureOverlay);
-                g2.fill(buttonRect);
+                g2.setFill(pictureOverlay);
+                fill(buttonRect);
             }
         }
         else if(button.getTextColor() != null && button.getTextFont() != null && button.getText() != null)
         {
             //The text:
-            g2.setPaint(button.getTextColor());
-            FontMetrics textFM = g2.getFontMetrics(button.getTextFont());
+            g2.setFill(button.getTextColor());
+            FXFontMetrics textFM = new FXFontMetrics(button.getTextFont());
             double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
             double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
             g2.setFont(button.getTextFont());
-            g2.drawString(button.getText(), (float)textX, (float)textY);
+            g2.strokeText(button.getText(), textX, textY);
         }
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * The drawing method for a tooltip all it requires is the tooltip object then it can draw it from there
@@ -618,19 +549,19 @@ public class WestGraphics
     private void drawToolTip(WGToolTip toolTip)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Draw the button
-        Rectangle2D.Double buttonRect = new Rectangle2D.Double(toolTip.getX(), toolTip.getY(), toolTip.getWidth(), toolTip.getHeight());
-        g2.setPaint(toolTip.getBackgroundColor());
-        g2.fill(buttonRect);
-        g2.setPaint(toolTip.getBorderColor());
-        g2.setStroke(new BasicStroke((float)toolTip.getBorderSize()));
-        g2.draw(buttonRect);
+        Rectangle2D buttonRect = new Rectangle2D(toolTip.getX(), toolTip.getY(), toolTip.getWidth(), toolTip.getHeight());
+        g2.setFill(toolTip.getBackgroundColor());
+        fill(buttonRect);
+        g2.setFill(toolTip.getBorderColor());
+        g2.setLineWidth(toolTip.getBorderSize());
+        draw(buttonRect);
         
         //Now the text:
-        g2.setPaint(toolTip.getTextColor());
-        FontMetrics textFM = g2.getFontMetrics(toolTip.getToolTipFont());
+        g2.setFill(toolTip.getTextColor());
+        FXFontMetrics textFM = new FXFontMetrics(toolTip.getToolTipFont());
         double textX = toolTip.getX();
         if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
         {
@@ -650,45 +581,48 @@ public class WestGraphics
                 textX = toolTip.getX() + toolTip.getWidth() - toolTip.getBorderSize() - textFM.stringWidth(text[i]);
             }
             textY += textFM.getHeight();
-            g2.drawString(text[i], (float)textX, (float)textY);
+            g2.strokeText(text[i], textX, textY);
         }
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * The drawing method for a pane that will draw the pane and all subsequent objects attached to the pane
      * @param pane The pane to be drawn and the components added to it that also draw
      */
-    private void drawPane(WGPane pane, boolean withinAnotherPane)
+    private void drawPane(WGPane pane, boolean withinAnotherPane, Rectangle2D oldClip)
     {
         if(!pane.isShown())
         {
             return;
         }
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
         
         //Save the original clip in case the user wanted that one:
-        Shape oldClip = g2.getClip();
+        g2.save();
         
         //Draw the background:
-        Rectangle2D.Double buttonRect = new Rectangle2D.Double(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
+        Rectangle2D buttonRect = new Rectangle2D(pane.getX(), pane.getY(), pane.getWidth(), pane.getHeight());
         if(pane.isHovered())
         {
-            g2.setPaint(pane.getHoverBackgroundColor());
+            g2.setFill(pane.getHoverBackgroundColor());
         }
         else
         {
-            g2.setPaint(pane.getBackgroundColor());
+            g2.setFill(pane.getBackgroundColor());
         }
-        g2.fill(buttonRect);
+        fill(buttonRect);
         
         
         //To make sure nothing goes off the pane:
         if(!withinAnotherPane || oldClip.contains(pane.getBounds())) //If not within another pane or the other pane's clip contains our clip, then we can redo the clip
         {
-            g2.setClip(pane.getBounds());
+        	g2.beginPath();
+        	Rectangle2D rect = pane.getBounds();
+        	g2.rect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+            g2.clip();
         }
         
         //Now the internal components:
@@ -697,7 +631,7 @@ public class WestGraphics
             WGDrawingObject obj = pane.getComponent(i);
             if(obj instanceof WGPane)
             {
-                drawPane((WGPane)obj, true);
+                drawPane((WGPane)obj, true, pane.getBounds());
                 //Remember to collect the toolTip:
                 WGToolTip addedToolTip = obj.getToolTip();
                 if(addedToolTip != null && addedToolTip.isShown())
@@ -718,16 +652,16 @@ public class WestGraphics
         
         
         //Reload the old clip, as it is no longer useful:
-        g2.setClip(oldClip);
+        g2.restore();
         
         
         //Then draw in the border:
-        g2.setPaint(pane.getBorderColor());
-        g2.setStroke(new BasicStroke((float)pane.getBorderSize()));
-        g2.draw(buttonRect);
+        g2.setFill(pane.getBorderColor());
+        g2.setLineWidth(pane.getBorderSize());
+        draw(buttonRect);
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     private void drawScrollBar(WGScrollableListener scrollBar, WGPane pane)
     {
@@ -759,9 +693,9 @@ public class WestGraphics
         //Then draw in the scrollBar:
         if(pane.isScrollable() && scrollBar != null && scrollBar.isShown())
         {
-            g2.setPaint(pane.getScrollBarColor());
-            Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
-            g2.fill(scrollBarRect);
+            g2.setFill(pane.getScrollBarColor());
+            Rectangle2D scrollBarRect =  new Rectangle2D(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
+            fill(scrollBarRect);
         }
     }
     private void drawScrollBar(WGTextScrollableListener scrollBar, WGTextArea textArea)
@@ -786,9 +720,9 @@ public class WestGraphics
         //Then draw in the scrollBar:
         if(scrollBar != null && scrollBar.isShown())
         {
-            g2.setPaint(textArea.getScrollBarColor());
-            Rectangle2D.Double scrollBarRect =  new Rectangle2D.Double(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
-            g2.fill(scrollBarRect);
+            g2.setFill(textArea.getScrollBarColor());
+            Rectangle2D scrollBarRect =  new Rectangle2D(scrollBarX, scrollBarY, scrollBarWidth, scrollBarHeight);
+            fill(scrollBarRect);
         }
     }
     /**
@@ -799,11 +733,11 @@ public class WestGraphics
     {
         
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
         
         //Draw the text:
-        g2.setPaint(label.getTextColor());
-        FontMetrics textFM = g2.getFontMetrics(label.getTextFont());
+        g2.setFill(label.getTextColor());
+        FXFontMetrics textFM = new FXFontMetrics(label.getTextFont());
         double textX = label.getX();
         
         double textY = label.getY() - textFM.getDescent() + label.getBorderSize();
@@ -819,10 +753,10 @@ public class WestGraphics
         }
         
         textY += textFM.getHeight();
-        g2.drawString(label.getText(), (float)textX, (float)textY);
+        g2.strokeText(label.getText(), textX, textY);
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * Creates a textInput based on the information given by the object
@@ -831,49 +765,49 @@ public class WestGraphics
     private void drawTextInput(WGTextInput textInput)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Draw the Box
-        Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
+        Rectangle2D buttonRect = new Rectangle2D(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
         Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
         if(textInput.isHovered() && !textInput.isFocused())
         {
-            g2.setPaint(textInput.getHoverBackgroundColor());
+            g2.setFill(textInput.getHoverBackgroundColor());
         }
         else
         {
-            g2.setPaint(backgroundColor);
+            g2.setFill(backgroundColor);
         }
-        g2.fill(buttonRect);
+        fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
-        g2.setPaint(borderColor);
-        g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
-        g2.draw(buttonRect);
+        g2.setFill(borderColor);
+        g2.setLineWidth(textInput.getBorderSize());
+        draw(buttonRect);
             
         //Draw the highlight:
         if(textInput.isHighlightShown() && textInput.isFocused())
         {
-            g2.setPaint(textInput.getHighlightColor());
-            g2.fill(textInput.getHighlightBounds());
+            g2.setFill(textInput.getHighlightColor());
+            fill(textInput.getHighlightBounds());
         }
         
         //Now the text:
-        g2.setPaint(textInput.getTextColor());
-        FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
+        g2.setFill(textInput.getTextColor());
+        FXFontMetrics textFM = new FXFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
         double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
         g2.setFont(textInput.getTextFont());
-        g2.drawString(textInput.getText(), (float)textX, (float)textY);
+        g2.strokeText(textInput.getText(), textX, textY);
             
         //Draw the cursor
         if(textInput.isCursorShown() && textInput.isFocused())
         {
-            g2.setPaint(textInput.getCursorColor());
-            g2.fill(textInput.getCursorBounds());
+            g2.setFill(textInput.getCursorColor());
+            fill(textInput.getCursorBounds());
         }
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     /**
      * 
@@ -882,16 +816,19 @@ public class WestGraphics
     private void drawTextArea(WGTextArea textArea)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
         
         //Save the original clip in case the user wanted that one:
-        Shape oldClip = g2.getClip();
+        g2.save();
         
         //To make sure nothing goes off the pane:
-        g2.setClip(textArea.getBounds());
+    	g2.beginPath();
+    	Rectangle2D rect = textArea.getBounds();
+    	g2.rect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+        g2.clip();
         
         //Draw the text:
-        FontMetrics textFM = g2.getFontMetrics(textArea.getTextFont());
+        FXFontMetrics textFM = new FXFontMetrics(textArea.getTextFont());
         double textX = textArea.getX();
         double textY = textArea.getY() - textFM.getDescent() + textArea.getBorderSize();
         
@@ -922,11 +859,11 @@ public class WestGraphics
             }
             else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
             {
-                int stringWidth = textFM.stringWidth(allText.get(i));
+                double stringWidth = textFM.stringWidth(allText.get(i));
                 textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
             }
-            g2.setPaint(allTextColors.get(i));
-            g2.drawString(allText.get(i), (float)textX, (float)textY);
+            g2.setFill(allTextColors.get(i));
+            g2.strokeText(allText.get(i), textX, textY);
             textY += textFM.getHeight();
         }
         
@@ -935,131 +872,136 @@ public class WestGraphics
         
         
         //Reload the old clip, as it is no longer useful:
-        g2.setClip(oldClip);
+        g2.restore();
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     public void drawCheckBox(WGCheckBox checkBox)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Draw the button
-        Rectangle2D.Double buttonRect = checkBox.getBounds();
+        Rectangle2D buttonRect = checkBox.getBounds();
         if(checkBox.isHovered())
         {
-            g2.setPaint(checkBox.getHoverBackgroundColor());
+            g2.setFill(checkBox.getHoverBackgroundColor());
         }
         else
         {
-            g2.setPaint(checkBox.getBackgroundColor());
+            g2.setFill(checkBox.getBackgroundColor());
         }
-        g2.fill(buttonRect);
-        g2.setPaint(checkBox.getBorderColor());
-        g2.setStroke(new BasicStroke((float)checkBox.getBorderSize()));
-        g2.draw(buttonRect);
+        fill(buttonRect);
+        g2.setFill(checkBox.getBorderColor());
+        g2.setLineWidth(checkBox.getBorderSize());
+        draw(buttonRect);
         
         //Draw the Check when needed:
         if(checkBox.isChecked())
         {
-            g2.setPaint(checkBox.getCheckColor());
-            Path2D.Double path = new Path2D.Double();
-            path.moveTo(buttonRect.getX(), buttonRect.getY());
-            path.lineTo(buttonRect.getX() + buttonRect.getWidth(), buttonRect.getY() + buttonRect.getHeight());
-            g2.draw(path);
-            path.reset();
-            path.moveTo(buttonRect.getX() + buttonRect.getWidth(), buttonRect.getY());
-            path.lineTo(buttonRect.getX(), buttonRect.getY() + buttonRect.getHeight());
-            g2.draw(path);
+            g2.setFill(checkBox.getCheckColor());
+            g2.beginPath();
+            g2.moveTo(buttonRect.getMinX(), buttonRect.getMinY());
+            g2.lineTo(buttonRect.getMinX() + buttonRect.getWidth(), buttonRect.getMinY() + buttonRect.getHeight());
+            g2.closePath();
+            g2.stroke();
+            g2.beginPath();
+            g2.moveTo(buttonRect.getMinX() + buttonRect.getWidth(), buttonRect.getMinY());
+            g2.lineTo(buttonRect.getMinX(), buttonRect.getMinY() + buttonRect.getHeight());
+            g2.closePath();
+            g2.stroke();
         }
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     private void drawKeyInput(WGKeyInput textInput)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
             
         //Draw the Box
-        Rectangle2D.Double buttonRect = new Rectangle2D.Double(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
+        Rectangle2D buttonRect = new Rectangle2D(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
         Paint backgroundColor = (textInput.isFocused()) ? textInput.getBackgroundOnFocusColor() : textInput.getBackgroundColor();
         if(textInput.isHovered() && !textInput.isFocused())
         {
-            g2.setPaint(textInput.getHoverBackgroundColor());
+            g2.setFill(textInput.getHoverBackgroundColor());
         }
         else
         {
-            g2.setPaint(backgroundColor);
+            g2.setFill(backgroundColor);
         }
-        g2.fill(buttonRect);
+        fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
-        g2.setPaint(borderColor);
-        g2.setStroke(new BasicStroke((float)textInput.getBorderSize()));
-        g2.draw(buttonRect);
+        g2.setFill(borderColor);
+        g2.setLineWidth(textInput.getBorderSize());
+        draw(buttonRect);
         
         //Now the text:
-        g2.setPaint(textInput.getTextColor());
-        FontMetrics textFM = g2.getFontMetrics(textInput.getTextFont());
+        g2.setFill(textInput.getTextColor());
+        FXFontMetrics textFM = new FXFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
         double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
         g2.setFont(textInput.getTextFont());
-        g2.drawString(textInput.getText(), (float)textX, (float)textY);
+        g2.strokeText(textInput.getText(), textX, textY);
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
     }
     private void drawTextImage(WGTextImage textImage)
     {
         //Draw the Image:
-        BufferedImage image = textImage.getDisplayImage();
+        Image image = textImage.getDisplayImage();
         if(image == null) //Don't draw something that will result in an error!
         {
             return;
         }
-        AffineTransform transformation = new AffineTransform(textImage.getImageXScale(),0,0,textImage.getImageYScale(), textImage.getX() + textImage.getImageOffSetX(), textImage.getY() + textImage.getImageOffSetY());
-        g2.drawImage(image, transformation, null);
+        Affine transformation = new Affine(textImage.getImageXScale(),0,0,textImage.getImageYScale(), textImage.getX() + textImage.getImageOffSetX(), textImage.getY() + textImage.getImageOffSetY());
+        Affine oldTransform = g2.getTransform();
+        g2.setTransform(transformation);
+        g2.drawImage(image, 0, 0);
+        g2.setTransform(oldTransform);
         
         //Now the text:
-        g2.setPaint(textImage.getTextColor());
+        g2.setFill(textImage.getTextColor());
         double textX = textImage.getTextX();
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());
-        g2.drawString(textImage.getImageText(), (float)(textImage.getX() + textX + textImage.getImageOffSetX()), (float)(textImage.getY() + textY + textImage.getImageOffSetY()));
+        g2.strokeText(textImage.getImageText(), (textImage.getX() + textX + textImage.getImageOffSetX()), (textImage.getY() + textY + textImage.getImageOffSetY()));
     }
     private void drawDropDown(WGDropDown dropDown)
     {
         //Save the original stroke in case the user wanted that one
-        Stroke oldStroke = g2.getStroke();
+        Double oldStroke = g2.getLineWidth();
         
         if(!dropDown.isDroppedDown())
         {
             //Simple to draw:
 
             //Draw the button
-            Rectangle2D.Double buttonRect = dropDown.getBounds();
+            Rectangle2D buttonRect = dropDown.getBounds();
             if(dropDown.isHovered())
             {
-                g2.setPaint(dropDown.getHoverBackgroundColor());
+                g2.setFill(dropDown.getHoverBackgroundColor());
             }
             else
             {
-                g2.setPaint(dropDown.getBackgroundColor());
+                g2.setFill(dropDown.getBackgroundColor());
             }
-            g2.fill(buttonRect);
-            g2.setPaint(dropDown.getBorderColor());
-            g2.setStroke(new BasicStroke((float)dropDown.getBorderSize()));
-            g2.draw(buttonRect);
+            fill(buttonRect);
+            g2.setFill(dropDown.getBorderColor());
+            g2.setLineWidth(dropDown.getBorderSize());
+            draw(buttonRect);
 
             //Draw the text:
-            g2.setPaint(dropDown.getTextColor());
-            FontMetrics textFM = g2.getFontMetrics(dropDown.getTextFont());
+            g2.setFill(dropDown.getTextColor());
+            FXFontMetrics textFM = new FXFontMetrics(dropDown.getTextFont());
             String text = dropDown.getSelectedChoiceText();
             double textX = dropDown.getX() + ((dropDown.getWidth() - textFM.stringWidth(text)) / 2);
             double textY = dropDown.getY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getHeight()) / 2);
             g2.setFont(dropDown.getTextFont());
-            g2.drawString(text, (float)textX, (float)textY);
+            g2.strokeText(text, textX, textY);
         }
         else
         {
@@ -1072,30 +1014,30 @@ public class WestGraphics
             Paint[] textColors = dropDown.getTextColors();
             for(int i = 0 ; i < choices.length ; i++)
             {
-                Rectangle2D.Double buttonBounds = new Rectangle2D.Double(buttonX, buttonY, dropDown.getButtonWidth(), dropDown.getButtonHeight());
+                Rectangle2D buttonBounds = new Rectangle2D(buttonX, buttonY, dropDown.getButtonWidth(), dropDown.getButtonHeight());
                 
                 //Draw the button:
                 if(dropDown.isHovered() && dropDown.getHoveredIndex() == i)
                 {
-                    g2.setPaint(dropDown.getHoverBackgroundColor());
+                    g2.setFill(dropDown.getHoverBackgroundColor());
                 }
                 else
                 {
-                    g2.setPaint(dropDown.getBackgroundColor());
+                    g2.setFill(dropDown.getBackgroundColor());
                 }
-                g2.fill(buttonBounds);
-                g2.setPaint(dropDown.getBorderColor());
-                g2.setStroke(new BasicStroke((float)dropDown.getBorderSize()));
-                g2.draw(buttonBounds);
+                fill(buttonBounds);
+                g2.setFill(dropDown.getBorderColor());
+                g2.setLineWidth(dropDown.getBorderSize());
+                draw(buttonBounds);
                 
                 //Draw the text:
-                g2.setPaint(textColors[i]);
-                FontMetrics textFM = g2.getFontMetrics(dropDown.getTextFont());
+                g2.setFill(textColors[i]);
+                FXFontMetrics textFM = new FXFontMetrics(dropDown.getTextFont());
                 String text = choices[i];
-                double textX = buttonBounds.getX() + ((dropDown.getButtonWidth() - textFM.stringWidth(text)) / 2);
-                double textY = buttonBounds.getY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getButtonHeight()) / 2);
+                double textX = buttonBounds.getMinX() + ((dropDown.getButtonWidth() - textFM.stringWidth(text)) / 2);
+                double textY = buttonBounds.getMinY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getButtonHeight()) / 2);
                 g2.setFont(dropDown.getTextFont());
-                g2.drawString(text, (float)textX, (float)textY);
+                g2.strokeText(text, textX, textY);
                 
                 //Now set up the next button's starting point:
                 buttonY += dropDown.getButtonHeight();
@@ -1103,6 +1045,28 @@ public class WestGraphics
         }
         
         //And reload it at the end
-        g2.setStroke(oldStroke);
+        g2.setLineWidth(oldStroke);
+    }
+    
+    //Porting functions:
+    public void fill(Rectangle2D rect)
+    {
+    	g2.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+    }
+    public void fill(Ellipse oval)
+    {
+    	Double radiusX = oval.getRadiusX();
+    	Double radiusY = oval.getRadiusY();
+    	g2.fillOval(oval.getCenterX() - radiusX, oval.getCenterY() - radiusY, radiusX * 2, radiusY * 2);
+    }
+    public void draw(Rectangle2D rect)
+    {
+    	g2.strokeRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+    }
+    public void draw(Ellipse oval)
+    {
+    	Double radiusX = oval.getRadiusX();
+    	Double radiusY = oval.getRadiusY();
+    	g2.strokeOval(oval.getCenterX() - radiusX, oval.getCenterY() - radiusY, radiusX * 2, radiusY * 2);
     }
 }

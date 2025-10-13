@@ -4,7 +4,7 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
+import javafx.scene.paint.Color;
 import utilities.FileProcessor;
 
 /**
@@ -21,15 +21,16 @@ public class WGColorHelper
     public static final int LINEAR_SEARCH_COLOR_OVERFLOW = 3;
     public static final boolean PREFERRANCE_COLOR_LIGHTER = true;
     public static final boolean PREFERRANCE_COLOR_DARKER = false;
+    private static final int DARKER_CUT_OFF = 25;
     public static Color getInverseColor(Color originalColor)
     {
-        Color newColor = new Color(RGBAMAX - originalColor.getRed(), RGBAMAX - originalColor.getGreen(), RGBAMAX - originalColor.getBlue());
+        Color newColor = new Color(1 - originalColor.getRed(), 1 - originalColor.getGreen(), 1 - originalColor.getBlue(), originalColor.getOpacity());
         return newColor;
     }
     public static Color getGrayScaleColor(Color originalColor)
     {
-        int average = (originalColor.getRed() + originalColor.getGreen() + originalColor.getBlue()) /3;
-        Color newColor =  new Color(average, average, average);
+        int average = (int)(RGBAMAX * (originalColor.getRed() + originalColor.getGreen() + originalColor.getBlue()) /3);
+        Color newColor =  Color.rgb(average, average, average);
         return newColor;
     }
     public static Color addToColor(Color originalColor, int red, int green, int blue, int alpha, int overflowColorBehavior)
@@ -37,14 +38,14 @@ public class WGColorHelper
         Color newColor;
         if(overflowColorBehavior != LINEAR_SEARCH_COLOR_OVERFLOW)
         {
-            newColor = new Color(fixOutOfBoundColor(originalColor.getRed() + red, overflowColorBehavior), fixOutOfBoundColor(originalColor.getGreen() + green, overflowColorBehavior), fixOutOfBoundColor(originalColor.getBlue() + blue, overflowColorBehavior), fixOutOfBoundColor(originalColor.getAlpha() + alpha, overflowColorBehavior));
+            newColor = Color.rgb(fixOutOfBoundColor((int)(RGBAMAX * originalColor.getRed()) + red, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getGreen()) + green, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getBlue()) + blue, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getOpacity()) + alpha, overflowColorBehavior));
         }
         else
         {
-            int currentAlpha = originalColor.getAlpha();
-            int currentBlue = originalColor.getBlue();
-            int currentGreen = originalColor.getGreen();
-            int currentRed = originalColor.getRed();
+            int currentAlpha = (int)(RGBAMAX * originalColor.getOpacity());
+            int currentBlue = (int)(RGBAMAX * originalColor.getBlue());
+            int currentGreen = (int)(RGBAMAX * originalColor.getGreen());
+            int currentRed = (int)(RGBAMAX * originalColor.getRed());
             if(currentAlpha + alpha > 255)
             {
                 currentAlpha = (currentAlpha + alpha) - 255;
@@ -60,14 +61,14 @@ public class WGColorHelper
                 currentGreen = (currentGreen + green) - 255;
                 currentRed++;
             }
-            newColor = new Color(fixOutOfBoundColor(currentRed + red, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentGreen, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentBlue, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentAlpha, PREVENT_COLOR_OVERFLOW));
+            newColor = Color.rgb(fixOutOfBoundColor(currentRed + red, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentGreen, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentBlue, PREVENT_COLOR_OVERFLOW), fixOutOfBoundColor(currentAlpha, PREVENT_COLOR_OVERFLOW));
         }
         
         return newColor;
     }
     public static Color createColor(String colorData)
     {
-        Color newColor = Color.black;
+        Color newColor = Color.BLACK;
         String temp[] = colorData.split(",");
         if(temp.length >= 3)
         {
@@ -79,7 +80,7 @@ public class WGColorHelper
             {
                 alpha = FileProcessor.toInt(temp[3]);
             }
-            newColor = new Color(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), putColorIntInRange(alpha));
+            newColor = Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), putColorIntInRange(alpha));
         }
         return newColor;
     }
@@ -88,22 +89,22 @@ public class WGColorHelper
         String text = "0, 0, 0";
         if(color != null)
         {
-            text = color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + ", " + color.getAlpha();
+            text = (int)(RGBAMAX * color.getRed()) + ", " + (int)(RGBAMAX * color.getGreen()) + ", " + (int)(RGBAMAX * color.getBlue()) + ", " + (int)(RGBAMAX * color.getOpacity());
         }
         return text;
     }
     public static Color combineTwoColors(Color color1, double c1Percentage, Color color2, double c2Percentage)
     {
         Color combinedColor;
-        int colorRed = (int)((color1.getRed() * c1Percentage) + (color2.getRed() * c2Percentage));
-        int colorGreen = (int)((color1.getGreen() * c1Percentage) + (color2.getGreen() * c2Percentage));
-        int colorBlue = (int)((color1.getBlue() * c1Percentage) + (color2.getBlue() * c2Percentage));
-        int alpha = (int)((color1.getAlpha() * c1Percentage) + (color2.getAlpha() * c2Percentage));
+        int colorRed = (int)(((int)(RGBAMAX * color1.getRed()) * c1Percentage) + ((int)(RGBAMAX * color2.getRed()) * c2Percentage));
+        int colorGreen = (int)(((int)(RGBAMAX * color1.getGreen()) * c1Percentage) + ((int)(RGBAMAX * color2.getGreen()) * c2Percentage));
+        int colorBlue = (int)(((int)(RGBAMAX * color1.getBlue()) * c1Percentage) + ((int)(RGBAMAX * color2.getBlue()) * c2Percentage));
+        int alpha = (int)(((int)(RGBAMAX * color1.getOpacity()) * c1Percentage) + ((int)(RGBAMAX * color2.getOpacity()) * c2Percentage));
         colorRed = putColorIntInRange(colorRed);
         colorGreen = putColorIntInRange(colorGreen);
         colorBlue = putColorIntInRange(colorBlue);
         alpha = putColorIntInRange(alpha);
-        combinedColor = new Color(colorRed, colorGreen, colorBlue, alpha);
+        combinedColor = Color.rgb(colorRed, colorGreen, colorBlue, alpha);
         return combinedColor;
     }
     /**
@@ -113,13 +114,12 @@ public class WGColorHelper
      */
     public static Color getDarkerOrLighter(Color color)
     {
-        int darkerCutOff = 25;
         //Assume darker is ok
         Color newColor = color.darker();
-        int red = color.getRed();
-        int green = color.getGreen();
-        int blue = color.getBlue();
-        if(red < darkerCutOff && green < darkerCutOff && blue < darkerCutOff) //Test for if it is not
+        int red = (int)(RGBAMAX * color.getRed());
+        int green = (int)(RGBAMAX * color.getGreen());
+        int blue = (int)(RGBAMAX * color.getBlue());
+        if(red < DARKER_CUT_OFF && green < DARKER_CUT_OFF && blue < DARKER_CUT_OFF) //Test for if it is not
         {
             newColor = color.brighter();
         }
@@ -137,15 +137,15 @@ public class WGColorHelper
         Color newColor = color;
         if(!preferance)
         {
-            int darkerCutOff = 25 * numTimes;
+            int darkerCutOff = DARKER_CUT_OFF * numTimes;
             //Assume darker is ok
             for(int i = 0 ; i < numTimes ; i++)
             {
                 newColor = newColor.darker();
             }
-            int red = color.getRed();
-            int green = color.getGreen();
-            int blue = color.getBlue();
+            int red = (int)(RGBAMAX * color.getRed());
+            int green = (int)(RGBAMAX * color.getGreen());
+            int blue = (int)(RGBAMAX * color.getBlue());
             if(red < darkerCutOff && green < darkerCutOff && blue < darkerCutOff) //Test for if it is not
             {
                 newColor = color;
@@ -157,15 +157,15 @@ public class WGColorHelper
         }
         else
         {
-            int lighterCutOff = 255 - (25 * numTimes);
+            int lighterCutOff = 255 - (DARKER_CUT_OFF * numTimes);
             //Assume darker is ok
             for(int i = 0 ; i < numTimes ; i++)
             {
                 newColor = newColor.brighter();
             }
-            int red = color.getRed();
-            int green = color.getGreen();
-            int blue = color.getBlue();
+            int red = (int)(RGBAMAX * color.getRed());
+            int green = (int)(RGBAMAX * color.getGreen());
+            int blue = (int)(RGBAMAX * color.getBlue());
             if(red > lighterCutOff && green > lighterCutOff && blue > lighterCutOff) //Test for if it is not
             {
                 newColor = color;
@@ -233,22 +233,22 @@ public class WGColorHelper
     }
     public static boolean willBounce(Color color, int redAdd, int greenAdd, int blueAdd, int alphaAdd)
     {
-        int redComp = color.getRed() + redAdd;
+        int redComp = (int)(RGBAMAX * color.getRed()) + redAdd;
         if(redComp > 255 || redComp < 0)
         {
             return true;
         }
-        int greenComp = color.getGreen() + greenAdd;
+        int greenComp = (int)(RGBAMAX * color.getGreen()) + greenAdd;
         if(greenComp > 255 || greenComp < 0)
         {
             return true;
         }
-        int blueComp = color.getBlue() + blueAdd;
+        int blueComp = (int)(RGBAMAX * color.getBlue()) + blueAdd;
         if(blueComp > 255 || blueComp < 0)
         {
             return true;
         }
-        int alphaComp = color.getAlpha() + alphaAdd;
+        int alphaComp = (int)(RGBAMAX * color.getOpacity()) + alphaAdd;
         if(alphaComp > 255 || alphaComp < 0)
         {
             return true;
@@ -263,8 +263,8 @@ public class WGColorHelper
      */
     public static boolean isColorGreaterThanColor(Color firstColor, Color secondColor)
     {
-        int[] color1 = {firstColor.getRed(), firstColor.getGreen(), firstColor.getBlue(), firstColor.getAlpha()};
-        int[] color2 = {secondColor.getRed(), secondColor.getGreen(), secondColor.getBlue(), secondColor.getAlpha()};
+        int[] color1 = {(int)(RGBAMAX * firstColor.getRed()), (int)(RGBAMAX * firstColor.getGreen()), (int)(RGBAMAX * firstColor.getBlue()), (int)(RGBAMAX * firstColor.getOpacity())};
+        int[] color2 = {(int)(RGBAMAX * secondColor.getRed()), (int)(RGBAMAX * secondColor.getGreen()), (int)(RGBAMAX * secondColor.getBlue()), (int)(RGBAMAX * secondColor.getOpacity())};
         for(int i = 0 ; i < color1.length ; i++)
         {
             if(color1[i] > color2[i])
@@ -286,8 +286,8 @@ public class WGColorHelper
      */
     public static boolean isColorEqualToColor(Color firstColor, Color secondColor)
     {
-        int[] color1 = {firstColor.getRed(), firstColor.getGreen(), firstColor.getBlue(), firstColor.getAlpha()};
-        int[] color2 = {secondColor.getRed(), secondColor.getGreen(), secondColor.getBlue(), secondColor.getAlpha()};
+        int[] color1 = {(int)(RGBAMAX * firstColor.getRed()), (int)(RGBAMAX * firstColor.getGreen()), (int)(RGBAMAX * firstColor.getBlue()), (int)(RGBAMAX * firstColor.getOpacity())};
+        int[] color2 = {(int)(RGBAMAX * secondColor.getRed()), (int)(RGBAMAX * secondColor.getGreen()), (int)(RGBAMAX * secondColor.getBlue()), (int)(RGBAMAX * secondColor.getOpacity())};
         for(int i = 0 ; i < color1.length ; i++)
         {
             if(color1[i] != color2[i])

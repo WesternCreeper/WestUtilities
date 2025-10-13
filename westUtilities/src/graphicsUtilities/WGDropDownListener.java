@@ -4,8 +4,8 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.event.MouseEvent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
@@ -18,7 +18,7 @@ public class WGDropDownListener extends WGButtonListener
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      */
-    public WGDropDownListener(WGBox parentObject, Component parentComponent)
+    public WGDropDownListener(WGBox parentObject, Canvas parentComponent)
     {
         super(parentObject, parentComponent);
     }
@@ -100,6 +100,5 @@ public class WGDropDownListener extends WGButtonListener
         }
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
-        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
 }

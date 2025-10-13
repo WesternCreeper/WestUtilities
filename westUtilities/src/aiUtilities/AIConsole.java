@@ -6,6 +6,14 @@ package aiUtilities;
 
 import graphicsUtilities.Console;
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGNullParentException;
@@ -14,13 +22,6 @@ import graphicsUtilities.WGTextInput;
 import graphicsUtilities.WGTextInputClickListener;
 import graphicsUtilities.WGTextInputKeyListener;
 import graphicsUtilities.WestGraphics;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 /**
  * This is a standardized communication device with an AI and translates your messages into AI language rather than teaching it a language.
  * @author Westley
@@ -36,18 +37,18 @@ public class AIConsole extends Console
     //Graphics variables:
     private final double slotSize = 50;
     private final float standardBorderSize = 5;
-    private final Color backgroundColor = new Color(209, 211, 255);
-    private final Color scrollbarColor = new Color(149, 151, 201);
-    private final Color highlightColor = new Color(195, 219, 191);
-    private final Color borderColor = new Color(186, 189, 245);
-    private final Color cursorColor = new Color(149, 151, 201);
-    private final Color textColor = new Color(196, 175, 16);
-    private final Font outputFont = new Font("Monospaced", Font.BOLD, 23);
-    private final Font inputFont = new Font("Monospaced", Font.ITALIC, 23);
-    private final Font returnButtonFont = new Font("Serif", Font.BOLD, 23);
-    private final Rectangle2D.Double consoleOutputBounds = new Rectangle2D.Double(1 / slotSize, 1/ slotSize, 48/slotSize, 42 / slotSize);
-    private final Rectangle2D.Double consoleInputBounds = new Rectangle2D.Double(6 / slotSize, 43/ slotSize, 43/slotSize, 6 / slotSize);
-    private final Rectangle2D.Double consoleReturnButtonBounds = new Rectangle2D.Double(1 / slotSize, 43/ slotSize, 5/slotSize, 6 / slotSize);
+    private final Color backgroundColor = Color.rgb(209, 211, 255);
+    private final Color scrollbarColor = Color.rgb(149, 151, 201);
+    private final Color highlightColor = Color.rgb(195, 219, 191);
+    private final Color borderColor = Color.rgb(186, 189, 245);
+    private final Color cursorColor = Color.rgb(149, 151, 201);
+    private final Color textColor = Color.rgb(196, 175, 16);
+    private final Font outputFont = Font.font("Monospaced", FontWeight.BOLD, FontPosture.REGULAR, 23);
+    private final Font inputFont = Font.font("Monospaced", FontWeight.NORMAL, FontPosture.ITALIC, 23);
+    private final Font returnButtonFont = Font.font("Serif", FontWeight.BOLD, FontPosture.REGULAR, 23);
+    private final Rectangle2D consoleOutputBounds = new Rectangle2D(1 / slotSize, 1/ slotSize, 48/slotSize, 42 / slotSize);
+    private final Rectangle2D consoleInputBounds = new Rectangle2D(6 / slotSize, 43/ slotSize, 43/slotSize, 6 / slotSize);
+    private final Rectangle2D consoleReturnButtonBounds = new Rectangle2D(1 / slotSize, 43/ slotSize, 5/slotSize, 6 / slotSize);
     
     /**
      * The standard way to communicate with the user
@@ -65,16 +66,15 @@ public class AIConsole extends Console
         }
         catch(WGNullParentException e){System.exit(-1);}
         
-        this.setFocusable(true);
         this.requestFocus();
     }
-    public void paintComponent(Graphics g) 
+    public void draw() 
     {
-        Graphics2D g2 = (Graphics2D)g;
+        GraphicsContext g2 = this.getGraphicsContext2D();
         WestGraphics g3 = new WestGraphics(g2);
         
-        g2.setColor(backgroundColor);
-        g2.fill(new Rectangle2D.Double(0, 0, getSize().width, getSize().height));
+        g2.setFill(backgroundColor);
+        g2.fillRect(0, 0, getWidth(), getHeight());
         
         g3.draw(consoleOutput);
         g3.draw(consoleInput);

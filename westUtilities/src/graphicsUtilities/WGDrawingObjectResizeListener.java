@@ -4,44 +4,35 @@
  */
 package graphicsUtilities;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.geom.Rectangle2D;
+import javafx.beans.value.ChangeListener;
+import javafx.geometry.Rectangle2D;
 
 /**
  *
  * @author Westley
  */
-public abstract class WGDrawingObjectResizeListener implements ComponentListener
+public abstract class WGDrawingObjectResizeListener
 {
     private double xPercent = 0;
     private double yPercent = 0;
     private double widthPercent = 0;
     private double heightPercent = 0;
+    private ChangeListener<Number> resizeListener;
     protected WGDrawingObjectResizeListener(double xPercent, double yPercent, double widthPercent, double heightPercent)
     {
         this.xPercent = xPercent;
         this.yPercent = yPercent;
         this.widthPercent = widthPercent;
         this.heightPercent = heightPercent;
+        this.resizeListener = (obs, oldVal, newVal) -> resizeComps();
     }
-    public void componentHidden(ComponentEvent e){}
-    public void componentMoved(ComponentEvent e){}
-    public void componentShown(ComponentEvent e)
+    public void setBounds(Rectangle2D newBounds)
     {
-        resizeComps();
-    }
-    public void componentResized(ComponentEvent e)
-    {
-        resizeComps();
-    }
-    
-    public void setBounds(Rectangle2D.Double newBounds)
-    {
-        xPercent = newBounds.getX();
-        yPercent = newBounds.getY();
+        xPercent = newBounds.getMinX();
+        yPercent = newBounds.getMinY();
         widthPercent = newBounds.getWidth();
         heightPercent = newBounds.getHeight();
+        this.resizeListener = (obs, oldVal, newVal) -> resizeComps();
         resizeComps();
     }
     
@@ -63,6 +54,10 @@ public abstract class WGDrawingObjectResizeListener implements ComponentListener
     public double getHeightPercent() {
         return heightPercent;
     }
+
+	public ChangeListener<Number> getResizeListener() {
+		return resizeListener;
+	}
     
     //Setters:
     public void setXPercent(double xPercent) {
@@ -84,5 +79,9 @@ public abstract class WGDrawingObjectResizeListener implements ComponentListener
         this.heightPercent = heightPercent;
         resizeComps();
     }
+    
+	public void setResizeListener(ChangeListener<Number> resizeListener) {
+		this.resizeListener = resizeListener;
+	}
     
 }

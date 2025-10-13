@@ -4,11 +4,13 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import utilities.FXFontMetrics;
 
 /**
  *
@@ -38,7 +40,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         toolTipText = text.split("\n");
@@ -49,11 +51,11 @@ public class WGToolTip extends WGBox implements TextStyles
             listener.setParentComponent(parent);
             listener.setParentObject(toolTipOwner);
             listener.setToolTipObject(this);
-            getParent().addMouseListener(listener);
-            getParent().addMouseMotionListener(listener);
+            getParent().addEventHandler(MouseEvent.ANY, listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
-            getParent().addComponentListener(resizer);
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -77,7 +79,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         this(widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, listener, toolTipOwner);
         this.textStyle = textStyle;
@@ -93,7 +95,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, String text, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, String text, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
     {
         this(widthPercent, heightPercent, theme.getBorderSize(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
         this.textStyle = theme.getTextStyle();
@@ -116,7 +118,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.autoResizeText = autoResizeText;
@@ -128,11 +130,11 @@ public class WGToolTip extends WGBox implements TextStyles
             listener.setParentComponent(parent);
             listener.setParentObject(toolTipOwner);
             listener.setToolTipObject(this);
-            getParent().addMouseListener(listener);
-            getParent().addMouseMotionListener(listener);
+            getParent().addEventHandler(MouseEvent.ANY, listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
-            getParent().addComponentListener(resizer);
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -153,7 +155,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, String text, Component parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, String text, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner, WGTheme theme) throws WGNullParentException
     {
         this(widthPercent, heightPercent, autoResizeText, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), parent, listener, toolTipOwner);
         setCurrentTheme(theme);
@@ -165,16 +167,16 @@ public class WGToolTip extends WGBox implements TextStyles
      * Returns a rectangular representation of the object
      * @return Rectangl2D.Double - bounds of the object
      */
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+       Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
     public void setUpBounds()
     {
         resizer.resizeComps();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -192,11 +194,11 @@ public class WGToolTip extends WGBox implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         
         WGToolTipListener toolTip = getToolTipListener();
-        getParent().removeMouseListener(toolTip);
-        getParent().removeMouseMotionListener(toolTip);
+        getParent().removeEventHandler(MouseEvent.ANY, toolTip);
     }
     
     public String getLongestString()
@@ -205,7 +207,7 @@ public class WGToolTip extends WGBox implements TextStyles
         {
             return "";
         }
-        FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
+        FXFontMetrics textFM = new FXFontMetrics(toolTipFont);
         int longest = 0;
         for(int i = 1 ; i < toolTipText.length ; i++)
         {
@@ -283,8 +285,8 @@ public class WGToolTip extends WGBox implements TextStyles
         public void resizeComps()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setWidth(getWidthPercent() * parentWidth);
@@ -296,7 +298,7 @@ public class WGToolTip extends WGBox implements TextStyles
             }
             
             //Then Find the best X place so the drawing is faster and smoother:
-            FontMetrics textFM = getParent().getFontMetrics(toolTipFont);
+            FXFontMetrics textFM = new FXFontMetrics(toolTipFont);
             longestStringWidth = textFM.stringWidth(longestString);
             
             //Now make the height and width "fit" to the text:
@@ -328,9 +330,6 @@ public class WGToolTip extends WGBox implements TextStyles
                 setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

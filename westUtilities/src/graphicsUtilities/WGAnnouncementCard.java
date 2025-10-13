@@ -4,11 +4,11 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import utilities.FXFontMetrics;
 
 /**
  *
@@ -47,7 +47,7 @@ public class WGAnnouncementCard extends WGBox
      * @param borderColor The color of the border of the box, if null then drawBackground is automatically set to false
      * @param parent The component that the object is on, and is used to determine how big this object is
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Component parent)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Canvas parent)
     {
         super(borderSize, backgroundColor, null, borderColor, parent);
         this.splitHeight = 0;
@@ -66,7 +66,8 @@ public class WGAnnouncementCard extends WGBox
         if(getParent() != null)
         {
             resizer = new AnnouncementResizeListener(xCenter, yCenter, widthPercent, heightPercent, titleHeightPercentage, subTitleHeightPercentage, splitPercentage);
-            getParent().addComponentListener(resizer);
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
     }
@@ -86,7 +87,7 @@ public class WGAnnouncementCard extends WGBox
      * @param parent The component that the object is on, and is used to determine how big this object is
      * @param theme The theme that is being used for this object
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Component parent, WGTheme theme)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Canvas parent, WGTheme theme)
     {
         super(theme.getBorderSize(), theme.getBackgroundColor(), null, theme.getBorderColor(), parent, theme);
         this.splitHeight = 0;
@@ -105,7 +106,8 @@ public class WGAnnouncementCard extends WGBox
         if(getParent() != null)
         {
             resizer = new AnnouncementResizeListener(xCenter, yCenter, widthPercent, heightPercent, titleHeightPercentage, subTitleHeightPercentage, splitPercentage);
-            getParent().addComponentListener(resizer);
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
     }
@@ -117,16 +119,16 @@ public class WGAnnouncementCard extends WGBox
      * This gives the x, y, width, and height bounds
      * @return The bounds
      */
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
         return bounds;
     }
     public void setUpBounds()
     {
         resizer.resizeComps();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -145,7 +147,8 @@ public class WGAnnouncementCard extends WGBox
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -254,8 +257,8 @@ public class WGAnnouncementCard extends WGBox
         public void resizeComps()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             double optimalWidth = parentWidth * getWidthPercent();
@@ -267,8 +270,8 @@ public class WGAnnouncementCard extends WGBox
             subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, getParent(), optimalWidth - (borderPadding * 2), subTitleHeight - borderPadding, subTitle, 100);
             
             //Now that the height, width, and fonts have been set, now use the xCenter and yCenter to make the component centered on that area:
-            FontMetrics titleFM = getParent().getFontMetrics(titleFont);
-            FontMetrics subTitleFM = getParent().getFontMetrics(subTitleFont);
+            FXFontMetrics titleFM = new FXFontMetrics(titleFont);
+            FXFontMetrics subTitleFM = new FXFontMetrics(subTitleFont);
             double xTitlePlace = (getXPercent() * parentWidth) - (titleFM.stringWidth(title)/ 2);
             double xSubTitlePlace = (getXPercent() * parentWidth) - (subTitleFM.stringWidth(subTitle)/ 2);
             double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
@@ -292,9 +295,6 @@ public class WGAnnouncementCard extends WGBox
                 splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SPLIT_COLOR));
                 subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SUBTITLE_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

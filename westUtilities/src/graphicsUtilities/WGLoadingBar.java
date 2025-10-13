@@ -4,11 +4,10 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -43,9 +42,9 @@ public class WGLoadingBar extends WGBox
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
      * @param parent The parent component upon which this object is being drawn on
      */
-    public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Component parent)
+    public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
     {
-        this(new Rectangle.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor, parent);
     }
     /**
      * The most complete version of the WGLoadingBar object, which allows complete control over all of the options
@@ -62,7 +61,7 @@ public class WGLoadingBar extends WGBox
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
      * @param parent The parent component upon which this object is being drawn on
      */
-    public WGLoadingBar(Rectangle.Double bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Component parent)
+    public WGLoadingBar(Rectangle2D bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
     {
         super(borderSize, barBackgroundColor, barBackgroundColor, barBorderColor, parent);
         originalTitle = title;
@@ -75,8 +74,9 @@ public class WGLoadingBar extends WGBox
         this.barColor = barColor;
         if(getParent() != null)
         {
-            resizer = new BarResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new BarResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
     }
@@ -90,7 +90,7 @@ public class WGLoadingBar extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @param parent The parent component upon which this object is being drawn on
      */
-    public WGLoadingBar(Rectangle.Double bounds, String title, boolean showPercentage, double percentFilled, boolean isHorizontal, Component parent, WGTheme theme)
+    public WGLoadingBar(Rectangle2D bounds, String title, boolean showPercentage, double percentFilled, boolean isHorizontal, Canvas parent, WGTheme theme)
     {
         this(bounds, theme.getBorderSize(), title, showPercentage, theme.getTextFont(), percentFilled, isHorizontal, theme.getBackgroundColor(), theme.getBorderColor(), theme.getTextColor(), theme.getBarColor(), parent);
         setCurrentTheme(theme);
@@ -98,16 +98,16 @@ public class WGLoadingBar extends WGBox
 
     
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+       Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
     public void setUpBounds()
     {
         resizer.resizeComps();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -125,7 +125,8 @@ public class WGLoadingBar extends WGBox
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -162,12 +163,10 @@ public class WGLoadingBar extends WGBox
 
     public void setTitleColor(Paint titleColor) {
         this.titleColor = titleColor;
-        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setBarColor(Paint barColor) {
         this.barColor = barColor;
-        WestGraphics.doRepaintJob(getParent());
     }
     
     
@@ -212,8 +211,8 @@ public class WGLoadingBar extends WGBox
         {
             title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
@@ -231,9 +230,6 @@ public class WGLoadingBar extends WGBox
                 titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 barColor = fixPaintBounds(barColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BAR_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

@@ -5,7 +5,7 @@
 package dataStructures;
 
 import graphicsUtilities.WGDrawingObject;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
 
 /**
  *
@@ -48,11 +48,11 @@ public class WGObjectBoundNode
         return child;
     }
 
-    public Rectangle2D.Double getBounds() {
+    public Rectangle2D getBounds() {
         return object.getBounds();
     }
 
-    public Rectangle2D.Double getRelativeBounds() {
+    public Rectangle2D getRelativeBounds() {
         return object.getRelativeBounds();
     }
 

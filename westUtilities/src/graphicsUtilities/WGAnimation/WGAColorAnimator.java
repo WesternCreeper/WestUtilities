@@ -4,8 +4,9 @@
  */
 package graphicsUtilities.WGAnimation;
 
-import java.awt.Color;
 import graphicsUtilities.WGColorHelper;
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 
 /**
@@ -93,7 +94,7 @@ public class WGAColorAnimator extends WGAAnimator
      */
     public synchronized void fadeToBalck()
     {
-        fadeTo(Color.black);
+        fadeTo(Color.BLACK);
     }
     /**
      * This "fades" to whichever color one wishes to fade to. Make sure to have a fast timer, with a high tick count for optimal results
@@ -116,7 +117,7 @@ public class WGAColorAnimator extends WGAAnimator
      */
     public synchronized void fadeFromBalck()
     {
-        fadeFrom(Color.black);
+        fadeFrom(Color.BLACK);
     }
     /**
      * This "fades" from whichever color one wishes to fade from. Make sure to have a fast timer, with a high tick count for optimal results. This is just a fade in function

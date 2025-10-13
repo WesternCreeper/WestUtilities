@@ -4,20 +4,17 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.RadialGradientPaint;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import javafx.event.Event;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
 
 /**
  *
  * @author Westley
  */
-public class WGCheckBoxClickListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
+public class WGCheckBoxClickListener extends WGClickListener
 {
     private Paint originalBackgroundColor;
     /**
@@ -39,30 +36,70 @@ public class WGCheckBoxClickListener extends WGClickListener implements MouseMot
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      */
-    public WGCheckBoxClickListener(WGDrawingObject parentObject, Component parentComponent)
+    public WGCheckBoxClickListener(WGDrawingObject parentObject, Canvas parentComponent)
     {
         super(parentObject, parentComponent);
     }
     
-    @Override
     public void mouseDragged(MouseEvent e) {}
 
-    @Override
     public void mouseMoved(MouseEvent e)
     {
         hoverEvent(e);
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) 
+    public void mouseWheelMoved(ScrollEvent e) 
     {
         hoverEvent(e);
+    }
+    
+    @Override
+    public void handle(Event e)
+    {
+		if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+		{
+			mouseClicked((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+		{
+			mousePressed((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+		{
+			mouseReleased((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+		{
+			mouseEntered((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+		{
+			mouseExited((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+		{
+			mouseDragged((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+		{
+			mouseMoved((MouseEvent)e);
+		}
+		else if(e.getEventType().equals(ScrollEvent.SCROLL))
+		{
+			mouseWheelMoved((ScrollEvent)e);
+		}
     }
     
     public void hoverEvent(MouseEvent e)
     {
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
+    }
+    
+    public void hoverEvent(ScrollEvent e)
+    {
+        //Cursor:
+        WestGraphics.checkCursor(getParentComponent(), getParentObject());
     }
     
     public void clickEvent(MouseEvent e) 
