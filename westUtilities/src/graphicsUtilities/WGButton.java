@@ -7,6 +7,8 @@ package graphicsUtilities;
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import graphicsUtilities.WGAnimation.WGAColorAnimator;
 import graphicsUtilities.WGAnimation.WGAPopupAnimationListener;
+import javafx.animation.KeyFrame;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
@@ -15,6 +17,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 /**
  *
@@ -350,7 +353,7 @@ public class WGButton extends WGBox
             animator.addColor((Color)textColor);
             animator.addColor((Color)getBorderColor());
             popper = new WGAPopupAnimationListener(animator, this);
-            parentAnimationManager.addTimer(30, popper);
+            parentAnimationManager.addTimer(new KeyFrame(Duration.millis(30), e -> popper.actionPerformed()));
         }
     }
     
@@ -498,35 +501,37 @@ public class WGButton extends WGBox
         }
         public void resizeComps()
         {
-            //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
-            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
-            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
-            setWidth(getWidthPercent() * parentWidth);
-            setHeight(getHeightPercent() * parentHeight);
-            if(!usesText) //If there is an image on the button instead of text:
-            {
-                if(displayedImage != null)
-                {
-                    setUpImage();
-                }
-            }
-            else if(textFont != null)
-            {
-                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
-            }
-            
-            //Now fix the colors of this object:
-            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-            {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-            }
+        	Platform.runLater(() -> {
+	            //Find the parent width and height so that the x/y can be scaled accordingly
+	            double parentWidth = getParent().getWidth();
+	            double parentHeight = getParent().getHeight();
+	            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
+	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+	            setX(getXPercent() * parentWidth);
+	            setY(getYPercent() * parentHeight);
+	            setWidth(getWidthPercent() * parentWidth);
+	            setHeight(getHeightPercent() * parentHeight);
+	            if(!usesText) //If there is an image on the button instead of text:
+	            {
+	                if(displayedImage != null)
+	                {
+	                    setUpImage();
+	                }
+	            }
+	            else if(textFont != null)
+	            {
+	                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+	            }
+	            
+	            //Now fix the colors of this object:
+	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+	            {
+	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+	            }
+        	});
         }
     }
 }

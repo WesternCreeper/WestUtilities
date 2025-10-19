@@ -4,9 +4,13 @@
  */
 package graphicsUtilities.WGAnimation;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.Timer;
+
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.collections.ObservableList;
+import javafx.util.Duration;
 
 /**
  * This is a robust class that allows for multiple higher level animations to be done with different options.
@@ -15,18 +19,18 @@ import javax.swing.Timer;
  */
 public class WGAAnimationManager 
 {
-    private ArrayList<Timer> allTimers = new ArrayList<Timer>(1);
+    private ArrayList<Timeline> allTimers = new ArrayList<Timeline>(1);
     
     public WGAAnimationManager() {}
     /**
      * The standard constructor that makes sure that there are no duplicate timers in the timers arrayList
      * @param timers An ArrayList of timers that define different intervals
      */
-    public WGAAnimationManager(ArrayList<Timer> timers)
+    public WGAAnimationManager(ArrayList<Timeline> timers)
     {
         for(int i = 0 ; i < timers.size() ; i++)
         {
-            addTimer(timers.get(i).getDelay(), timers.get(i).getActionListeners()[0]);
+            addTimer(timers.get(i).getKeyFrames().get(0));
         }
     }
     
@@ -35,15 +39,15 @@ public class WGAAnimationManager
      * @param milliseconds The interval wait time between animations (In ms)
      * @param listener The actionListener that defines what happens when the interval has elapsed
      */
-    public synchronized final void addTimer(int milliseconds, ActionListener listener)
+    public synchronized final void addTimer(KeyFrame listener)
     {
         boolean intervalExists = false;
         //Make sure that no timer already exists with that said time
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            if(allTimers.get(i).getDelay() == milliseconds) //If there is then add the listener to it
+            if(allTimers.get(i).getCycleDuration().equals(listener.getTime())) //If there is then add the listener to it
             {
-                allTimers.get(i).addActionListener(listener);
+                allTimers.get(i).getKeyFrames().add(listener);
                 intervalExists = true;
                 break;
             }
@@ -51,7 +55,9 @@ public class WGAAnimationManager
         
         if(!intervalExists) //Else just make a new Timer for that interval
         {
-            allTimers.add(new Timer(milliseconds, listener));
+        	Timeline newTimeline = new Timeline(listener);
+        	newTimeline.setCycleCount(Animation.INDEFINITE);
+            allTimers.add(newTimeline);
         }
     }
     
@@ -59,12 +65,12 @@ public class WGAAnimationManager
      * This stops the timer with the interval specified
      * @param milli the interval
      */
-    public synchronized void stop(int milli)
+    public synchronized void stop(Duration milli)
     {
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            Timer timer = allTimers.get(i);
-            if(timer.getDelay() == milli)
+            Timeline timer = allTimers.get(i);
+            if(timer.getDelay().equals(milli))
             {
                 timer.stop();
                 break;
@@ -76,14 +82,14 @@ public class WGAAnimationManager
      * This starts the timer with the interval specified
      * @param milli the interval
      */
-    public synchronized void start(int milli)
+    public synchronized void start(Duration milli)
     {
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            Timer timer = allTimers.get(i);
-            if(timer.getDelay() == milli)
+            Timeline timer = allTimers.get(i);
+            if(timer.getDelay().equals(milli))
             {
-                timer.start();
+                timer.play();
                 break;
             }
         }
@@ -115,7 +121,7 @@ public class WGAAnimationManager
     {
         if(index >= 0 && index < allTimers.size())
         {
-            allTimers.get(index).start();
+            allTimers.get(index).play();
         }
         else
         {
@@ -141,7 +147,7 @@ public class WGAAnimationManager
     {
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            allTimers.get(i).start();
+            allTimers.get(i).play();
         }
     }
     
@@ -152,11 +158,12 @@ public class WGAAnimationManager
     {
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            Timer currentTimer = allTimers.get(i);
-            ActionListener[] allListeners = currentTimer.getActionListeners();
-            for(int a = 0 ; a < allListeners.length ; a++)
+            Timeline currentTimer = allTimers.get(i);
+            ObservableList<KeyFrame> allListeners = currentTimer.getKeyFrames();
+            for(int a = 0 ; a < allListeners.size() ; a++)
             {
-                currentTimer.removeActionListener(allListeners[a]);
+                allListeners.remove(a);
+                a--;
             }
         }
     }
@@ -165,11 +172,11 @@ public class WGAAnimationManager
      * This removes a certain listener from ALL of the timers
      * @param listener The listener that needs to be removed
      */
-    public synchronized final void removeListener(ActionListener listener)
+    public synchronized final void removeListener(KeyFrame listener)
     {
         for(int i = 0 ; i < allTimers.size() ; i++)
         {
-            allTimers.get(i).removeActionListener(listener);
+            allTimers.get(i).getKeyFrames().remove(listener);
         }
     }
 }

@@ -4,8 +4,15 @@
  */
 package graphicsUtilities;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -13,6 +20,9 @@ import javafx.stage.Stage;
  */
 public class Console extends Canvas
 {
+    //Repainter:
+    private final int REFRESH_RATE = 16;
+    private Timeline repainter;
     private Stage paneOwner;
     /**
      * This creates the console's basic functions then shows it. Starts at 0,0 and the given width/height are its minimums. No extended state set
@@ -29,7 +39,32 @@ public class Console extends Canvas
         this.paneOwner.setHeight(height);
         this.paneOwner.setMinWidth(width);
         this.paneOwner.setMinHeight(height);
+        Group group = new Group();
+        group.getChildren().add(this);
+        Scene scene = new Scene(group);
+        scene.widthProperty().addListener((e, old, newWidth) -> {
+        	Platform.runLater(() -> {
+        	repainter.stop();
+        	this.setWidth(newWidth.doubleValue());
+        	repainter.play();
+        	});
+        });
+        scene.heightProperty().addListener((e, old, newHeight) -> {
+        	Platform.runLater(() -> {
+        	repainter.stop();
+        	this.setHeight(newHeight.doubleValue());
+        	repainter.play();
+        	});
+        });
+        this.paneOwner.setScene(scene);
         this.paneOwner.show();
+        this.setWidth(width);
+        this.setHeight(height);
+        
+        //Set up the repainter
+        repainter = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE), e -> draw()));
+        repainter.setCycleCount(Animation.INDEFINITE);
+        repainter.play();
     }
     /**
      * This creates the console's basic functions then shows it. Starts at 0,0 and the given width/height are its minimums
@@ -65,8 +100,15 @@ public class Console extends Canvas
         this.paneOwner.setMinHeight(minimumHeight);
     }
     
+    //Methods:
+    public void draw() {}
+    
+    public void closeDown()
+    {
+    	repainter.stop();
+    }
+    
     //Getter:
-
     public Stage getPaneOwner() {
         return paneOwner;
     }

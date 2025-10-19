@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
@@ -307,30 +308,34 @@ public class WGKeyInput extends WGBox
         }
         public void resizeComps()
         {
-            //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
-            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
-            setWidth(getWidthPercent() * parentWidth);
-            setHeight(getHeightPercent() * parentHeight);
-            setUpFont();
-            
-            //Now fix the colors of this object:
-            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-            {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
-            }
+        	Platform.runLater(() -> {
+	            //Find the parent width and height so that the x/y can be scaled accordingly
+	            double parentWidth = getParent().getWidth();
+	            double parentHeight = getParent().getHeight();
+	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+	            setX(getXPercent() * parentWidth);
+	            setY(getYPercent() * parentHeight);
+	            setWidth(getWidthPercent() * parentWidth);
+	            setHeight(getHeightPercent() * parentHeight);
+	            setUpFont();
+	            
+	            //Now fix the colors of this object:
+	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+	            {
+	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+	                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
+	            }
+        	});
         }
         public void setUpFont()
         {
-            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
-            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+        	Platform.runLater(() -> {
+	            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
+	            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+        	});
         }
     }
 }

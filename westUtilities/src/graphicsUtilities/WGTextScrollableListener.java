@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -45,22 +46,24 @@ public class WGTextScrollableListener implements EventHandler<Event>
 	@Override
 	public void handle(Event e) 
 	{
-		if(e.getEventType().equals(ScrollEvent.SCROLL))
-		{
-			mouseWheelMoved((ScrollEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
-		{
-			mouseDragged((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-		{
-			mouseReleased((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
-		{
-			mousePressed((MouseEvent)e);
-		}
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(ScrollEvent.SCROLL))
+			{
+				mouseWheelMoved((ScrollEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+    	});
 	}
 	
     /**
@@ -112,7 +115,7 @@ public class WGTextScrollableListener implements EventHandler<Event>
         FXFontMetrics textFM = new FXFontMetrics(parentTextArea.getTextFont());
         
         //The addition of descent is entirely redundent. However, it guarentees that the text shown does not have tails going off the page (Such as the letters "p", "g", etc.)
-        totalArea = text.size() * (textFM.getHeight()) + textFM.getDescent(); 
+        totalArea = text.size() * (textFM.getHeight("l")); 
         
         scrollBarHeight = seeableArea / totalArea * seeableArea;
         scrollY = 0;

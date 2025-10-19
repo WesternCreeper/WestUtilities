@@ -6,6 +6,7 @@ package utilities;
 
 import graphicsUtilities.Console;
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import javafx.animation.KeyFrame;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
@@ -17,6 +18,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGLabel;
@@ -24,8 +26,6 @@ import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGTextArea;
 import graphicsUtilities.WestGraphics;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -135,7 +135,7 @@ public class Logger extends Console
         catch(WGNullParentException e) {} //This should NEVER happen
         
         //Set up any animations:
-        animationManager.addTimer(updateTime, new StandardUpdateListener());
+        animationManager.addTimer(new KeyFrame(Duration.millis(updateTime), e -> new StandardUpdateListener().actionPerformed()));
         animationManager.startAllTimers();
         
         //Start on the proper page:
@@ -166,6 +166,7 @@ public class Logger extends Console
         }
         
     }
+    @Override
     public void draw() 
     {
         GraphicsContext g2 = this.getGraphicsContext2D();
@@ -173,7 +174,7 @@ public class Logger extends Console
         
         //Create the background:
         g2.setFill(backgroundColor);
-        g2.fillRect(getPaneOwner().getX(), getPaneOwner().getY(), getPaneOwner().getWidth(), getPaneOwner().getHeight());
+        g2.fillRect(0, 0, getPaneOwner().getWidth(), getPaneOwner().getHeight());
         
         //Buttons:
         g3.draw(switchToLogsButton);
@@ -251,7 +252,7 @@ public class Logger extends Console
                 System.exit(-1);
             }
         }
-        this.requestFocus();
+        //this.requestFocus();
     }
     
     public final void logOutput(String message)
@@ -328,12 +329,11 @@ public class Logger extends Console
     }
     
     
-    private class StandardUpdateListener implements ActionListener
+    private class StandardUpdateListener
     {
         private final int runningTickMax = 4;
         private int runningTick = 0;
-        @Override
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed() 
         {
             String runningText = "Running" + ".".repeat(runningTick);
             runningTick++;

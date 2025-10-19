@@ -8,14 +8,11 @@ import graphicsUtilities.WestGraphics;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /**
  *
  * @author Westley
  */
-public abstract class WGAFader implements ActionListener
+public abstract class WGAFader
 {
     private Color fadeColor;
     private Color fadeOverlay;
@@ -30,7 +27,7 @@ public abstract class WGAFader implements ActionListener
         isDone = true;
         colorAnimator.setTick(tickMax);
     }
-    public synchronized void actionPerformed(ActionEvent e)
+    public synchronized void actionPerformed()
     {
         if(!colorAnimator.isDone())
         {

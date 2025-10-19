@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -45,18 +46,20 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
 	@Override
 	public void handle(KeyEvent e) 
 	{
-		if(e.getEventType().equals(KeyEvent.KEY_TYPED))
-		{
-			keyTyped(e);
-		}
-		else if(e.getEventType().equals(KeyEvent.KEY_RELEASED))
-		{
-			keyReleased(e);
-		}
-		else if(e.getEventType().equals(KeyEvent.KEY_PRESSED))
-		{
-			keyPressed(e);
-		}
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(KeyEvent.KEY_TYPED))
+			{
+				keyTyped(e);
+			}
+			else if(e.getEventType().equals(KeyEvent.KEY_RELEASED))
+			{
+				keyReleased(e);
+			}
+			else if(e.getEventType().equals(KeyEvent.KEY_PRESSED))
+			{
+				keyPressed(e);
+			}
+    	});
 	}
     
     public synchronized final void keyTyped(KeyEvent e) 

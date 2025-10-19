@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
@@ -230,74 +231,76 @@ public class WGDropDown extends WGBox
         }
         public void resizeComps(boolean doXYLocation)
         {
-            //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
-            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
-            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            if(doXYLocation)
-            {
-                setX(getXPercent() * parentWidth);
-                setY(getYPercent() * parentHeight);
-            }
-            buttonWidth = getWidthPercent() * parentWidth;
-            buttonHeight = getHeightPercent() * parentHeight;
-            if(!droppedDown)
-            {
-                setWidth(getWidthPercent() * parentWidth);
-                setHeight(getHeightPercent() * parentHeight);
-            }
-            else //Set the size to the total size of the object, this is for the dropdown listener to work properly:
-            {
-                setWidth(getWidthPercent() * parentWidth);
-                setHeight(getHeightPercent() * parentHeight * choices.length);
-            }
-            
-            if(selectedChoice >= 0 && selectedChoice < choices.length)
-            {
-                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), buttonWidth - borderPadding, buttonHeight - borderPadding, choices[selectedChoice], 100);
-            }
-            
-            //Now fix the colors of this object:
-            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-            {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-                if(!droppedDown)
-                {
-                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-                }
-                else
-                {
-                    textColors = new Paint[choices.length];
-                    double x = getX();
-                    double y = getY();
-                    for(int i = 0 ; i < textColors.length ; i++)
-                    {
-                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
-                        y += buttonHeight;
-                    }
-                }
-            }
-            else
-            {
-                if(!droppedDown)
-                {
-                    textColor = fixPaintBounds(textColor);
-                }
-                else
-                {
-                    textColors = new Paint[choices.length];
-                    double x = getX();
-                    double y = getY();
-                    for(int i = 0 ; i < textColors.length ; i++)
-                    {
-                        textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
-                        y += buttonHeight;
-                    }
-                }
-            }
+        	Platform.runLater(() -> {
+	            //Find the parent width and height so that the x/y can be scaled accordingly
+	            double parentWidth = getParent().getWidth();
+	            double parentHeight = getParent().getHeight();
+	            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
+	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+	            if(doXYLocation)
+	            {
+	                setX(getXPercent() * parentWidth);
+	                setY(getYPercent() * parentHeight);
+	            }
+	            buttonWidth = getWidthPercent() * parentWidth;
+	            buttonHeight = getHeightPercent() * parentHeight;
+	            if(!droppedDown)
+	            {
+	                setWidth(getWidthPercent() * parentWidth);
+	                setHeight(getHeightPercent() * parentHeight);
+	            }
+	            else //Set the size to the total size of the object, this is for the dropdown listener to work properly:
+	            {
+	                setWidth(getWidthPercent() * parentWidth);
+	                setHeight(getHeightPercent() * parentHeight * choices.length);
+	            }
+	            
+	            if(selectedChoice >= 0 && selectedChoice < choices.length)
+	            {
+	                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), buttonWidth - borderPadding, buttonHeight - borderPadding, choices[selectedChoice], 100);
+	            }
+	            
+	            //Now fix the colors of this object:
+	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+	            {
+	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+	                if(!droppedDown)
+	                {
+	                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+	                }
+	                else
+	                {
+	                    textColors = new Paint[choices.length];
+	                    double x = getX();
+	                    double y = getY();
+	                    for(int i = 0 ; i < textColors.length ; i++)
+	                    {
+	                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
+	                        y += buttonHeight;
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                if(!droppedDown)
+	                {
+	                    textColor = fixPaintBounds(textColor);
+	                }
+	                else
+	                {
+	                    textColors = new Paint[choices.length];
+	                    double x = getX();
+	                    double y = getY();
+	                    for(int i = 0 ; i < textColors.length ; i++)
+	                    {
+	                        textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
+	                        y += buttonHeight;
+	                    }
+	                }
+	            }
+        	});
         }
     }
 }

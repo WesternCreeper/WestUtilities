@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -47,22 +48,24 @@ public class WGScrollableListener implements EventHandler<Event>
 	@Override
 	public void handle(Event e) 
 	{
-		if(e.getEventType().equals(ScrollEvent.SCROLL))
-		{
-			mouseWheelMoved((ScrollEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
-		{
-			mousePressed((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-		{
-			mouseReleased((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
-		{
-			mouseDragged((MouseEvent)e);
-		}
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(ScrollEvent.SCROLL))
+			{
+				mouseWheelMoved((ScrollEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+    	});
 	}
     
     /**

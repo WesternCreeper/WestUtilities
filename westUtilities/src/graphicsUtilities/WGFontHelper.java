@@ -41,11 +41,11 @@ public class WGFontHelper
             currentSize = (int)((minimumSize + maximumSize) /2.0);
             newFont = generateFont(originalFont, currentSize);
             FXFontMetrics testFM = new FXFontMetrics(newFont);
-            if(testFM.getHeight() >= boxHeight || testFM.stringWidth(text) >= boxWidth)
+            if(testFM.getHeight(text) >= boxHeight || testFM.stringWidth(text) >= boxWidth)
             {
                 maximumSize = currentSize;
             }
-            else if(testFM.getHeight() < boxHeight || testFM.stringWidth(text) < boxWidth)
+            else if(testFM.getHeight(text) < boxHeight || testFM.stringWidth(text) < boxWidth)
             {
                 minimumSize = currentSize;
             }
@@ -125,11 +125,11 @@ public class WGFontHelper
             currentSize = (int)((minimumSize + maximumSize) /2.0);
             newFont = generateFont(originalFont, currentSize);
             FXFontMetrics testFM = new FXFontMetrics(newFont);
-            if(testFM.getHeight() >= boxHeight)
+            if(testFM.getHeight(text) >= boxHeight)
             {
                 maximumSize = currentSize;
             }
-            else if(testFM.getHeight() < boxHeight)
+            else if(testFM.getHeight(text) < boxHeight)
             {
                 minimumSize = currentSize;
             }
@@ -216,15 +216,37 @@ public class WGFontHelper
         }
         return newList;
     }
+    /**
+     * Generates a new font based on the last one, which keeps all settings except the size, which is set to the given size
+     * @param font Original font that the new font is based on
+     * @param newSize The new size for the new font
+     * @return Font The new font
+     */
     public static Font generateFont(Font font, int newSize)
     {
         String[] fontParts = font.getStyle().split(" ");
         FontPosture posture = FontPosture.REGULAR;
         if(fontParts.length == 2)
         {
-        	posture = FontPosture.valueOf(fontParts[1]);
+        	posture = FontPosture.findByName(fontParts[1].toUpperCase());
         }
-        return Font.font(font.getName(), FontWeight.valueOf(fontParts[0]), posture, newSize);
+        return Font.font(font.getName(), FontWeight.findByName(fontParts[0].toUpperCase()), posture, newSize);
+    }
+    /**
+     * Generates a new font based on the last one, which keeps all settings except the font name, which is set to the given name
+     * @param font The original font, whose settings are used
+     * @param name The new name for the font. (Think like Arial, or Dialog)
+     * @return Font The new Font
+     */
+    public static Font generateFont(Font font, String name)
+    {
+        String[] fontParts = font.getStyle().split(" ");
+        FontPosture posture = FontPosture.REGULAR;
+        if(fontParts.length == 2)
+        {
+        	posture = FontPosture.findByName(fontParts[1].toUpperCase());
+        }
+        return Font.font(name, FontWeight.findByName(fontParts[0].toUpperCase()), posture, font.getSize());
     }
     protected WGFontHelper(){}
 }

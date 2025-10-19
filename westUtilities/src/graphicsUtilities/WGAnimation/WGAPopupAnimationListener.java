@@ -10,14 +10,11 @@ import graphicsUtilities.WestGraphics;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /**
  *
  * @author Westley
  */
-public class WGAPopupAnimationListener implements ActionListener
+public class WGAPopupAnimationListener
 {
     private final Color fullTransparentColor = new Color(0, 0, 0, 0);
     private boolean popOut = false;
@@ -29,7 +26,7 @@ public class WGAPopupAnimationListener implements ActionListener
         this.colorAnimator = colorAnimator;
         parentComp = parentObject;
     }
-    public synchronized void actionPerformed(ActionEvent e)
+    public synchronized void actionPerformed()
     {
         isWorking = !colorAnimator.isDone();
         if(!colorAnimator.isDone())

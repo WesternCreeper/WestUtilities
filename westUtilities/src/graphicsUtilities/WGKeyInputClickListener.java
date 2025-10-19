@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -80,34 +81,36 @@ public class WGKeyInputClickListener extends WGClickListener
     @Override
     public void handle(Event e)
     {
-		if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
-		{
-			mouseClicked((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
-		{
-			mousePressed((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-		{
-			mouseReleased((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
-		{
-			mouseEntered((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
-		{
-			mouseExited((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
-		{
-			mouseDragged((MouseEvent)e);
-		}
-		else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
-		{
-			mouseMoved((MouseEvent)e);
-		}
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+			{
+				mouseClicked((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+			{
+				mouseEntered((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+			{
+				mouseExited((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+			{
+				mouseMoved((MouseEvent)e);
+			}
+    	});
     }
     
     protected Cursor getCursorType()

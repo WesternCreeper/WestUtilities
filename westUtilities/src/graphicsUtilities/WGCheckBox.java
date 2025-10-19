@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
@@ -148,23 +149,25 @@ public class WGCheckBox extends WGBox
         }
         public void resizeComps()
         {
-            //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
-            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
-            setWidth(getWidthPercent() * parentWidth);
-            setHeight(getHeightPercent() * parentHeight);
-            
-            //Now fix the colors of this object:
-            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-            {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-                checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CHECK_COLOR));
-            }
+        	Platform.runLater(() -> {
+	            //Find the parent width and height so that the x/y can be scaled accordingly
+	            double parentWidth = getParent().getWidth();
+	            double parentHeight = getParent().getHeight();
+	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+	            setX(getXPercent() * parentWidth);
+	            setY(getYPercent() * parentHeight);
+	            setWidth(getWidthPercent() * parentWidth);
+	            setHeight(getHeightPercent() * parentHeight);
+	            
+	            //Now fix the colors of this object:
+	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+	            {
+	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+	                checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CHECK_COLOR));
+	            }
+        	});
         }
     }
 }

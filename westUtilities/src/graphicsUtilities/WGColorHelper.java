@@ -33,22 +33,22 @@ public class WGColorHelper
         Color newColor =  Color.rgb(average, average, average);
         return newColor;
     }
-    public static Color addToColor(Color originalColor, int red, int green, int blue, int alpha, int overflowColorBehavior)
+    public static Color addToColor(Color originalColor, int red, int green, int blue, double alpha, int overflowColorBehavior)
     {
         Color newColor;
         if(overflowColorBehavior != LINEAR_SEARCH_COLOR_OVERFLOW)
         {
-            newColor = Color.rgb(fixOutOfBoundColor((int)(RGBAMAX * originalColor.getRed()) + red, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getGreen()) + green, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getBlue()) + blue, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getOpacity()) + alpha, overflowColorBehavior));
+            newColor = Color.rgb(fixOutOfBoundColor((int)(RGBAMAX * originalColor.getRed()) + red, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getGreen()) + green, overflowColorBehavior), fixOutOfBoundColor((int)(RGBAMAX * originalColor.getBlue()) + blue, overflowColorBehavior), fixOutOfBoundColor(originalColor.getOpacity() + alpha, overflowColorBehavior));
         }
         else
         {
-            int currentAlpha = (int)(RGBAMAX * originalColor.getOpacity());
+            double currentAlpha = originalColor.getOpacity();
             int currentBlue = (int)(RGBAMAX * originalColor.getBlue());
             int currentGreen = (int)(RGBAMAX * originalColor.getGreen());
             int currentRed = (int)(RGBAMAX * originalColor.getRed());
-            if(currentAlpha + alpha > 255)
+            if(currentAlpha + alpha > 1)
             {
-                currentAlpha = (currentAlpha + alpha) - 255;
+                currentAlpha = (currentAlpha + alpha) - 1;
                 currentBlue++;
             }
             if(currentBlue + blue > 255)
@@ -80,7 +80,7 @@ public class WGColorHelper
             {
                 alpha = FileProcessor.toInt(temp[3]);
             }
-            newColor = Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), putColorIntInRange(alpha));
+            newColor = Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), putColorIntInRange(alpha / 255.0));
         }
         return newColor;
     }
@@ -99,7 +99,7 @@ public class WGColorHelper
         int colorRed = (int)(((int)(RGBAMAX * color1.getRed()) * c1Percentage) + ((int)(RGBAMAX * color2.getRed()) * c2Percentage));
         int colorGreen = (int)(((int)(RGBAMAX * color1.getGreen()) * c1Percentage) + ((int)(RGBAMAX * color2.getGreen()) * c2Percentage));
         int colorBlue = (int)(((int)(RGBAMAX * color1.getBlue()) * c1Percentage) + ((int)(RGBAMAX * color2.getBlue()) * c2Percentage));
-        int alpha = (int)(((int)(RGBAMAX * color1.getOpacity()) * c1Percentage) + ((int)(RGBAMAX * color2.getOpacity()) * c2Percentage));
+        double alpha = ((color1.getOpacity() * c1Percentage) + (color2.getOpacity() * c2Percentage));
         colorRed = putColorIntInRange(colorRed);
         colorGreen = putColorIntInRange(colorGreen);
         colorBlue = putColorIntInRange(colorBlue);
@@ -189,6 +189,18 @@ public class WGColorHelper
                 return putColorIntInRange(colorInt);
         }
     }
+    public static double fixOutOfBoundColor(double colorInt, int behavior)
+    {
+        switch(behavior)
+        {
+            case BOUNCE_ON_COLOR_OVERFLOW:
+                return bounceOutOfBoundColor(colorInt);
+            case FLIP_ON_COLOR_OVERFLOW:
+                return flipOutOfBoundColor(colorInt);
+            default:
+                return putColorIntInRange(colorInt);
+        }
+    }
     public static int putColorIntInRange(int colorInt)
     {
         int color = colorInt;
@@ -199,6 +211,19 @@ public class WGColorHelper
         else if(color < 0)
         {
             color = 0;
+        }
+        return color;
+    }
+    public static double putColorIntInRange(double colorInt)
+    {
+        double color = colorInt;
+        if(color > 1.0)
+        {
+            color = 1.0;
+        }
+        else if(color < 0.0)
+        {
+            color = 0.0;
         }
         return color;
     }
@@ -215,6 +240,19 @@ public class WGColorHelper
         }
         return color;
     }
+    public static double flipOutOfBoundColor(double colorInt)
+    {
+        double color = colorInt;
+        while(color > 1.0)
+        {
+            color -= 1.0;
+        }
+        while(color < 0)
+        {
+            color += 1.0;
+        }
+        return color;
+    }
     public static int bounceOutOfBoundColor(int colorInt)
     {
         int color = colorInt;
@@ -223,6 +261,22 @@ public class WGColorHelper
             if(color > 255)
             {
                 color = 255 - (color - 255);
+            }
+            if(color < 0)
+            {
+                color = -color;
+            }
+        }
+        return color;
+    }
+    public static double bounceOutOfBoundColor(double colorInt)
+    {
+        double color = colorInt;
+        while(color > 1.0 || color < 0)
+        {
+            if(color > 1.0)
+            {
+                color = 1.0 - (color - 1.0);
             }
             if(color < 0)
             {
@@ -296,6 +350,14 @@ public class WGColorHelper
             }
         }
         return true;
+    }
+    public static Color shade(Color originalColor, double brightness)
+    {
+    	int red = (int)(RGBAMAX * originalColor.getRed() * brightness);
+    	int green = (int)(RGBAMAX * originalColor.getGreen() * brightness);
+    	int blue = (int)(RGBAMAX * originalColor.getBlue() * brightness);
+    	
+    	return  Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), (int)(RGBAMAX * originalColor.getOpacity()));
     }
     protected WGColorHelper(){}
 }

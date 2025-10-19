@@ -12,6 +12,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -387,6 +388,118 @@ public class WestGraphics
     }
     
     /**
+     * This draws an image with a resize
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     */
+    public void drawImage(Image image, int x, int y, double widthRescale, double heightRescale)
+    {
+        drawImage(image, x, y, widthRescale, heightRescale, 0);
+    }
+    
+    /**
+     * This draws an image with a resize
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     * @param rotation The rotation of the image
+     */
+    public void drawImage(Image image, int x, int y, double widthRescale, double heightRescale, double rotation)
+    {
+        Affine originalTransform = g2.getTransform();
+        Affine currentTransform = new Affine(widthRescale,0, x * widthRescale, 0, heightRescale, y * heightRescale);
+        currentTransform.appendRotation(rotation);
+        g2.transform(currentTransform);
+        
+        g2.drawImage(image, 0, 0);
+        g2.setTransform(originalTransform);
+    }
+    
+    /**
+     * This draws an image with a bunch of rescales using the WGRescaleOptions object
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param rotation The rotation of the image
+     * @param rescaleOptions The options for rescaling the image
+     */
+    public void drawImage(Image image, int x, int y, double rotation, WGRescaleOptions rescaleOptions)
+    {
+        Affine originalTransform = g2.getTransform();
+        Affine currentTransform = new Affine(rescaleOptions.getWidthRescale(),0, x * rescaleOptions.getXRescale(), 0, rescaleOptions.getHeightRescale(), y * rescaleOptions.getYRescale());
+        currentTransform.appendRotation(rotation);
+        g2.transform(currentTransform);
+        
+        g2.drawImage(image, 0, 0);
+        g2.setTransform(originalTransform);
+    }
+    
+    /**
+     * This draws an image with a resize
+     * @param image The image to be drawn
+     * @param Effect The effect for the image
+     * @param x The x location
+     * @param y The y location
+     */
+    public void drawImage(Image image, Effect effect, int x, int y)
+    {
+    	g2.setEffect(effect);
+        g2.drawImage(image, x, y);
+        g2.setEffect(null);
+    }
+    
+    /**
+     * This draws an image with a resize
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     */
+    public void drawImage(Image image, Effect effect, int x, int y, double widthRescale, double heightRescale)
+    {
+    	g2.setEffect(effect);
+        drawImage(image, x, y, widthRescale, heightRescale);
+        g2.setEffect(null);
+    }
+    
+    /**
+     * This draws an image with a resize
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param widthRescale The rescale of the width
+     * @param heightRescale The rescale of the height
+     * @param rotation The rotation of the image
+     */
+    public void drawImage(Image image, Effect effect, int x, int y, double widthRescale, double heightRescale, double rotation)
+    {
+    	g2.setEffect(effect);
+        drawImage(image, x, y, widthRescale, heightRescale, rotation);
+        g2.setEffect(null);
+    }
+    
+    /**
+     * This draws an image with a bunch of rescales using the WGRescaleOptions object
+     * @param image The image to be drawn
+     * @param x The x location
+     * @param y The y location
+     * @param rotation The rotation of the image
+     * @param rescaleOptions The options for rescaling the image
+     */
+    public void drawImage(Image image, Effect effect, int x, int y, double rotation, WGRescaleOptions rescaleOptions)
+    {
+    	g2.setEffect(effect);
+        drawImage(image, x, y, rotation, rescaleOptions);
+        g2.setEffect(null);
+    }
+    
+    /**
      * This function draws out a loading bar based on a WGLoadingBar Object, which allows for certain defaults to exist
      * @param loadingBar The Object representation of the loading bar to be drawn
      */
@@ -413,7 +526,7 @@ public class WestGraphics
         
         g2.setFill(loadingBar.getTitleColor());
         String text = loadingBar.getTitle();
-        g2.strokeText(text, (originalBarRect.getMinX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (originalBarRect.getMinY() + ((titleFM.getAscent() - titleFM.getDescent() + originalBarRect.getHeight()) / 2)));
+        g2.fillText(text, (originalBarRect.getMinX() + ((loadingBar.getWidth() - titleFM.stringWidth(text)) / 2.0)), (originalBarRect.getMinY() + ((originalBarRect.getHeight()) / 2)));
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
@@ -428,6 +541,8 @@ public class WestGraphics
         Double oldStroke = g2.getLineWidth();
             
         //Find the width of the title and the subtitle, whichever is biggest is the total width of the card:
+        String title = announcementCard.getTitle();
+        String subTitle = announcementCard.getSubTitle();
         FXFontMetrics titleFM = new FXFontMetrics(announcementCard.getTitleFont());
         FXFontMetrics subTitleFM = new FXFontMetrics(announcementCard.getSubTitleFont());
         double titleWidth = titleFM.stringWidth(announcementCard.getTitle());
@@ -437,11 +552,7 @@ public class WestGraphics
         //Draw the background if told to:
         if(announcementCard.getDrawBackground())
         {
-            double totalHeight = titleFM.getHeight() + announcementCard.getSplitHeight() + subTitleFM.getHeight();
-            if(announcementCard.getSplitHeight() == 0)
-            {
-                totalHeight -= titleFM.getDescent();
-            }
+            double totalHeight = titleFM.getHeight(title) + announcementCard.getSplitHeight() + subTitleFM.getHeight(subTitle);
             Rectangle2D backgroundRect = new Rectangle2D(announcementCard.getX(), announcementCard.getY(), totalWidth, totalHeight);
             g2.setFill(announcementCard.getBackgroundColor());
             fill(backgroundRect);
@@ -452,31 +563,31 @@ public class WestGraphics
         
         //Now draw the title:
         double titleX = announcementCard.getX() + ((totalWidth - titleWidth) / 2);
-        double titleY = announcementCard.getY() + titleFM.getHeight() - subTitleFM.getDescent() - subTitleFM.getLeading() - titleFM.getDescent() - titleFM.getLeading();
+        double titleY = announcementCard.getY() + titleFM.getHeight(title);
         g2.setFill(announcementCard.getTitleColor());
         g2.setFont(announcementCard.getTitleFont());
-        g2.strokeText(announcementCard.getTitle(), titleX, titleY);
+        g2.fillText(announcementCard.getTitle(), titleX, titleY);
         
         //Now draw the seperator:
         double splitY = titleY;
         if(announcementCard.getSplitHeight() > 0)
         {
-            splitY += titleFM.getDescent() + announcementCard.getSplitHeight();
+            splitY += announcementCard.getSplitHeight();
+            g2.setStroke(announcementCard.getSplitColor());
             g2.beginPath();
             g2.setLineWidth(announcementCard.getSplitHeight());
             g2.moveTo(announcementCard.getX(), splitY);
             g2.lineTo(announcementCard.getX() + totalWidth, splitY);
             g2.closePath();
-            g2.setFill(announcementCard.getSplitColor());
             g2.stroke();
         }
         
         //Finish with the Subtitle:
         double subTitleX = announcementCard.getX() + ((totalWidth - subTitleWidth) / 2);
-        double subTitleY = splitY + subTitleFM.getHeight();
+        double subTitleY = splitY + subTitleFM.getHeight(subTitle);
         g2.setFont(announcementCard.getSubTitleFont());
         g2.setFill(announcementCard.getSubTitleColor());
-        g2.strokeText(announcementCard.getSubTitle(), subTitleX, subTitleY);
+        g2.fillText(announcementCard.getSubTitle(), subTitleX, subTitleY);
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
@@ -501,7 +612,7 @@ public class WestGraphics
             g2.setFill(button.getBackgroundColor());
         }
         fill(buttonRect);
-        g2.setFill(button.getBorderColor());
+        g2.setStroke(button.getBorderColor());
         g2.setLineWidth(button.getBorderSize());
         draw(buttonRect);
         
@@ -509,10 +620,12 @@ public class WestGraphics
         if(button.getDisplayedImage() != null)
         {
             //The image:
-            Affine transformation = new Affine(button.getImageXScale(),0,0,button.getImageYScale(), button.getImageX(), button.getImageY());
+            Affine transformation = new Affine(button.getImageXScale(),0, button.getImageX(),0, button.getImageYScale(), button.getImageY());
             Affine oldTransform = g2.getTransform();
             g2.setTransform(transformation);
+            g2.setImageSmoothing(false);
             g2.drawImage(button.getDisplayedImage(), 0, 0);
+            g2.setImageSmoothing(true);
             g2.setTransform(oldTransform);
             //Draw a faint overlay of the background:
             Paint background = button.getBackgroundColor();
@@ -523,7 +636,7 @@ public class WestGraphics
                 {
                     backgroundColor = (Color)button.getHoverBackgroundColor();
                 }
-                Paint pictureOverlay = new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 70);
+                Paint pictureOverlay = new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 70.0/255);
                 g2.setFill(pictureOverlay);
                 fill(buttonRect);
             }
@@ -534,9 +647,9 @@ public class WestGraphics
             g2.setFill(button.getTextColor());
             FXFontMetrics textFM = new FXFontMetrics(button.getTextFont());
             double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
-            double textY = button.getY() + ((textFM.getAscent() - textFM.getDescent() + button.getHeight()) / 2);
+            double textY = button.getY() + ((button.getHeight()) / 2);
             g2.setFont(button.getTextFont());
-            g2.strokeText(button.getText(), textX, textY);
+            g2.fillText(button.getText(), textX, textY);
         }
         
         //And reload it at the end
@@ -555,7 +668,7 @@ public class WestGraphics
         Rectangle2D buttonRect = new Rectangle2D(toolTip.getX(), toolTip.getY(), toolTip.getWidth(), toolTip.getHeight());
         g2.setFill(toolTip.getBackgroundColor());
         fill(buttonRect);
-        g2.setFill(toolTip.getBorderColor());
+        g2.setStroke(toolTip.getBorderColor());
         g2.setLineWidth(toolTip.getBorderSize());
         draw(buttonRect);
         
@@ -567,7 +680,7 @@ public class WestGraphics
         {
             textX = toolTip.getX() + toolTip.getBorderSize();
         }
-        double textY = toolTip.getY() - textFM.getDescent() + toolTip.getBorderSize();
+        double textY = toolTip.getY() + toolTip.getBorderSize();
         g2.setFont(toolTip.getToolTipFont());
         String[] text = toolTip.getToolTipText();
         for(int i = 0 ; i < text.length ; i++)
@@ -580,8 +693,8 @@ public class WestGraphics
             {
                 textX = toolTip.getX() + toolTip.getWidth() - toolTip.getBorderSize() - textFM.stringWidth(text[i]);
             }
-            textY += textFM.getHeight();
-            g2.strokeText(text[i], textX, textY);
+            textY += textFM.getHeight(text[i]);
+            g2.fillText(text[i], textX, textY);
         }
         
         //And reload it at the end
@@ -656,7 +769,7 @@ public class WestGraphics
         
         
         //Then draw in the border:
-        g2.setFill(pane.getBorderColor());
+        g2.setStroke(pane.getBorderColor());
         g2.setLineWidth(pane.getBorderSize());
         draw(buttonRect);
         
@@ -740,7 +853,7 @@ public class WestGraphics
         FXFontMetrics textFM = new FXFontMetrics(label.getTextFont());
         double textX = label.getX();
         
-        double textY = label.getY() - textFM.getDescent() + label.getBorderSize();
+        double textY = label.getY() + label.getBorderSize();
         g2.setFont(label.getTextFont());
         
         if(label.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
@@ -752,8 +865,8 @@ public class WestGraphics
             textX = label.getX() + label.getWidth() - textFM.stringWidth(label.getText());
         }
         
-        textY += textFM.getHeight();
-        g2.strokeText(label.getText(), textX, textY);
+        textY += textFM.getHeight(label.getText());
+        g2.fillText(label.getText(), textX, textY);
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
@@ -780,7 +893,7 @@ public class WestGraphics
         }
         fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
-        g2.setFill(borderColor);
+        g2.setStroke(borderColor);
         g2.setLineWidth(textInput.getBorderSize());
         draw(buttonRect);
             
@@ -795,9 +908,9 @@ public class WestGraphics
         g2.setFill(textInput.getTextColor());
         FXFontMetrics textFM = new FXFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
-        double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
+        double textY = textInput.getY() + ((textInput.getHeight()) / 2);
         g2.setFont(textInput.getTextFont());
-        g2.strokeText(textInput.getText(), textX, textY);
+        g2.fillText(textInput.getText(), textX, textY);
             
         //Draw the cursor
         if(textInput.isCursorShown() && textInput.isFocused())
@@ -830,7 +943,7 @@ public class WestGraphics
         //Draw the text:
         FXFontMetrics textFM = new FXFontMetrics(textArea.getTextFont());
         double textX = textArea.getX();
-        double textY = textArea.getY() - textFM.getDescent() + textArea.getBorderSize();
+        double textY = textArea.getY() + textArea.getBorderSize();
         
         if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
         {
@@ -838,8 +951,7 @@ public class WestGraphics
         }
         
         g2.setFont(textArea.getTextFont());
-        textY += textFM.getHeight() - textArea.getStringYOffset();
-        ArrayList<String> allText;
+        ArrayList<String> allText = null;
         ArrayList<Paint> allTextColors;
         if(textArea.isTextWrapped())
         {
@@ -851,20 +963,24 @@ public class WestGraphics
             allText = textArea.getText();
             allTextColors = textArea.getTextColors();
         }
-        for(int i = 0 ; i < allText.size() ; i++)
+        if(allText != null)
         {
-            if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
-            {
-                textX = textArea.getX() + ((textArea.getWidth() - textFM.stringWidth(allText.get(i))) / 2);
-            }
-            else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
-            {
-                double stringWidth = textFM.stringWidth(allText.get(i));
-                textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
-            }
-            g2.setFill(allTextColors.get(i));
-            g2.strokeText(allText.get(i), textX, textY);
-            textY += textFM.getHeight();
+	        textY += textArea.getStringYOffset();
+	        for(int i = 0 ; i < allText.size() ; i++)
+	        {
+	            if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+	            {
+	                textX = textArea.getX() + ((textArea.getWidth() - textFM.stringWidth(allText.get(i))) / 2);
+	            }
+	            else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+	            {
+	                double stringWidth = textFM.stringWidth(allText.get(i));
+	                textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
+	            }
+	            g2.setFill(allTextColors.get(i));
+	            g2.fillText(allText.get(i), textX, textY);
+	            textY += textFM.getHeight(allText.get(i));
+	        }
         }
         
         //Draw the scrollBars
@@ -893,14 +1009,14 @@ public class WestGraphics
             g2.setFill(checkBox.getBackgroundColor());
         }
         fill(buttonRect);
-        g2.setFill(checkBox.getBorderColor());
+        g2.setStroke(checkBox.getBorderColor());
         g2.setLineWidth(checkBox.getBorderSize());
         draw(buttonRect);
         
         //Draw the Check when needed:
         if(checkBox.isChecked())
         {
-            g2.setFill(checkBox.getCheckColor());
+            g2.setStroke(checkBox.getCheckColor());
             g2.beginPath();
             g2.moveTo(buttonRect.getMinX(), buttonRect.getMinY());
             g2.lineTo(buttonRect.getMinX() + buttonRect.getWidth(), buttonRect.getMinY() + buttonRect.getHeight());
@@ -934,7 +1050,7 @@ public class WestGraphics
         }
         fill(buttonRect);
         Paint borderColor = textInput.getBorderColor();
-        g2.setFill(borderColor);
+        g2.setStroke(borderColor);
         g2.setLineWidth(textInput.getBorderSize());
         draw(buttonRect);
         
@@ -942,9 +1058,9 @@ public class WestGraphics
         g2.setFill(textInput.getTextColor());
         FXFontMetrics textFM = new FXFontMetrics(textInput.getTextFont());
         double textX = textInput.getX() + ((textInput.getWidth() - textFM.stringWidth(textInput.getText())) / 2);
-        double textY = textInput.getY() + ((textFM.getAscent() - textFM.getDescent() + textInput.getHeight()) / 2);
+        double textY = textInput.getY() + ((textInput.getHeight()) / 2);
         g2.setFont(textInput.getTextFont());
-        g2.strokeText(textInput.getText(), textX, textY);
+        g2.fillText(textInput.getText(), textX, textY);
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
@@ -957,10 +1073,12 @@ public class WestGraphics
         {
             return;
         }
-        Affine transformation = new Affine(textImage.getImageXScale(),0,0,textImage.getImageYScale(), textImage.getX() + textImage.getImageOffSetX(), textImage.getY() + textImage.getImageOffSetY());
+        Affine transformation = new Affine(textImage.getImageXScale(),0, textImage.getX() + textImage.getImageOffSetX(), 0, textImage.getImageYScale(), textImage.getY() + textImage.getImageOffSetY());
         Affine oldTransform = g2.getTransform();
         g2.setTransform(transformation);
+        g2.setImageSmoothing(false);
         g2.drawImage(image, 0, 0);
+        g2.setImageSmoothing(true);
         g2.setTransform(oldTransform);
         
         //Now the text:
@@ -968,7 +1086,7 @@ public class WestGraphics
         double textX = textImage.getTextX();
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());
-        g2.strokeText(textImage.getImageText(), (textImage.getX() + textX + textImage.getImageOffSetX()), (textImage.getY() + textY + textImage.getImageOffSetY()));
+        g2.fillText(textImage.getImageText(), (textImage.getX() + textX + textImage.getImageOffSetX()), (textImage.getY() + textY + textImage.getImageOffSetY()));
     }
     private void drawDropDown(WGDropDown dropDown)
     {
@@ -990,7 +1108,7 @@ public class WestGraphics
                 g2.setFill(dropDown.getBackgroundColor());
             }
             fill(buttonRect);
-            g2.setFill(dropDown.getBorderColor());
+            g2.setStroke(dropDown.getBorderColor());
             g2.setLineWidth(dropDown.getBorderSize());
             draw(buttonRect);
 
@@ -999,9 +1117,9 @@ public class WestGraphics
             FXFontMetrics textFM = new FXFontMetrics(dropDown.getTextFont());
             String text = dropDown.getSelectedChoiceText();
             double textX = dropDown.getX() + ((dropDown.getWidth() - textFM.stringWidth(text)) / 2);
-            double textY = dropDown.getY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getHeight()) / 2);
+            double textY = dropDown.getY() + ((dropDown.getHeight()) / 2);
             g2.setFont(dropDown.getTextFont());
-            g2.strokeText(text, textX, textY);
+            g2.fillText(text, textX, textY);
         }
         else
         {
@@ -1026,7 +1144,7 @@ public class WestGraphics
                     g2.setFill(dropDown.getBackgroundColor());
                 }
                 fill(buttonBounds);
-                g2.setFill(dropDown.getBorderColor());
+                g2.setStroke(dropDown.getBorderColor());
                 g2.setLineWidth(dropDown.getBorderSize());
                 draw(buttonBounds);
                 
@@ -1035,9 +1153,9 @@ public class WestGraphics
                 FXFontMetrics textFM = new FXFontMetrics(dropDown.getTextFont());
                 String text = choices[i];
                 double textX = buttonBounds.getMinX() + ((dropDown.getButtonWidth() - textFM.stringWidth(text)) / 2);
-                double textY = buttonBounds.getMinY() + ((textFM.getAscent() - textFM.getDescent() + dropDown.getButtonHeight()) / 2);
+                double textY = buttonBounds.getMinY() + ((dropDown.getButtonHeight()) / 2);
                 g2.setFont(dropDown.getTextFont());
-                g2.strokeText(text, textX, textY);
+                g2.fillText(text, textX, textY);
                 
                 //Now set up the next button's starting point:
                 buttonY += dropDown.getButtonHeight();

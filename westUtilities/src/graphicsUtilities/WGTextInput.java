@@ -4,10 +4,8 @@
  */
 package graphicsUtilities;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
@@ -16,7 +14,9 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import utilities.FXFontMetrics;
+import javafx.animation.KeyFrame;
 
 /**
  *
@@ -87,7 +87,7 @@ public class WGTextInput extends WGBox
             throw new WGNullParentException();
         }
         this.parentAnimationManager = parentAnimationManager;
-        this.parentAnimationManager.addTimer(600, cursorAnimator);
+        this.parentAnimationManager.addTimer(new KeyFrame(Duration.millis(600), e -> new CursorAnimator().actionPerformed()));
         setUpCursorBounds();
     }
     /**
@@ -172,7 +172,7 @@ public class WGTextInput extends WGBox
             throw new WGNullParentException();
         }
         this.parentAnimationManager = parentAnimationManager;
-        this.parentAnimationManager.addTimer(600, cursorAnimator);
+        this.parentAnimationManager.addTimer(new KeyFrame(Duration.millis(600), e -> new CursorAnimator().actionPerformed()));
         setUpCursorBounds();
     }
     /**
@@ -306,7 +306,7 @@ public class WGTextInput extends WGBox
             cursorX += textFM.stringWidth(text.substring(0, cursorPosition));
         }
         double cursorWidth = CURSOR_WIDTH;
-        double cursorHeight = textFM.getHeight();
+        double cursorHeight = textFM.getHeight(text);
         double cursorY = getY() + (getHeight() - cursorHeight) / 2;
                                 
         cursorBounds = new Rectangle2D(cursorX, cursorY, cursorWidth, cursorHeight);
@@ -341,7 +341,7 @@ public class WGTextInput extends WGBox
         
         //The width, height, and Y
         double highlightWidth = Math.abs(highlightEndX - highlightStartX);
-        double highlightHeight = textFM.getHeight();
+        double highlightHeight = textFM.getHeight(text);
         double highlightY = getY() + (getHeight() - highlightHeight) / 2;
         double highlightX = (highlightStartX < highlightEndX) ? highlightStartX : highlightEndX;
                     
@@ -472,40 +472,44 @@ public class WGTextInput extends WGBox
         }
         public void resizeComps()
         {
-            //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
-            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
-            setWidth(getWidthPercent() * parentWidth);
-            setHeight(getHeightPercent() * parentHeight);
-            setUpFont();
-            setUpCursorBounds();
-
-            //Now fix the colors of this object:
-            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-            {
-                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-                cursorColor = fixPaintBounds(cursorColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CURSOR_COLOR));
-                highlightColor = fixPaintBounds(highlightColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HIGHLIGHT_COLOR));
-                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
-            }
+        	Platform.runLater(() -> {
+	            //Find the parent width and height so that the x/y can be scaled accordingly
+	            double parentWidth = getParent().getWidth();
+	            double parentHeight = getParent().getHeight();
+	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+	            setX(getXPercent() * parentWidth);
+	            setY(getYPercent() * parentHeight);
+	            setWidth(getWidthPercent() * parentWidth);
+	            setHeight(getHeightPercent() * parentHeight);
+	            setUpFont();
+	            setUpCursorBounds();
+	
+	            //Now fix the colors of this object:
+	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+	            {
+	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+	                cursorColor = fixPaintBounds(cursorColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CURSOR_COLOR));
+	                highlightColor = fixPaintBounds(highlightColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HIGHLIGHT_COLOR));
+	                backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
+	            }
+        	});
         }
         public void setUpFont()
         {
-            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
-            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+        	Platform.runLater(() -> {
+	            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the input
+	            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);
+        	});
         }
     }
-    private class CursorAnimator implements ActionListener
+    private class CursorAnimator
     {
         private final int tickMax = 0;
         private int tick = 0;
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed() 
         {
             if(beingTypedOn)
             {

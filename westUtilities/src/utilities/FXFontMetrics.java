@@ -1,6 +1,5 @@
 package utilities;
 
-import com.sun.javafx.tk.Toolkit;
 
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -10,36 +9,23 @@ import javafx.scene.text.Text;
  */
 public class FXFontMetrics 
 {
-    private final Font font;
-    private final com.sun.javafx.tk.FontMetrics fm;
+    private final Text fm;
 
     public FXFontMetrics(Font font) 
     {
-        this.font = font;
-        this.fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
+        this.fm = new Text("");
+        fm.setFont(font);
     }
 
-    public double getAscent() 
-    {
-    	return fm.getAscent(); 
-	}
-    public double getDescent() 
-    {
-    	return fm.getDescent(); 
-    }
-    public double getHeight() 
+    public double getHeight(String s) 
     { 
-    	return fm.getLineHeight(); 
-    }
-    public double getLeading()
-    {
-    	return fm.getLeading();
+    	fm.setText(s);
+    	return fm.getLayoutBounds().getHeight(); 
     }
     public double stringWidth(String s) 
     {
-        Text text = new Text(s);
-        text.setFont(font);
-        return text.getLayoutBounds().getWidth();
+    	fm.setText(s);
+        return fm.getLayoutBounds().getWidth();
     }
 }
 
