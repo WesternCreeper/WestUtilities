@@ -412,11 +412,13 @@ public class WestGraphics
     public void drawImage(Image image, int x, int y, double widthRescale, double heightRescale, double rotation)
     {
         Affine originalTransform = g2.getTransform();
-        Affine currentTransform = new Affine(widthRescale,0, x * widthRescale, 0, heightRescale, y * heightRescale);
+        Affine currentTransform = new Affine(widthRescale,0, x, 0, heightRescale, y);
         currentTransform.appendRotation(rotation);
         g2.transform(currentTransform);
         
+        g2.setImageSmoothing(false);
         g2.drawImage(image, 0, 0);
+        g2.setImageSmoothing(true);
         g2.setTransform(originalTransform);
     }
     
@@ -430,13 +432,7 @@ public class WestGraphics
      */
     public void drawImage(Image image, int x, int y, double rotation, WGRescaleOptions rescaleOptions)
     {
-        Affine originalTransform = g2.getTransform();
-        Affine currentTransform = new Affine(rescaleOptions.getWidthRescale(),0, x * rescaleOptions.getXRescale(), 0, rescaleOptions.getHeightRescale(), y * rescaleOptions.getYRescale());
-        currentTransform.appendRotation(rotation);
-        g2.transform(currentTransform);
-        
-        g2.drawImage(image, 0, 0);
-        g2.setTransform(originalTransform);
+        drawImage(image, x, y, rescaleOptions.getWidthRescale(), rescaleOptions.getHeightRescale(), rotation);
     }
     
     /**

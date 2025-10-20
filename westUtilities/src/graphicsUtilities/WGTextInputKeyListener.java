@@ -19,10 +19,10 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
     private static final KeyCode ENTER_KEY = KeyCode.ENTER;
     private static final KeyCode SHIFT_KEY = KeyCode.SHIFT;
     private static final KeyCode CLEAR_KEY = KeyCode.CLEAR;
-    private static final KeyCode LEFT_ARROW_KEY = KeyCode.KP_LEFT;
-    private static final KeyCode UP_ARROW_KEY = KeyCode.KP_UP;
-    private static final KeyCode RIGHT_ARROW_KEY = KeyCode.KP_RIGHT;
-    private static final KeyCode DOWN_ARROW_KEY = KeyCode.KP_DOWN;
+    private static final KeyCode LEFT_ARROW_KEY = KeyCode.LEFT;
+    private static final KeyCode UP_ARROW_KEY = KeyCode.UP;
+    private static final KeyCode RIGHT_ARROW_KEY = KeyCode.RIGHT;
+    private static final KeyCode DOWN_ARROW_KEY = KeyCode.DOWN;
     private static final KeyCode DELETE_KEY = KeyCode.DELETE;
     private boolean alphabeticalAllowed = false;
     private boolean numericAllowed = false;
@@ -66,20 +66,20 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
     {
         if(parent.isFocused())
         {
-            KeyCode keyCode = e.getCode();
-            if(keyCode == BACKSPACE_KEY)
+            String keyCode = e.getCharacter();
+            if(keyCode.equals(BACKSPACE_KEY.getChar()))
             {
                 backspaceEvent(e);
             }
-            else if(keyCode == DELETE_KEY)
+            else if(keyCode.equals(DELETE_KEY.getChar()))
             {
                 deleteEvent(e);
             }
-            else if(keyCode == CLEAR_KEY)
+            else if(keyCode.equals(CLEAR_KEY.getChar()))
             {
                 clearEvent(e);
             }
-            else if(keyCode == ENTER_KEY)
+            else if(keyCode.equals(ENTER_KEY.getChar()))
             {
                 enterEvent(e);
             }
@@ -95,7 +95,7 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
     {
         if(parent.isFocused())
         {
-            if(e.getCode() == SHIFT_KEY)
+            if(e.getCode().equals(SHIFT_KEY))
             {
                 shiftEvent(e, true);
             }
@@ -109,23 +109,23 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
         {
             keyCodeEvent(e);
             KeyCode keyCode = e.getCode();
-            if(keyCode == LEFT_ARROW_KEY)
+            if(keyCode.equals(LEFT_ARROW_KEY))
             {
                 leftArrowEvent(e);
             }
-            else if(keyCode == RIGHT_ARROW_KEY)
+            else if(keyCode.equals(RIGHT_ARROW_KEY))
             {
                 rightArrowEvent(e);
             }
-            else if(keyCode == UP_ARROW_KEY)
+            else if(keyCode.equals(UP_ARROW_KEY))
             {
                 upArrowEvent(e);
             }
-            else if(keyCode == DOWN_ARROW_KEY)
+            else if(keyCode.equals(DOWN_ARROW_KEY))
             {
                 downArrowEvent(e);
             }
-            else if(keyCode == SHIFT_KEY)
+            else if(keyCode.equals(SHIFT_KEY))
             {
                 shiftEvent(e, false);
             }

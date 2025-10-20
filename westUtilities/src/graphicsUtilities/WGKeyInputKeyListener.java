@@ -19,10 +19,10 @@ public class WGKeyInputKeyListener implements EventHandler<KeyEvent>
     private static final KeyCode ENTER_KEY = KeyCode.ENTER;
     private static final KeyCode SHIFT_KEY = KeyCode.SHIFT;
     private static final KeyCode ESC_KEY = KeyCode.ESCAPE;
-    private static final KeyCode LEFT_ARROW_KEY = KeyCode.KP_LEFT;
-    private static final KeyCode UP_ARROW_KEY = KeyCode.KP_UP;
-    private static final KeyCode RIGHT_ARROW_KEY = KeyCode.KP_RIGHT;
-    private static final KeyCode DOWN_ARROW_KEY = KeyCode.KP_DOWN;
+    private static final KeyCode LEFT_ARROW_KEY = KeyCode.LEFT;
+    private static final KeyCode UP_ARROW_KEY = KeyCode.UP;
+    private static final KeyCode RIGHT_ARROW_KEY = KeyCode.RIGHT;
+    private static final KeyCode DOWN_ARROW_KEY = KeyCode.DOWN;
     private static final KeyCode DELETE_KEY = KeyCode.DELETE;
     private static final KeyCode PAUSE_KEY = KeyCode.PAUSE;
     private WGKeyInput parent;
@@ -75,54 +75,54 @@ public class WGKeyInputKeyListener implements EventHandler<KeyEvent>
     
     protected synchronized void keyCodeEvent(KeyEvent e) 
     {
-        getParent().setText("[" + codePointToString(e.getCode()) + "]");
+        getParent().setText("[" + codePointToString(e.getCharacter()) + "]");
     }
-    private String codePointToString(KeyCode codePoint)
+    private String codePointToString(String codePoint)
     {
         String str = "";
-        if(BACKSPACE_KEY == codePoint)
+        if(BACKSPACE_KEY.toString().equals(codePoint))
         {
             str = "BACKSPACE";
         }
-        else if(PAUSE_KEY == codePoint)
+        else if(PAUSE_KEY.toString().equals(codePoint))
         {
             str = "PAUSE";
         }
-        else if(ENTER_KEY == codePoint)
+        else if(ENTER_KEY.toString().equals(codePoint))
         {
             str = "ENTER";
         }
-        else if(SHIFT_KEY == codePoint)
+        else if(SHIFT_KEY.toString().equals(codePoint))
         {
             str = "SHIFT";
         }
-        else if(ESC_KEY == codePoint)
+        else if(ESC_KEY.toString().equals(codePoint))
         {
             str = "ESC";
         }
-        else if(LEFT_ARROW_KEY == codePoint)
+        else if(LEFT_ARROW_KEY.toString().equals(codePoint))
         {
             str = "LEFT ARROW";
         }
-        else if(UP_ARROW_KEY == codePoint)
+        else if(UP_ARROW_KEY.toString().equals(codePoint))
         {
             str = "UP ARROW";
         }
-        else if(RIGHT_ARROW_KEY == codePoint)
+        else if(RIGHT_ARROW_KEY.toString().equals(codePoint))
         {
             str = "RIGHT ARROW";
         }
-        else if(DOWN_ARROW_KEY == codePoint)
+        else if(DOWN_ARROW_KEY.toString().equals(codePoint))
         {
             str = "DOWN ARROW";
         }
-        else if(DELETE_KEY == codePoint)
+        else if(DELETE_KEY.toString().equals(codePoint))
         {
             str = "DELETE";
         }
         else
         {
-            str = codePoint.getChar();
+            str = codePoint;
         }
         return str;
     }
