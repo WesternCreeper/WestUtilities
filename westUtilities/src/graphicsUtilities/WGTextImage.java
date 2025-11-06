@@ -246,8 +246,11 @@ public class WGTextImage extends WGDrawingObject
         return imageOffSetY;
     }
     
+    public int getTextPosition() {
+		return textPosition;
+	}
     
-    //Setters:
+	//Setters:
     public void setDisplayImage(Image displayImage) {
         this.displayImage = displayImage;
         resizer.resizeComps();
@@ -343,22 +346,22 @@ public class WGTextImage extends WGDrawingObject
 	                case TEXT_LOWER_LEFT_CORNER:
 	                    //Place in the lower left corner, relative to the position of the object:
 	                    textX = 0;
-	                    textY = height - textFM.getHeight(imageText);
+	                    textY = height - getBorderSize();
 	                    break;
 	                case TEXT_UPPER_LEFT_CORNER:
 	                    //Place in the upper left corner, relative to the position of the object:
 	                    textX = 0;
-	                    textY = 0;
+	                    textY = getBorderSize();
 	                    break;
 	                case TEXT_UPPER_RIGHT_CORNER:
 	                    //Place in the upper left corner, relative to the position of the object:
 	                    textX = width - textFM.stringWidth(imageText);
-	                    textY = 0;
+	                    textY = getBorderSize();
 	                    break;
 	                case TEXT_LOWER_RIGHT_CORNER:
 	                    //Place in the upper left corner, relative to the position of the object:
 	                    textX = width - textFM.stringWidth(imageText);
-	                    textY = height - textFM.getHeight(imageText);
+	                    textY = height - getBorderSize();
 	                    break;
 	            }
 	

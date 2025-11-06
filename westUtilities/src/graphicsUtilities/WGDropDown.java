@@ -266,39 +266,34 @@ public class WGDropDown extends WGBox
 	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
 	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
 	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-	                if(!droppedDown)
-	                {
-	                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-	                }
-	                else
-	                {
-	                    textColors = new Paint[choices.length];
-	                    double x = getX();
-	                    double y = getY();
-	                    for(int i = 0 ; i < textColors.length ; i++)
-	                    {
-	                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
-	                        y += buttonHeight;
-	                    }
-	                }
+	                
+	                //For the single instance
+                    textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+	                 
+                    //For the dropped down instance
+                    textColors = new Paint[choices.length];
+                    double x = getX();
+                    double y = getY();
+                    for(int i = 0 ; i < textColors.length ; i++)
+                    {
+                        textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
+                        y += buttonHeight;
+                    }
 	            }
 	            else
 	            {
-	                if(!droppedDown)
-	                {
-	                    textColor = fixPaintBounds(textColor);
-	                }
-	                else
-	                {
-	                    textColors = new Paint[choices.length];
-	                    double x = getX();
-	                    double y = getY();
-	                    for(int i = 0 ; i < textColors.length ; i++)
-	                    {
-	                        textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
-	                        y += buttonHeight;
-	                    }
-	                }
+	            	//For the single instance:
+	                textColor = fixPaintBounds(textColor);
+	                   
+	                //For the dropped down instance:
+                    textColors = new Paint[choices.length];
+                    double x = getX();
+                    double y = getY();
+                    for(int i = 0 ; i < textColors.length ; i++)
+                    {
+                        textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
+                        y += buttonHeight;
+                    }
 	            }
         	});
         }

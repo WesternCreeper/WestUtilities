@@ -165,6 +165,8 @@ public class Logger extends Console
             }
         }
         
+        //Make sure the WestGraphics System has the correct mouseEvent always:
+        WestGraphics.setUpMouseListener(this);
     }
     @Override
     public void draw() 

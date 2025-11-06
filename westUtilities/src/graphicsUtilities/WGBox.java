@@ -54,8 +54,12 @@ public abstract class WGBox extends WGDrawingObject
     {
         super.setTheme(theme);
         setBorderSize(theme.getBorderSize());
-        setBackgroundColor(theme.getBackgroundColor());
-        hoverBackgroundColor = theme.getHoverBackgroundColor();
+        Paint newHoverBackgroundColor = theme.getHoverBackgroundColor();
+    	setBackgroundColor(theme.getBackgroundColor());
+        if(newHoverBackgroundColor != null)
+        {
+        	hoverBackgroundColor = newHoverBackgroundColor;
+        }
         setBorderColor(theme.getBorderColor());
     }
     

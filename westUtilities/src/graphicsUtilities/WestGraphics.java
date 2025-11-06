@@ -4,11 +4,14 @@
  */
 package graphicsUtilities;
 
+import dataStructures.HashTable;
 import dataStructures.Queue;
 import dataStructures.WGObjectBoundList;
 import dataStructures.WGObjectBoundNode;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -34,7 +37,7 @@ public class WestGraphics
     //Static Package wide important stuff:
     private static Canvas currentActiveParent;
     private static WGBox lastHoverOject;
-    private static MouseEvent lastMouseEvent;
+    private static HashTable<MouseEvent> lastMouseEvents = new HashTable<MouseEvent>(5, HashTable.HASHING_OPTION_LINEAR);
     private static WGObjectBoundList allClickables = new WGObjectBoundList();
     private static Cursor defaultCursor = Cursor.DEFAULT;
     private static Cursor hoverCursor = Cursor.HAND;
@@ -66,6 +69,14 @@ public class WestGraphics
         WestGraphics.textCursor = textCursor;
     }
     
+    public static void setUpMouseListener(Canvas parent)
+    {
+    	lastMouseEvents.insert(parent.toString(), null);
+    	parent.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+    		lastMouseEvents.set(parent.toString(), e);
+    	});
+    }
+    
     /**
      * This function adds a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
      * @param obj The Object to be added
@@ -86,6 +97,7 @@ public class WestGraphics
     
     static void setProperHoverDuringScroll(Canvas parent)
     {
+    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
         if(lastMouseEvent == null)
         {
             return;
@@ -117,6 +129,7 @@ public class WestGraphics
      */
     static void checkCursor(Canvas parent, WGDrawingObject sourceObject)
     {
+    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
         if(lastMouseEvent == null || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
             //We have also already set the hover, so make sure to remember that:
@@ -172,6 +185,7 @@ public class WestGraphics
      */
     static void checkCursor(MouseEvent e, Canvas parent, WGDrawingObject sourceObject)
     {
+    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
         if(lastMouseEvent == e || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
         {
             //We have also already set the hover, so make sure to remember that:
@@ -201,7 +215,7 @@ public class WestGraphics
             boolean onPane = clickCursor.getClickListener().getParentOwningPane() != null;
             if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
             {
-                lastMouseEvent = e;
+            	lastMouseEvents.set(parent.toString(), e);
                 if(!onPane)
                 {
                     parent.setCursor(sourceObject.getClickListener().getCursorType());
@@ -289,6 +303,7 @@ public class WestGraphics
     //Individual drawing based stuff:
     private GraphicsContext g2;
     private Queue<WGToolTip> toolTipOrder = new Queue<WGToolTip>();
+    private Queue<WGQueuedDrawing> dropDownOrder = new Queue<WGQueuedDrawing>();
     /**
      * This constructs a standard WestGraphics object that can then draw the advanced components on the canvas or whatever that the Graphics2D is from.
      * @param g The Graphics supplied from the paintComponent object. (Already casted to Graphics 2D BEFORE construction, as in you have to cast it!)
@@ -326,7 +341,7 @@ public class WestGraphics
             {
                 drawAnnouncementCard((WGAnnouncementCard)obj);
             }
-            else if(obj instanceof WGToolTip)
+            else if(obj instanceof WGToolTip && !drawToolTip)
             {
                 drawToolTip((WGToolTip)obj);
             }
@@ -360,7 +375,9 @@ public class WestGraphics
             }
             else if(obj instanceof WGDropDown)
             {
-                drawDropDown((WGDropDown)obj);
+                WGDropDown dropdown = (WGDropDown)obj;
+                Canvas parent = dropdown.getParent();
+                dropDownOrder.enqueue(new WGQueuedDrawing(dropdown, new Rectangle2D(parent.getLayoutBounds().getMinX(), parent.getLayoutBounds().getMinY(), parent.getWidth(), parent.getHeight())));
             }
             
             //Now make sure to draw the tool tip that is part of this object:
@@ -377,9 +394,38 @@ public class WestGraphics
     }
     
     /**
+     * This function draws all of the important objects at the very end of the drawing process, these are objects that were flagged for overlapping or maybe are tooltips.
+     * Either way, by calling this function, this guarantees the object is seen and not covered by another object
+     */
+    public void drawAllEndDrawings()
+    {
+    	drawAllToolTips();
+    	drawAllDropDowns();
+    }
+    
+    /**
+     * This function draws all of the dropdowns that were found during the drawing process. This allows for dropdowns to not be hidden by an overlapping object
+     */
+    private void drawAllDropDowns()
+    {
+        while(!dropDownOrder.isEmpty())
+        {
+        	WGQueuedDrawing drawing = dropDownOrder.dequeue();
+        	Rectangle2D rect = drawing.getClip();
+        	WGDropDown dropDown = (WGDropDown)drawing.getObject();
+        	g2.save();
+        	g2.beginPath();
+        	g2.rect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+        	g2.clip();
+            drawDropDown(dropDown);
+            g2.restore();
+        }
+    }
+    
+    /**
      * This function draws all of the tooltips that were found during the drawing process. This allows for tooltips to be on the correct layer
      */
-    public void drawAllToolTips()
+    private void drawAllToolTips()
     {
         while(!toolTipOrder.isEmpty())
         {
@@ -503,6 +549,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
             
         FXFontMetrics titleFM = new FXFontMetrics(loadingBar.getTitleFont());
         g2.setFont(loadingBar.getTitleFont());
@@ -526,6 +574,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * This creates an announcement card based on the object WGAnnouncementCard given
@@ -535,6 +584,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.BASELINE);
             
         //Find the width of the title and the subtitle, whichever is biggest is the total width of the card:
         String title = announcementCard.getTitle();
@@ -587,6 +638,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * Creates a button based on the parameters given by the WGButton object
@@ -596,6 +648,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
             
         //Draw the button
         Rectangle2D buttonRect = button.getBounds();
@@ -643,13 +697,14 @@ public class WestGraphics
             g2.setFill(button.getTextColor());
             FXFontMetrics textFM = new FXFontMetrics(button.getTextFont());
             double textX = button.getX() + ((button.getWidth() - textFM.stringWidth(button.getText())) / 2);
-            double textY = button.getY() + ((button.getHeight()) / 2);
+            double textY = button.getY() + (button.getHeight() / 2);
             g2.setFont(button.getTextFont());
             g2.fillText(button.getText(), textX, textY);
         }
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * The drawing method for a tooltip all it requires is the tooltip object then it can draw it from there
@@ -659,6 +714,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.TOP);
             
         //Draw the button
         Rectangle2D buttonRect = new Rectangle2D(toolTip.getX(), toolTip.getY(), toolTip.getWidth(), toolTip.getHeight());
@@ -689,12 +746,13 @@ public class WestGraphics
             {
                 textX = toolTip.getX() + toolTip.getWidth() - toolTip.getBorderSize() - textFM.stringWidth(text[i]);
             }
-            textY += textFM.getHeight(text[i]);
             g2.fillText(text[i], textX, textY);
+            textY += textFM.getHeight(text[i]);
         }
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * The drawing method for a pane that will draw the pane and all subsequent objects attached to the pane
@@ -708,6 +766,8 @@ public class WestGraphics
         }
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
         
         //Save the original clip in case the user wanted that one:
         g2.save();
@@ -726,10 +786,12 @@ public class WestGraphics
         
         
         //To make sure nothing goes off the pane:
+        Rectangle2D currentClip = oldClip;
         if(!withinAnotherPane || oldClip.contains(pane.getBounds())) //If not within another pane or the other pane's clip contains our clip, then we can redo the clip
         {
         	g2.beginPath();
         	Rectangle2D rect = pane.getBounds();
+        	currentClip = rect;
         	g2.rect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
             g2.clip();
         }
@@ -751,7 +813,16 @@ public class WestGraphics
             }
             else
             {
-                draw(obj);
+            	//Make sure that if it is a dropDown, to collect the dropDown and the clip:
+            	if(obj instanceof WGDropDown)
+            	{
+                    WGDropDown dropdown = (WGDropDown)obj;
+                    dropDownOrder.enqueue(new WGQueuedDrawing(dropdown, currentClip));
+            	}
+            	else
+            	{
+            		draw(obj);
+            	}
             }
         }
         
@@ -771,6 +842,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     private void drawScrollBar(WGScrollableListener scrollBar, WGPane pane)
     {
@@ -843,6 +915,8 @@ public class WestGraphics
         
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.BASELINE);
         
         //Draw the text:
         g2.setFill(label.getTextColor());
@@ -866,6 +940,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * Creates a textInput based on the information given by the object
@@ -875,6 +950,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
             
         //Draw the Box
         Rectangle2D buttonRect = new Rectangle2D(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
@@ -917,6 +994,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     /**
      * 
@@ -926,6 +1004,8 @@ public class WestGraphics
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
         
         //Save the original clip in case the user wanted that one:
         g2.save();
@@ -988,11 +1068,14 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     public void drawCheckBox(WGCheckBox checkBox)
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
             
         //Draw the button
         Rectangle2D buttonRect = checkBox.getBounds();
@@ -1027,11 +1110,14 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     private void drawKeyInput(WGKeyInput textInput)
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
             
         //Draw the Box
         Rectangle2D buttonRect = new Rectangle2D(textInput.getX(), textInput.getY(), textInput.getWidth(), textInput.getHeight());
@@ -1060,9 +1146,19 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     private void drawTextImage(WGTextImage textImage)
     {
+    	VPos lastpos = g2.getTextBaseline();
+    	if(textImage.getTextPosition() == WGTextImage.TEXT_UPPER_LEFT_CORNER || textImage.getTextPosition() == WGTextImage.TEXT_UPPER_RIGHT_CORNER)
+    	{
+        	g2.setTextBaseline(VPos.TOP);
+    	}
+    	else
+    	{
+        	g2.setTextBaseline(VPos.BASELINE);
+    	}
         //Draw the Image:
         Image image = textImage.getDisplayImage();
         if(image == null) //Don't draw something that will result in an error!
@@ -1083,11 +1179,14 @@ public class WestGraphics
         double textY = textImage.getTextY();
         g2.setFont(textImage.getTextFont());
         g2.fillText(textImage.getImageText(), (textImage.getX() + textX + textImage.getImageOffSetX()), (textImage.getY() + textY + textImage.getImageOffSetY()));
+    	g2.setTextBaseline(lastpos);
     }
     private void drawDropDown(WGDropDown dropDown)
     {
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
         
         if(!dropDown.isDroppedDown())
         {
@@ -1160,6 +1259,7 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+        g2.setTextBaseline(lastpos);
     }
     
     //Porting functions:
