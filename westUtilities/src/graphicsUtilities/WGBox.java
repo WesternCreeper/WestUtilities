@@ -44,7 +44,7 @@ public abstract class WGBox extends WGDrawingObject
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {

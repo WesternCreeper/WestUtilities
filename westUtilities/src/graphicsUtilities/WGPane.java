@@ -170,7 +170,7 @@ public class WGPane extends WGBox
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -235,12 +235,8 @@ public class WGPane extends WGBox
     public void addDrawableObject(WGDrawingObject obj)
     {
         containedObjects.add(obj);
-        WGClickListener objListener = obj.getClickListener();
-        if(objListener != null)
-        {
-            objListener.setParentOwningPane(this);
-        }
-        setUpScroll();
+        obj.setParentOwningPane(this);
+        resizer.resizeComps();
     }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects. This removes the listeners of the individual objects
@@ -401,34 +397,32 @@ public class WGPane extends WGBox
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
-        	Platform.runLater(() -> {
-	            //Find the parent width and height so that the x/y can be scaled accordingly
-	            double parentWidth = getParent().getWidth();
-	            double parentHeight = getParent().getHeight();
-	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-	            setX(getXPercent() * parentWidth);
-	            setY(getYPercent() * parentHeight);
-	            setWidth(getWidthPercent() * parentWidth);
-	            setHeight(getHeightPercent() * parentHeight);
-	            
-	            //Now fix the colors of this object:
-	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-	            {
-	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-	                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
-	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-	                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
-	            }
-	            
-	            //Wait for all of the components added to this object to finish setting up:
-	            for(int i = 0 ; i < containedObjects.size() ; i++)
-	            {
-	                containedObjects.get(i).setUpBounds();
-	            }
-	            setUpScroll();
-        	});
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setX(getXPercent() * parentWidth);
+            setY(getYPercent() * parentHeight);
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            
+            //Now fix the colors of this object:
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setHoverBackgroundColor(fixPaintBounds(getHoverBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.HOVER_BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
+            }
+            
+            //Wait for all of the components added to this object to finish setting up:
+            for(int i = 0 ; i < containedObjects.size() ; i++)
+            {
+                containedObjects.get(i).setUpBounds();
+            }
+            setUpScroll();
         }
     }
 }

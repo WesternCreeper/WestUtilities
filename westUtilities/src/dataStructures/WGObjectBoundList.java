@@ -187,7 +187,7 @@ public class WGObjectBoundList
         if(foundInstance == null) //Double check that the real thing we are looking for has not scrolled away:
         {
             WGDrawingObject instanceABS = containsUseAbsolute(point, currentParent);
-            if(instanceABS != null && instanceABS.getClickListener().getParentOwningPane() != null)
+            if(instanceABS != null && instanceABS.getParentOwningPane() != null)
             {
                 //This is in a pane and therefore must have been scrolled, use this instead of null:
                 foundInstance = instanceABS;

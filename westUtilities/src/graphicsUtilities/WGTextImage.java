@@ -175,7 +175,7 @@ public class WGTextImage extends WGDrawingObject
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -284,93 +284,91 @@ public class WGTextImage extends WGDrawingObject
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
-        	Platform.runLater(() -> {
-	            if(displayImage == null) //If there is no image, then save time by not calculating anything
-	            {
-	                return;
-	            }
-	            //Find the parent width and height so that the x/y can be scaled accordingly
-	            double parentWidth = getParent().getWidth();
-	            double parentHeight = getParent().getHeight();
-	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-	            setX(getXPercent() * parentWidth);
-	            setY(getYPercent() * parentHeight);
-	            setWidth(getWidthPercent() * parentWidth);
-	            setHeight(getHeightPercent() * parentHeight);
-	            
-	            //Resize the image as applicable
-	            double width = (double)getWidth();
-	            double height = (double)getHeight();
-	            imageOffSetX = 0;
-	            imageOffSetY = 0;
-	            switch(imageResizeOption)
-	            {
-	                case RESIZE_OPTION_FULL_RESIZE:
-	                    imageXScale = (double)getWidth() / displayImage.getWidth();
-	                    imageYScale = (double)getHeight() / displayImage.getHeight();
-	                    break;
-	                case RESIZE_OPTION_ASPECT_SCALED:
-	                    imageXScale = (double)getWidth() / displayImage.getWidth();
-	                    imageYScale = (double)getHeight() / displayImage.getHeight();
-	                    if(imageYScale > imageXScale)
-	                    {
-	                        imageYScale = imageXScale;
-	                    }
-	                    else
-	                    {
-	                        imageXScale = imageYScale;
-	                    }
-	                    imageOffSetX = (width - displayImage.getWidth() * imageXScale) / 2;
-	                    imageOffSetY = (height - displayImage.getHeight() * imageYScale) / 2;
-	                    width = displayImage.getWidth();
-	                    height = displayImage.getHeight();
-	                    break;
-	                case RESIZE_OPTION_NONE:
-	                    imageXScale = 1;
-	                    imageYScale = 1;
-	                    imageOffSetX = (width - displayImage.getWidth()) / 2;
-	                    imageOffSetY = (height - displayImage.getHeight()) / 2;
-	                    width = displayImage.getWidth();
-	                    height = displayImage.getHeight();
-	                    break;
-	            }
-	            
-	            //Now make sure the image is in the correct location:
-	            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), width * textXSizePercent, height * textYSizePercent, imageText, 100);
-	            FXFontMetrics textFM = new FXFontMetrics(textFont); 
-	            
-	            switch(textPosition)
-	            {
-	                case TEXT_LOWER_LEFT_CORNER:
-	                    //Place in the lower left corner, relative to the position of the object:
-	                    textX = 0;
-	                    textY = height - getBorderSize();
-	                    break;
-	                case TEXT_UPPER_LEFT_CORNER:
-	                    //Place in the upper left corner, relative to the position of the object:
-	                    textX = 0;
-	                    textY = getBorderSize();
-	                    break;
-	                case TEXT_UPPER_RIGHT_CORNER:
-	                    //Place in the upper left corner, relative to the position of the object:
-	                    textX = width - textFM.stringWidth(imageText);
-	                    textY = getBorderSize();
-	                    break;
-	                case TEXT_LOWER_RIGHT_CORNER:
-	                    //Place in the upper left corner, relative to the position of the object:
-	                    textX = width - textFM.stringWidth(imageText);
-	                    textY = height - getBorderSize();
-	                    break;
-	            }
-	
-	            //Now fix the colors of this object:
-	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-	            {
-	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-	            }
-        	});
+            if(displayImage == null) //If there is no image, then save time by not calculating anything
+            {
+                return;
+            }
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setX(getXPercent() * parentWidth);
+            setY(getYPercent() * parentHeight);
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            
+            //Resize the image as applicable
+            double width = (double)getWidth();
+            double height = (double)getHeight();
+            imageOffSetX = 0;
+            imageOffSetY = 0;
+            switch(imageResizeOption)
+            {
+                case RESIZE_OPTION_FULL_RESIZE:
+                    imageXScale = (double)getWidth() / displayImage.getWidth();
+                    imageYScale = (double)getHeight() / displayImage.getHeight();
+                    break;
+                case RESIZE_OPTION_ASPECT_SCALED:
+                    imageXScale = (double)getWidth() / displayImage.getWidth();
+                    imageYScale = (double)getHeight() / displayImage.getHeight();
+                    if(imageYScale > imageXScale)
+                    {
+                        imageYScale = imageXScale;
+                    }
+                    else
+                    {
+                        imageXScale = imageYScale;
+                    }
+                    imageOffSetX = (width - displayImage.getWidth() * imageXScale) / 2;
+                    imageOffSetY = (height - displayImage.getHeight() * imageYScale) / 2;
+                    width = displayImage.getWidth();
+                    height = displayImage.getHeight();
+                    break;
+                case RESIZE_OPTION_NONE:
+                    imageXScale = 1;
+                    imageYScale = 1;
+                    imageOffSetX = (width - displayImage.getWidth()) / 2;
+                    imageOffSetY = (height - displayImage.getHeight()) / 2;
+                    width = displayImage.getWidth();
+                    height = displayImage.getHeight();
+                    break;
+            }
+            
+            //Now make sure the image is in the correct location:
+            textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), width * textXSizePercent, height * textYSizePercent, imageText, 100);
+            FXFontMetrics textFM = new FXFontMetrics(textFont); 
+            
+            switch(textPosition)
+            {
+                case TEXT_LOWER_LEFT_CORNER:
+                    //Place in the lower left corner, relative to the position of the object:
+                    textX = 0;
+                    textY = height - getBorderSize();
+                    break;
+                case TEXT_UPPER_LEFT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = 0;
+                    textY = getBorderSize();
+                    break;
+                case TEXT_UPPER_RIGHT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = getBorderSize();
+                    break;
+                case TEXT_LOWER_RIGHT_CORNER:
+                    //Place in the upper left corner, relative to the position of the object:
+                    textX = width - textFM.stringWidth(imageText);
+                    textY = height - getBorderSize();
+                    break;
+            }
+
+            //Now fix the colors of this object:
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+            }
         }
     }
 }

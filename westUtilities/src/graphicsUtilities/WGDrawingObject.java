@@ -43,6 +43,7 @@ public abstract class WGDrawingObject
     private double height;
     private double borderSize = 1;
     private boolean isShown = true;
+    private WGPane parentOwningPane;
     private WGTheme currentTheme;
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
@@ -274,6 +275,10 @@ public abstract class WGDrawingObject
         this.shownCursor = shownCursor;
     }
 
+    public void setParentOwningPane(WGPane parentOwningPane) {
+        this.parentOwningPane = parentOwningPane;
+    }
+
     /**
      * A very important not about this:
      * Do NOT use this function if this object is a tool tip!
@@ -282,6 +287,10 @@ public abstract class WGDrawingObject
      * @param toolTip The Tool Tip that is added to this object, important when the tool tip no longer has a reference but needs to be changed
     */ 
     public void setToolTip(WGToolTip toolTip) {
+    	if(this instanceof WGToolTip) //This is for safety, to prevent tooltips from having tooltips, which is impossible
+    	{
+    		return; 
+    	}
         this.toolTip = toolTip;
     }
 
@@ -337,5 +346,9 @@ public abstract class WGDrawingObject
 
     public WGTheme getCurrentTheme() {
         return currentTheme;
+    }
+
+    public WGPane getParentOwningPane() {
+        return parentOwningPane;
     }
 }

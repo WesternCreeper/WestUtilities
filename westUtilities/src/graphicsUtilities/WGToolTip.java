@@ -175,7 +175,7 @@ public class WGToolTip extends WGBox implements TextStyles
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -283,56 +283,54 @@ public class WGToolTip extends WGBox implements TextStyles
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
-        	Platform.runLater(() -> {
-	            //Find the parent width and height so that the x/y can be scaled accordingly
-	            double parentWidth = getParent().getWidth();
-	            double parentHeight = getParent().getHeight();
-	            double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
-	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-	            setWidth(getWidthPercent() * parentWidth);
-	            setHeight(getHeightPercent() * parentHeight);
-	            String longestString = getLongestString();
-	            if(autoResizeText)
-	            {
-	                toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getParent(), getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString, 100);
-	            }
-	            
-	            //Then Find the best X place so the drawing is faster and smoother:
-	            FXFontMetrics textFM = new FXFontMetrics(toolTipFont);
-	            longestStringWidth = textFM.stringWidth(longestString);
-	            
-	            //Now make the height and width "fit" to the text:
-	            double textWidth = textFM.stringWidth(longestString);
-	            double textHeight = textFM.getHeight(longestString) * toolTipText.length;
-	            
-	            if(!autoResizeText)
-	            {
-	                //Fit the text into the box (No matter if it is too big or too small):
-	                setWidth(textWidth + borderPadding * 2);
-	                setHeight(textHeight + borderPadding * 2);
-	            }
-	            else
-	            {
-	                if(getWidth() > textWidth) //IF the actual width is greater than the text's width, THEN the it needs to be fixed
-	                {
-	                    setWidth(textWidth + borderPadding * 2);
-	                }
-	                if(getHeight() > textHeight) //IF the actual height is greater than the text's height, THEN the it needs to be fixed
-	                {
-	                    setHeight(textHeight + borderPadding * 2);
-	                }
-	            }
-	
-	            //Now fix the colors of this object:
-	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-	            {
-	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-	            }
-        	});
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
+            double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            String longestString = getLongestString();
+            if(autoResizeText)
+            {
+                toolTipFont = WGFontHelper.getFittedFontForBox(toolTipFont, getParent(), getWidth() - borderPadding, (getHeight() / toolTipText.length) - borderPadding, longestString, 100);
+            }
+            
+            //Then Find the best X place so the drawing is faster and smoother:
+            FXFontMetrics textFM = new FXFontMetrics(toolTipFont);
+            longestStringWidth = textFM.stringWidth(longestString);
+            
+            //Now make the height and width "fit" to the text:
+            double textWidth = textFM.stringWidth(longestString);
+            double textHeight = textFM.getHeight(longestString) * toolTipText.length;
+            
+            if(!autoResizeText)
+            {
+                //Fit the text into the box (No matter if it is too big or too small):
+                setWidth(textWidth + borderPadding * 2);
+                setHeight(textHeight + borderPadding * 2);
+            }
+            else
+            {
+                if(getWidth() > textWidth) //IF the actual width is greater than the text's width, THEN the it needs to be fixed
+                {
+                    setWidth(textWidth + borderPadding * 2);
+                }
+                if(getHeight() > textHeight) //IF the actual height is greater than the text's height, THEN the it needs to be fixed
+                {
+                    setHeight(textHeight + borderPadding * 2);
+                }
+            }
+
+            //Now fix the colors of this object:
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+            }
         }
     }
 }

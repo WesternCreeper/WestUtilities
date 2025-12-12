@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
  */
 public class WGDropDownListener extends WGButtonListener
 {
+	private boolean didDragEvent = false;
     /**
      * The necessary components needed to make this object versatile for anything needed to be clicked on. This could be a button, although there is a specific class for those, or any WGDrawingObject, a loading bar or an announcement card. Whatever the need is, this class will be  
      * @param parentObject The WGDrawingObject that allows for certain functions to work
@@ -31,14 +32,26 @@ public class WGDropDownListener extends WGButtonListener
     {
         super.mouseClicked(e);
         
+        //To prevent a nasty scrollbar bug:
+        if(didDragEvent)
+        {
+        	didDragEvent = false;
+        	return;
+        }
+        
         //Check to see if the object needs to go back into the original form, without all of the choices
         WGDropDown parent = (WGDropDown)getParentObject();
-        if(parent.isDroppedDown() && !isWithinBounds(e))
+        if(!e.isConsumed() && parent.isDroppedDown() && !isWithinBounds(e))
         {
             parent.setDroppedDown(false);
             //Force the pane owner to update!
-            getParentOwningPane().changeScrollBounds(false);
+            getParentObject().getParentOwningPane().getResizer().resizeComps();
         }
+    }
+    @Override
+    public void mouseDragged(MouseEvent e)
+    {
+    	didDragEvent = true;
     }
     
     public void clickEvent(MouseEvent e)
@@ -52,7 +65,7 @@ public class WGDropDownListener extends WGButtonListener
             parent.setDroppedDown(true);
             parent.setHoveredIndex(0);
             //Force the pane owner to update!
-            getParentOwningPane().changeScrollBounds(true);
+            getParentObject().getParentOwningPane().getResizer().resizeComps();
         }
         else
         {
@@ -70,7 +83,7 @@ public class WGDropDownListener extends WGButtonListener
             parent.setDroppedDown(false);
             parent.setSelectedChoice(choice);
             //Force the pane owner to update!
-            getParentOwningPane().changeScrollBounds(false);
+            getParentObject().getParentOwningPane().getResizer().resizeComps();
             
             //Cursor:
             WestGraphics.checkCursor(e, getParentComponent(), getParentObject());

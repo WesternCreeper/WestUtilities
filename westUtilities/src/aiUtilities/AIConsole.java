@@ -5,6 +5,8 @@
 package aiUtilities;
 
 import graphicsUtilities.Console;
+import graphicsUtilities.WGButton;
+import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,8 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import graphicsUtilities.WGButton;
-import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGTextArea;
 import graphicsUtilities.WGTextInput;

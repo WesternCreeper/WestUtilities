@@ -75,7 +75,7 @@ public class WGScrollableListener implements EventHandler<Event>
     {
         if(preferred && isWithinBounds(e) && !e.isConsumed())
         {
-            doScroll(e.getDeltaX(), true);
+            doScroll(-e.getDeltaY(), true);
             //Cursor:
             WestGraphics.setProperHoverDuringScroll(parentPane.getParent());
         }
@@ -147,14 +147,7 @@ public class WGScrollableListener implements EventHandler<Event>
             double smallestY = 0;
             double biggestY = 0;
             for(int i = 0 ; i < components.size() ; i++)
-            {
-                //Make sure to close all dropdowns that are within this object:
-                if(components.get(i) instanceof WGDropDown)
-                {
-                    WGDropDown dropDown = (WGDropDown)components.get(i);
-                    dropDown.setDroppedDown(false);
-                }
-                
+            {   
                 double newSmallestY = components.get(i).getY();
                 double newbiggestY = newSmallestY + components.get(i).getHeight() - parentPane.getY();
                 if(newSmallestY < smallestY)
@@ -179,13 +172,6 @@ public class WGScrollableListener implements EventHandler<Event>
             double biggestX = 0;
             for(int i = 0 ; i < components.size() ; i++)
             {
-                //Make sure to close all dropdowns that are within this object:
-                if(components.get(i) instanceof WGDropDown)
-                {
-                    WGDropDown dropDown = (WGDropDown)components.get(i);
-                    dropDown.setDroppedDown(false);
-                }
-                
                 double newSmallestX = components.get(i).getX();
                 double newbiggestX = newSmallestX + components.get(i).getWidth() - parentPane.getX();
                 if(newSmallestX < smallestX)

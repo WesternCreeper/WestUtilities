@@ -127,7 +127,7 @@ public class WGAnnouncementCard extends WGBox
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -255,49 +255,47 @@ public class WGAnnouncementCard extends WGBox
             this.subTitleHeightPercentage = subTitleHeightPercentage;
             this.splitPercentage = splitPercentage;
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
-        	Platform.runLater(() -> {
-	            //Find the parent width and height so that the x/y can be scaled accordingly
-	            double parentWidth = getParent().getWidth();
-	            double parentHeight = getParent().getHeight();
-	            double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
-	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-	            double optimalWidth = parentWidth * getWidthPercent();
-	            double optimalHeight = parentHeight * getHeightPercent();
-	            double titleHeight = titleHeightPercentage * optimalHeight;
-	            double subTitleHeight = subTitleHeightPercentage * optimalHeight;
-	            splitHeight = splitPercentage * optimalHeight;
-	            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getParent(), optimalWidth - (borderPadding * 2), titleHeight - borderPadding, title, 100);
-	            subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, getParent(), optimalWidth - (borderPadding * 2), subTitleHeight - borderPadding, subTitle, 100);
-	            
-	            //Now that the height, width, and fonts have been set, now use the xCenter and yCenter to make the component centered on that area:
-	            FXFontMetrics titleFM = new FXFontMetrics(titleFont);
-	            FXFontMetrics subTitleFM = new FXFontMetrics(subTitleFont);
-	            double xTitlePlace = (getXPercent() * parentWidth) - (titleFM.stringWidth(title)/ 2);
-	            double xSubTitlePlace = (getXPercent() * parentWidth) - (subTitleFM.stringWidth(subTitle)/ 2);
-	            double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
-	            setX(xPlace);
-	            double yPlace = (getYPercent() * parentHeight) - (((titleFM.getHeight(title) + subTitleFM.getHeight(subTitle)) + splitHeight) / 2);
-	            setY(yPlace);
-	            double titleWidth = titleFM.stringWidth(title);
-	            double subTitleWidth = subTitleFM.stringWidth(subTitle) + borderPadding * 2;
-	            double totalWidth = (titleWidth > subTitleWidth ? titleWidth : subTitleWidth);
-	            setWidth(totalWidth);
-	            
-	            double totalHeight = titleFM.getHeight(title) + subTitleFM.getHeight(subTitle) + borderPadding * 2 + splitHeight;
-	            setHeight(totalHeight);
-	            
-	            //Now fix the colors of this object:
-	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-	            {
-	                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
-	                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
-	                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TITLE_COLOR));
-	                splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SPLIT_COLOR));
-	                subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SUBTITLE_COLOR));
-	            }
-        	});
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
+            double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            double optimalWidth = parentWidth * getWidthPercent();
+            double optimalHeight = parentHeight * getHeightPercent();
+            double titleHeight = titleHeightPercentage * optimalHeight;
+            double subTitleHeight = subTitleHeightPercentage * optimalHeight;
+            splitHeight = splitPercentage * optimalHeight;
+            titleFont = WGFontHelper.getFittedFontForBox(titleFont, getParent(), optimalWidth - (borderPadding * 2), titleHeight - borderPadding, title, 100);
+            subTitleFont = WGFontHelper.getFittedFontForBox(subTitleFont, getParent(), optimalWidth - (borderPadding * 2), subTitleHeight - borderPadding, subTitle, 100);
+            
+            //Now that the height, width, and fonts have been set, now use the xCenter and yCenter to make the component centered on that area:
+            FXFontMetrics titleFM = new FXFontMetrics(titleFont);
+            FXFontMetrics subTitleFM = new FXFontMetrics(subTitleFont);
+            double xTitlePlace = (getXPercent() * parentWidth) - (titleFM.stringWidth(title)/ 2);
+            double xSubTitlePlace = (getXPercent() * parentWidth) - (subTitleFM.stringWidth(subTitle)/ 2);
+            double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
+            setX(xPlace);
+            double yPlace = (getYPercent() * parentHeight) - (((titleFM.getHeight(title) + subTitleFM.getHeight(subTitle)) + splitHeight) / 2);
+            setY(yPlace);
+            double titleWidth = titleFM.stringWidth(title);
+            double subTitleWidth = subTitleFM.stringWidth(subTitle) + borderPadding * 2;
+            double totalWidth = (titleWidth > subTitleWidth ? titleWidth : subTitleWidth);
+            setWidth(totalWidth);
+            
+            double totalHeight = titleFM.getHeight(title) + subTitleFM.getHeight(subTitle) + borderPadding * 2 + splitHeight;
+            setHeight(totalHeight);
+            
+            //Now fix the colors of this object:
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                setBackgroundColor(fixPaintBounds(getBackgroundColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BACKGROUND_COLOR)));
+                setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
+                titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TITLE_COLOR));
+                splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SPLIT_COLOR));
+                subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SUBTITLE_COLOR));
+            }
         }
     }
 }

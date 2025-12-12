@@ -4,8 +4,8 @@
  */
 package graphicsUtilities.WGAnimation;
 
-import graphicsUtilities.WGDrawingObject;
 import graphicsUtilities.WGButton;
+import graphicsUtilities.WGDrawingObject;
 import graphicsUtilities.WestGraphics;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;

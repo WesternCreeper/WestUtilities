@@ -190,8 +190,9 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     }
 
     @Override
-    public void setUpBounds() {
-        resizer.resizeComps();
+    public void setUpBounds() 
+    {
+        resizer.resizeCompsWithoutDelay();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -335,121 +336,119 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
-        	Platform.runLater(() -> {
-	            //Find the parent width and height so that the x/y can be scaled accordingly
-	            double parentWidth = getParent().getWidth();
-	            double parentHeight = getParent().getHeight();
-	            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
-	            //Set up the x, y, width, and height components based on the percentages given and the parent's size
-	            setX(getXPercent() * parentWidth);
-	            setY(getYPercent() * parentHeight);
-	            setWidth(getWidthPercent() * parentWidth);
-	            setHeight(getHeightPercent() * parentHeight);
-	            //Allow for the scroll to happen if there is a pane that controls this
-	            if(verticalScroll != null)
-	            {
-	                if(textWrapped)
-	                {
-	                    ArrayList<String> newList = new ArrayList<String>(text.size());
-	                    ArrayList<Paint> newColorList = new ArrayList<Paint>(textColors.size());
-	                    FXFontMetrics textFM = new FXFontMetrics(textFont);
-	                    double objectWidth = getWidth();
-	                    //First copy over the strings:
-	                    for(int i = 0 ; i < text.size() ; i++)
-	                    {
-	                        newList.add(text.get(i));
-	                        newColorList.add(textColors.get(i));
-	                    }
-	                    //This requires that each line is split if too long:
-	                    for(int i = 0 ; i < newList.size() ; i++)
-	                    {
-	                        String str = newList.get(i);
-	                        double textLength = textFM.stringWidth(str);
-	                        if(textLength > objectWidth) //There is a problem, the string is too long, now wrap it!
-	                        {
-	                            //Now determine where in the string is the best location to split:
-	                            //Search Binarially:
-	                            int minimumSize = 0;
-	                            int maximumSize = str.length();
-	                            int sizeSplit = str.length();
-	                            while(true)
-	                            {
-	                                int currentSize = (int)((minimumSize + maximumSize) /2.0);
-	                                String test = str.substring(0, currentSize);
-	                                double testLength = textFM.stringWidth(test);
-	                                if(testLength >= objectWidth)
-	                                {
-	                                    maximumSize = currentSize;
-	                                }
-	                                else if(testLength < objectWidth)
-	                                {
-	                                    minimumSize = currentSize;
-	                                }
-	                                if(minimumSize == maximumSize)
-	                                {
-	                                    sizeSplit = minimumSize;
-	                                    break;
-	                                }
-	                                else if(minimumSize+1 == maximumSize) //Make sure to use the correct one:
-	                                {
-	                                    test = str.substring(0, maximumSize);
-	                                    testLength = textFM.stringWidth(test);
-	                                    if(testLength >= objectWidth)
-	                                    {
-	                                        sizeSplit = minimumSize;
-	                                    }
-	                                    if(testLength < objectWidth)
-	                                    {
-	                                        sizeSplit = maximumSize;
-	                                    }
-	                                    break;
-	                                }
-	                            }
-	                            //Now Do stuff:
-	                            String thisLine = str.substring(0, sizeSplit+1);
-	                            String newLine = str.substring(sizeSplit+1);
-	                            //Now try to keep words together:
-	                            if(thisLine.contains(" "))
-	                            {
-	                                //Split at the space instead if can:
-	                                sizeSplit = thisLine.lastIndexOf(" ");
-	                                thisLine = str.substring(0, sizeSplit+1);
-	                                newLine = str.substring(sizeSplit+1);
-	                            }
-	                            newList.set(i, thisLine);
-	                            newList.add(i+1, newLine.strip());
-	                            //Whenever a new line is added make sure to also add to the colors array:
-	                            newColorList.add(i+1, newColorList.get(i));
-	                        }
-	                    }
-	                    formatedText = newList;
-	                    formatedColors = newColorList;
-	                    verticalScroll.setScrollSpeed(formatedText.size());
-	                    verticalScroll.setUpScroll(formatedText);
-	                }
-	                else
-	                {
-	                    //Reset the width and height according to the size of the string:
-	                    textFont = WGFontHelper.getFittedFontForWidth(textFont, getParent(), getWidth() - borderPadding, getLongestString(), 100);
-	                    verticalScroll.setScrollSpeed(text.size());
-	                    verticalScroll.setUpScroll(text);
-	                }
-	            }
-	            else
-	            {
-	                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, (double)(getHeight() - borderPadding) / text.size(), getLongestString(), 100);
-	            }
-	            stringYOffset = 0;
-	
-	            //Now fix the colors of this object:
-	            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
-	            {
-	                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
-	                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
-	            }
-        	});
+            //Find the parent width and height so that the x/y can be scaled accordingly
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
+            double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
+            //Set up the x, y, width, and height components based on the percentages given and the parent's size
+            setX(getXPercent() * parentWidth);
+            setY(getYPercent() * parentHeight);
+            setWidth(getWidthPercent() * parentWidth);
+            setHeight(getHeightPercent() * parentHeight);
+            //Allow for the scroll to happen if there is a pane that controls this
+            if(verticalScroll != null)
+            {
+                if(textWrapped)
+                {
+                    ArrayList<String> newList = new ArrayList<String>(text.size());
+                    ArrayList<Paint> newColorList = new ArrayList<Paint>(textColors.size());
+                    FXFontMetrics textFM = new FXFontMetrics(textFont);
+                    double objectWidth = getWidth();
+                    //First copy over the strings:
+                    for(int i = 0 ; i < text.size() ; i++)
+                    {
+                        newList.add(text.get(i));
+                        newColorList.add(textColors.get(i));
+                    }
+                    //This requires that each line is split if too long:
+                    for(int i = 0 ; i < newList.size() ; i++)
+                    {
+                        String str = newList.get(i);
+                        double textLength = textFM.stringWidth(str);
+                        if(textLength > objectWidth) //There is a problem, the string is too long, now wrap it!
+                        {
+                            //Now determine where in the string is the best location to split:
+                            //Search Binarially:
+                            int minimumSize = 0;
+                            int maximumSize = str.length();
+                            int sizeSplit = str.length();
+                            while(true)
+                            {
+                                int currentSize = (int)((minimumSize + maximumSize) /2.0);
+                                String test = str.substring(0, currentSize);
+                                double testLength = textFM.stringWidth(test);
+                                if(testLength >= objectWidth)
+                                {
+                                    maximumSize = currentSize;
+                                }
+                                else if(testLength < objectWidth)
+                                {
+                                    minimumSize = currentSize;
+                                }
+                                if(minimumSize == maximumSize)
+                                {
+                                    sizeSplit = minimumSize;
+                                    break;
+                                }
+                                else if(minimumSize+1 == maximumSize) //Make sure to use the correct one:
+                                {
+                                    test = str.substring(0, maximumSize);
+                                    testLength = textFM.stringWidth(test);
+                                    if(testLength >= objectWidth)
+                                    {
+                                        sizeSplit = minimumSize;
+                                    }
+                                    if(testLength < objectWidth)
+                                    {
+                                        sizeSplit = maximumSize;
+                                    }
+                                    break;
+                                }
+                            }
+                            //Now Do stuff:
+                            String thisLine = str.substring(0, sizeSplit+1);
+                            String newLine = str.substring(sizeSplit+1);
+                            //Now try to keep words together:
+                            if(thisLine.contains(" "))
+                            {
+                                //Split at the space instead if can:
+                                sizeSplit = thisLine.lastIndexOf(" ");
+                                thisLine = str.substring(0, sizeSplit+1);
+                                newLine = str.substring(sizeSplit+1);
+                            }
+                            newList.set(i, thisLine);
+                            newList.add(i+1, newLine.strip());
+                            //Whenever a new line is added make sure to also add to the colors array:
+                            newColorList.add(i+1, newColorList.get(i));
+                        }
+                    }
+                    formatedText = newList;
+                    formatedColors = newColorList;
+                    verticalScroll.setScrollSpeed(formatedText.size());
+                    verticalScroll.setUpScroll(formatedText);
+                }
+                else
+                {
+                    //Reset the width and height according to the size of the string:
+                    textFont = WGFontHelper.getFittedFontForWidth(textFont, getParent(), getWidth() - borderPadding, getLongestString(), 100);
+                    verticalScroll.setScrollSpeed(text.size());
+                    verticalScroll.setUpScroll(text);
+                }
+            }
+            else
+            {
+                textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, (double)(getHeight() - borderPadding) / text.size(), getLongestString(), 100);
+            }
+            stringYOffset = 0;
+
+            //Now fix the colors of this object:
+            if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
+            {
+                textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
+                scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
+            }
         }
     }
 }

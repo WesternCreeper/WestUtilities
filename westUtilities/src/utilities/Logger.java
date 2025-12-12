@@ -5,6 +5,9 @@
 package utilities;
 
 import graphicsUtilities.Console;
+import graphicsUtilities.WGButton;
+import graphicsUtilities.WGButtonListener;
+import graphicsUtilities.WGLabel;
 import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import javafx.animation.KeyFrame;
 import javafx.event.EventHandler;
@@ -19,9 +22,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import graphicsUtilities.WGButton;
-import graphicsUtilities.WGButtonListener;
-import graphicsUtilities.WGLabel;
 import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGTextArea;
 import graphicsUtilities.WestGraphics;

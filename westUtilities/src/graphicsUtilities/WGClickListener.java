@@ -24,7 +24,6 @@ import javafx.scene.input.ScrollEvent;
 public class WGClickListener implements EventHandler<Event>
 {
     private WGDrawingObject parentObject;
-    private WGPane parentOwningPane;
     private Canvas parentComponent;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
@@ -63,7 +62,7 @@ public class WGClickListener implements EventHandler<Event>
     {
         if(isWithinBounds(e) && !e.isConsumed() && parentObject.isShown())
         {
-            if(parentOwningPane != null && !parentOwningPane.isShown())
+            if(parentObject.getParentOwningPane() != null && !parentObject.getParentOwningPane().isShown())
             {
                 return;
             }
@@ -141,9 +140,9 @@ public class WGClickListener implements EventHandler<Event>
     {
         Point2D clickLoaction = new Point2D(e.getX(), e.getY());
         Rectangle2D objectBounds = parentObject.getBounds();
-        if(parentOwningPane != null) //If there is a pane then make sure it is within both bounds!
+        if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
         {
-            return objectBounds.contains(clickLoaction) && parentOwningPane.getBounds().contains(clickLoaction);
+            return objectBounds.contains(clickLoaction) && parentObject.getParentOwningPane().getBounds().contains(clickLoaction);
         }
         return objectBounds.contains(clickLoaction);
     }
@@ -157,9 +156,9 @@ public class WGClickListener implements EventHandler<Event>
     {
         Point2D clickLoaction = new Point2D(e.getX(), e.getY());
         Rectangle2D objectBounds = parentObject.getBounds();
-        if(parentOwningPane != null) //If there is a pane then make sure it is within both bounds!
+        if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
         {
-            return objectBounds.contains(clickLoaction) && parentOwningPane.getBounds().contains(clickLoaction);
+            return objectBounds.contains(clickLoaction) && parentObject.getParentOwningPane().getBounds().contains(clickLoaction);
         }
         return objectBounds.contains(clickLoaction);
     }
@@ -167,9 +166,9 @@ public class WGClickListener implements EventHandler<Event>
     protected boolean isParentShown()
     {
         boolean result = parentObject.isShown();
-        if(parentOwningPane != null)
+        if(parentObject.getParentOwningPane() != null)
         {
-            result = result && parentOwningPane.isShown();
+            result = result && parentObject.getParentOwningPane().isShown();
         }
         return result;
     }
@@ -187,20 +186,12 @@ public class WGClickListener implements EventHandler<Event>
         return parentObject;
     }
 
-    public WGPane getParentOwningPane() {
-        return parentOwningPane;
-    }
-
     public void setParentComponent(Canvas parentComponent) {
         this.parentComponent = parentComponent;
     }
 
     public void setParentObject(WGDrawingObject parentObject) {
         this.parentObject = parentObject;
-    }
-
-    public void setParentOwningPane(WGPane parentOwningPane) {
-        this.parentOwningPane = parentOwningPane;
     }
     
     public void clickEvent(MouseEvent e) {}

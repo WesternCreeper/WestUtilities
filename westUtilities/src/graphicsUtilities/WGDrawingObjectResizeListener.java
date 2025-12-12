@@ -4,6 +4,7 @@
  */
 package graphicsUtilities;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Rectangle2D;
 
@@ -36,7 +37,14 @@ public abstract class WGDrawingObjectResizeListener
         resizeComps();
     }
     
-    public abstract void resizeComps();
+    public final void resizeComps()
+    {
+    	Platform.runLater(() -> {
+    		resizeCompsWithoutDelay();
+    	});
+    }
+    
+    public abstract void resizeCompsWithoutDelay();
 
     //Getters:
     public double getXPercent() {

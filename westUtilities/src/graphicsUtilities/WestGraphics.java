@@ -212,7 +212,7 @@ public class WestGraphics
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
-            boolean onPane = clickCursor.getClickListener().getParentOwningPane() != null;
+            boolean onPane = clickCursor.getParentOwningPane() != null;
             if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
             {
             	lastMouseEvents.set(parent.toString(), e);
