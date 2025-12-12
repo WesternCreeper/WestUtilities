@@ -4,10 +4,14 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+
+import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Paint;
 
 /**
  * This serves as a grouping tool, with a cool rectangle surrounding it. By no means is this a JPanel or Window or other actual heavy-weight components. All this is, is a way to easily group WGDrawingObjects together, such as in menuing.
@@ -34,26 +38,25 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.scrollBarColor = scrollBarColor;
         this.scrollable = scrollable;
         if(getParent() != null)
         {
-            resizer = new PaneResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new PaneResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             if(scrollable)
             {
                 verticalScroll = new WGScrollableListener(this);
-                getParent().addMouseWheelListener(verticalScroll);
-                getParent().addMouseListener(verticalScroll);
-                getParent().addMouseMotionListener(verticalScroll);
+                getParent().addEventHandler(MouseEvent.ANY, verticalScroll);
+                getParent().addEventHandler(ScrollEvent.ANY, verticalScroll);
                 horizontalScroll = new WGScrollableListener(this);
-                getParent().addMouseWheelListener(horizontalScroll);
-                getParent().addMouseListener(horizontalScroll);
-                getParent().addMouseMotionListener(horizontalScroll);
+                getParent().addEventHandler(MouseEvent.ANY, horizontalScroll);
+                getParent().addEventHandler(ScrollEvent.ANY, horizontalScroll);
             }
         }
         else
@@ -76,9 +79,9 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Component parent) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
     }
     
     /**
@@ -89,7 +92,7 @@ public class WGPane extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, boolean scrollable, Component parent, WGTheme theme) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, boolean scrollable, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), scrollable, theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
         setCurrentTheme(theme);
@@ -105,7 +108,7 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, float borderSize, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, float borderSize, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, false, backgroundColor, borderColor, null, parent);
         
@@ -115,9 +118,8 @@ public class WGPane extends WGBox
             super.setClickListener(clickListener);
             getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            getParent().addMouseListener(getClickListener());
-            getParent().addMouseMotionListener((WGButtonListener)getClickListener());
-            getParent().addMouseWheelListener((WGButtonListener)getClickListener());
+            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
+            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
             WestGraphics.add(this);
         }
         else
@@ -139,9 +141,9 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Paint backgroundColor, Paint borderColor, Component parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, backgroundColor, borderColor, parent, clickListener);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, backgroundColor, borderColor, parent, clickListener);
     }
     
     /**
@@ -152,7 +154,7 @@ public class WGPane extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D.Double bounds, Component parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, Canvas parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent, clickListener);
         setCurrentTheme(theme);
@@ -161,16 +163,16 @@ public class WGPane extends WGBox
     
     //Methods:
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+       Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -197,7 +199,8 @@ public class WGPane extends WGBox
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -205,16 +208,23 @@ public class WGPane extends WGBox
         
         WGScrollableListener scrollerH = getHorizontalScroll();
         WGScrollableListener scrollerV = getVerticalScroll();
-        getParent().removeMouseListener(scrollerH);
-        getParent().removeMouseMotionListener(scrollerH);
-        getParent().removeMouseWheelListener(scrollerH);
-        getParent().removeMouseListener(scrollerV);
-        getParent().removeMouseMotionListener(scrollerV);
-        getParent().removeMouseWheelListener(scrollerV);
+        if(scrollerH != null)
+        {
+	        getParent().removeEventHandler(MouseEvent.ANY, scrollerH);
+	        getParent().removeEventHandler(ScrollEvent.ANY, scrollerH);
+        }
+        if(scrollerV != null)
+        {
+            getParent().removeEventHandler(MouseEvent.ANY, scrollerV);
+            getParent().removeEventHandler(ScrollEvent.ANY, scrollerV);
+        }
         
-        WGButtonListener buttoner = (WGButtonListener)(getClickListener());
-        getParent().removeMouseListener(buttoner);
-        getParent().removeMouseMotionListener(buttoner);
+        WGClickListener clickListener = getClickListener();
+        if(clickListener != null)
+        {
+	        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
+	        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
+        }
         WestGraphics.remove(this);
     }
     
@@ -225,12 +235,8 @@ public class WGPane extends WGBox
     public void addDrawableObject(WGDrawingObject obj)
     {
         containedObjects.add(obj);
-        WGClickListener objListener = obj.getClickListener();
-        if(objListener != null)
-        {
-            objListener.setParentOwningPane(this);
-        }
-        setUpScroll();
+        obj.setParentOwningPane(this);
+        resizer.resizeComps();
     }
     /**
      * A wrapper for the ArrayList. Does the same thing as ArrayList.removeAll(Collection(?) c), only these "Objects" are WGDrawingObjects. This removes the listeners of the individual objects
@@ -391,11 +397,11 @@ public class WGPane extends WGBox
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
             setY(getYPercent() * parentHeight);
@@ -417,9 +423,6 @@ public class WGPane extends WGBox
                 containedObjects.get(i).setUpBounds();
             }
             setUpScroll();
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

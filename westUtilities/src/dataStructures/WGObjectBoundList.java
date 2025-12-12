@@ -6,9 +6,9 @@ package dataStructures;
 
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGDrawingObject;
-import java.awt.Component;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
+import javafx.geometry.Rectangle2D;
 
 /**
  *
@@ -30,21 +30,21 @@ public class WGObjectBoundList
         {
             //Now we need to find where to place this:
             //Search based on the x-value:
-            double x = node.getRelativeBounds().getX();
+            double x = node.getRelativeBounds().getMinX();
             double width = node.getRelativeBounds().getWidth();
             WGObjectBoundNode searchNode = header;
             WGObjectBoundNode prev = null;
             boolean isChild = false;
             
             //Find the next best location to go (This should automatically sort the x-values, from smallest to largest):
-            while(searchNode != null && x > searchNode.getRelativeBounds().getX())
+            while(searchNode != null && x > searchNode.getRelativeBounds().getMinX())
             {
                 prev = searchNode;
                 searchNode = searchNode.getNext();
             }
             
             //Now that we are at the right x-value, either because searchNode.next does not exist, or because we found an x that we are equal to:
-            if(searchNode != null && x == searchNode.getRelativeBounds().getX())
+            if(searchNode != null && x == searchNode.getRelativeBounds().getMinX())
             {
                 //Now find the best location (largest to smallest widths):
                 while(searchNode != null && width < searchNode.getRelativeBounds().getWidth())
@@ -108,21 +108,21 @@ public class WGObjectBoundList
         {
             //Now we need to find where we were placed
             //Search based on the x-value:
-            double x = node.getRelativeBounds().getX();
+            double x = node.getRelativeBounds().getMinX();
             double width = node.getRelativeBounds().getWidth();
             WGObjectBoundNode searchNode = header;
             WGObjectBoundNode prev = null;
             boolean isChild = false;
             
             //Search by the x-values:
-            while(searchNode != null && x > searchNode.getRelativeBounds().getX())
+            while(searchNode != null && x > searchNode.getRelativeBounds().getMinX())
             {
                 prev = searchNode;
                 searchNode = searchNode.getNext();
             }
             
             //Now that we are at the right x-value, now find out where we went:
-            if(searchNode != null && x == searchNode.getRelativeBounds().getX())
+            if(searchNode != null && x == searchNode.getRelativeBounds().getMinX())
             {
                 //Now find our exact location:
                 while(searchNode != null && width <= searchNode.getRelativeBounds().getWidth())
@@ -181,13 +181,13 @@ public class WGObjectBoundList
             }
         }
     }
-    public WGDrawingObject contains(Point2D.Double point, Component currentParent)
+    public WGDrawingObject contains(Point2D point, Canvas currentParent)
     {
         WGDrawingObject foundInstance = containsUseRelative(point, currentParent);
         if(foundInstance == null) //Double check that the real thing we are looking for has not scrolled away:
         {
             WGDrawingObject instanceABS = containsUseAbsolute(point, currentParent);
-            if(instanceABS != null && instanceABS.getClickListener().getParentOwningPane() != null)
+            if(instanceABS != null && instanceABS.getParentOwningPane() != null)
             {
                 //This is in a pane and therefore must have been scrolled, use this instead of null:
                 foundInstance = instanceABS;
@@ -195,7 +195,7 @@ public class WGObjectBoundList
         }
         return foundInstance;
     }
-    public WGDrawingObject containsUseRelative(Point2D.Double point, Component currentParent)
+    public WGDrawingObject containsUseRelative(Point2D point, Canvas currentParent)
     {
         if(header == null)
         {
@@ -207,7 +207,7 @@ public class WGObjectBoundList
         WGObjectBoundNode searchNode = header;
         
         //Figure out where we go based on the x-value:
-        while(x >= searchNode.getRelativeBounds().getX())
+        while(x >= searchNode.getRelativeBounds().getMinX())
         {
             WGObjectBoundNode searchChild = searchNode;
             do
@@ -215,12 +215,12 @@ public class WGObjectBoundList
                 if(searchChild.getObject().isShown() && searchChild.getObject().getParent() == currentParent)
                 {
                     //We know that we are larger than or equal to the current x, so search the widths of the serachNode until we find one that contains us:
-                    Rectangle2D.Double nodeBounds = searchChild.getRelativeBounds();
-                    double nodeWidthX = nodeBounds.getWidth() + nodeBounds.getX();
+                    Rectangle2D nodeBounds = searchChild.getRelativeBounds();
+                    double nodeWidthX = nodeBounds.getWidth() + nodeBounds.getMinX();
                     if(x <= nodeWidthX) //We fit in the box, that means we are good, hopefully!
                     {
                         //Now check the y-coor:
-                        if(y >= nodeBounds.getY() && y <= nodeBounds.getY() + nodeBounds.getHeight())
+                        if(y >= nodeBounds.getMinY() && y <= nodeBounds.getMinY() + nodeBounds.getHeight())
                         {
                             return searchChild.getObject();
                         }
@@ -251,7 +251,7 @@ public class WGObjectBoundList
         //If we exited the loop then we know we did not find it:
         return null;
     }
-    public WGDrawingObject containsUseAbsolute(Point2D.Double point, Component currentParent)
+    public WGDrawingObject containsUseAbsolute(Point2D point, Canvas currentParent)
     {
         if(header == null)
         {
@@ -263,7 +263,7 @@ public class WGObjectBoundList
         WGObjectBoundNode searchNode = header;
         
         //Figure out where we go based on the x-value:
-        while(x >= searchNode.getBounds().getX())
+        while(x >= searchNode.getBounds().getMinX())
         {
             WGObjectBoundNode searchChild = searchNode;
             do
@@ -271,12 +271,12 @@ public class WGObjectBoundList
                 if(searchChild.getObject().isShown() && searchChild.getObject().getParent() == currentParent)
                 {
                     //We know that we are larger than or equal to the current x, so search the widths of the serachNode until we find one that contains us:
-                    Rectangle2D.Double nodeBounds = searchChild.getBounds();
-                    double nodeWidthX = nodeBounds.getWidth() + nodeBounds.getX();
+                    Rectangle2D nodeBounds = searchChild.getBounds();
+                    double nodeWidthX = nodeBounds.getWidth() + nodeBounds.getMinX();
                     if(x <= nodeWidthX) //We fit in the box, that means we are good, hopefully!
                     {
                         //Now check the y-coor:
-                        if(y >= nodeBounds.getY() && y <= nodeBounds.getY() + nodeBounds.getHeight())
+                        if(y >= nodeBounds.getMinY() && y <= nodeBounds.getMinY() + nodeBounds.getHeight())
                         {
                             return searchChild.getObject();
                         }

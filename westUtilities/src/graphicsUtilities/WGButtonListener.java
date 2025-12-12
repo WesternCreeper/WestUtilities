@@ -4,17 +4,17 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  *
  * @author Westley
  */
-public class WGButtonListener extends WGClickListener implements MouseMotionListener, MouseWheelListener
+public class WGButtonListener extends WGClickListener
 {
     protected boolean cursorSet = false;
     /**
@@ -36,30 +36,71 @@ public class WGButtonListener extends WGClickListener implements MouseMotionList
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      */
-    public WGButtonListener(WGBox parentObject, Component parentComponent)
+    public WGButtonListener(WGBox parentObject, Canvas parentComponent)
     {
         super(parentObject, parentComponent);
     }
 
-    @Override
     public void mouseDragged(MouseEvent e) {}
 
-    @Override
     public void mouseMoved(MouseEvent e)
     {
         hoverEvent(e);
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) 
+    public void mouseWheelMoved(ScrollEvent e) 
     {
         hoverEvent(e);
+    }
+    
+    @Override
+    public void handle(Event e)
+    {
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+			{
+				mouseClicked((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+			{
+				mouseEntered((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+			{
+				mouseExited((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+			{
+				mouseMoved((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(ScrollEvent.SCROLL))
+			{
+				mouseWheelMoved((ScrollEvent)e);
+			}
+    	});
     }
     
     public void hoverEvent(MouseEvent e)
     {
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
-        WestGraphics.doRepaintJob(getParentObject().getParent());
+    }
+    
+    public void hoverEvent(ScrollEvent e)
+    {
+        //Cursor:
+        WestGraphics.checkCursor(getParentComponent(), getParentObject());
     }
 }

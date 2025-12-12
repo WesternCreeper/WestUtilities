@@ -4,6 +4,8 @@
  */
 package utilities;
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Scanner;
 import java.util.ArrayList;
 /**
@@ -661,7 +663,7 @@ public class FileProcessor
     /**
      * Using a string this function will make that into a boolean value. True/False
      * @param str
-     * @param defaultValue The default value that will be returned if the result could not be turned into an int. Including but not limited to String values, Object values, Double values, or Integer values
+     * @param defaultValue The default value that will be returned if the result could not be turned into an boolean. Including but not limited to String values, Object values, Double values, or Integer values
      * @return The boolean created from the string, will return false if there is an error
      */
     public static boolean toBoolean(String str, boolean defaultValue)
@@ -676,6 +678,58 @@ public class FileProcessor
         {
             return defaultValue;
         }
+    }
+    /**
+     * Using a string this function will make that into a range, given the format (min, max). Will also accept min,max. If a Range cannot be created, then the range (Integer.Min, Integer.Min) will be created
+     * @param str
+     * @return The Range, returns (Integer.minValue(), Integer.minValue()) on failure. Automatically creates double ranges
+     */
+    public static Range<Number> toRange(String str)
+    {
+        return toRange(str, false, RangeType.DOUBLE);
+    }
+    /**
+     * Using a string this function will make that into a range, given the format (min, max). Will also accept min,max. If a Range cannot be created, then the range (Integer.Min, Integer.Min) will be created
+     * @param str
+     * @param defaultValue The default value that will be returned if the result could not be turned into an Range. Including but not limited to String values, Object values, Double values, or Integer values
+     * @param rangeType The type of range that is being created. This guarantees that a range will be of that type, and the values are correctly cast to that type
+     * @return The Range<Number>, returns (Integer.minValue(), Integer.minValue()) on failure. Automatically creates double ranges
+     */
+    public static Range<Number> toRange(String str, boolean defaultValue, RangeType rangeType)
+    {
+    	//Remove the parentheses if they exist:
+    	str = str.substring(str.indexOf("("), str.indexOf(")"));
+    	
+    	//Next follow determine the rangeType to find the type of range to be created:
+    	String[] parts = str.split(",");
+    	Range<Number> range = new Range<>(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    	
+    	switch(rangeType)
+    	{
+    		case RangeType.BIG_DECIMAL:
+    			range = new Range<Number>(new BigDecimal(parts[0]), new BigDecimal(parts[1]));
+    			break;
+    		case RangeType.BIG_INTEGER:
+    			range = new Range<Number>(new BigInteger(parts[0]), new BigInteger(parts[1]));
+    			break;
+    		case RangeType.BYTE:
+    			range = new Range<Number>(Byte.valueOf(parts[0]), Byte.valueOf(parts[1]));
+    			break;
+    		case RangeType.SHORT:
+    			range = new Range<Number>(Short.valueOf(parts[0]), Short.valueOf(parts[1]));
+    			break;
+    		case RangeType.LONG:
+    			range = new Range<Number>(Long.valueOf(parts[0]), Long.valueOf(parts[1]));
+    			break;
+    		case RangeType.FLOAT:
+    			range = new Range<Number>(Float.valueOf(parts[0]), Float.valueOf(parts[1]));
+    			break;
+    		default: //Assume everything else is a double:
+    			range = new Range<Number>(Double.valueOf(parts[0]), Double.valueOf(parts[1]));
+    			break;
+    	}
+    	
+    	return range;
     }
     
     /**

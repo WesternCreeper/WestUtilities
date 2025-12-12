@@ -4,24 +4,26 @@
  */
 package graphicsUtilities;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  *
  * @author Westley
  */
-public class WGTextInputKeyListener implements KeyListener
+public class WGTextInputKeyListener implements EventHandler<KeyEvent>
 {
-    private static final int BACKSPACE_KEY = 8;
-    private static final int ENTER_KEY = 10;
-    private static final int SHIFT_KEY = 16;
-    private static final int CLEAR_KEY = 27;
-    private static final int LEFT_ARROW_KEY = 37;
-    private static final int UP_ARROW_KEY = 38;
-    private static final int RIGHT_ARROW_KEY = 39;
-    private static final int DOWN_ARROW_KEY = 40;
-    private static final int DELETE_KEY = 127;
+    private static final KeyCode BACKSPACE_KEY = KeyCode.BACK_SPACE;
+    private static final KeyCode ENTER_KEY = KeyCode.ENTER;
+    private static final KeyCode SHIFT_KEY = KeyCode.SHIFT;
+    private static final KeyCode CLEAR_KEY = KeyCode.CLEAR;
+    private static final KeyCode LEFT_ARROW_KEY = KeyCode.LEFT;
+    private static final KeyCode UP_ARROW_KEY = KeyCode.UP;
+    private static final KeyCode RIGHT_ARROW_KEY = KeyCode.RIGHT;
+    private static final KeyCode DOWN_ARROW_KEY = KeyCode.DOWN;
+    private static final KeyCode DELETE_KEY = KeyCode.DELETE;
     private boolean alphabeticalAllowed = false;
     private boolean numericAllowed = false;
     private boolean whitespaceAllowed = false;
@@ -41,78 +43,94 @@ public class WGTextInputKeyListener implements KeyListener
         this.parent = parent;
     }
     
-    @Override
+	@Override
+	public void handle(KeyEvent e) 
+	{
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(KeyEvent.KEY_TYPED))
+			{
+				keyTyped(e);
+			}
+			else if(e.getEventType().equals(KeyEvent.KEY_RELEASED))
+			{
+				keyReleased(e);
+			}
+			else if(e.getEventType().equals(KeyEvent.KEY_PRESSED))
+			{
+				keyPressed(e);
+			}
+    	});
+	}
+    
     public synchronized final void keyTyped(KeyEvent e) 
     {
         if(parent.isFocused())
         {
-            int keyCode = (e.getKeyChar() + "").codePointAt(0);
-            switch(keyCode)
+            String keyCode = e.getCharacter();
+            if(keyCode.equals(BACKSPACE_KEY.getChar()))
             {
-                case BACKSPACE_KEY:
-                    backspaceEvent(e);
-                    break;
-                case DELETE_KEY:
-                    deleteEvent(e);
-                    break;
-                case CLEAR_KEY:
-                    clearEvent(e);
-                    break;
-                case ENTER_KEY:
-                    enterEvent(e);
-                    break;
-                default:
-                    standardEvent(e);
-                    break;
+                backspaceEvent(e);
+            }
+            else if(keyCode.equals(DELETE_KEY.getChar()))
+            {
+                deleteEvent(e);
+            }
+            else if(keyCode.equals(CLEAR_KEY.getChar()))
+            {
+                clearEvent(e);
+            }
+            else if(keyCode.equals(ENTER_KEY.getChar()))
+            {
+                enterEvent(e);
+            }
+            else
+            {
+                standardEvent(e);
             }
             e.consume();
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
 
-    @Override
     public synchronized void keyPressed(KeyEvent e) 
     {
         if(parent.isFocused())
         {
-            switch(e.getExtendedKeyCode())
+            if(e.getCode().equals(SHIFT_KEY))
             {
-                case SHIFT_KEY:
-                    shiftEvent(e, true);
-                    break;
+                shiftEvent(e, true);
             }
             e.consume();
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
 
-    @Override
     public synchronized final void keyReleased(KeyEvent e) 
     {
         if(parent.isFocused())
         {
             keyCodeEvent(e);
-            switch(e.getExtendedKeyCode())
+            KeyCode keyCode = e.getCode();
+            if(keyCode.equals(LEFT_ARROW_KEY))
             {
-                case LEFT_ARROW_KEY:
-                    leftArrowEvent(e);
-                    break;
-                case RIGHT_ARROW_KEY:
-                    rightArrowEvent(e);
-                    break;
-                case UP_ARROW_KEY:
-                    upArrowEvent(e);
-                    break;
-                case DOWN_ARROW_KEY:
-                    downArrowEvent(e);
-                    break;
-                case SHIFT_KEY:
-                    shiftEvent(e, false);
-                    break;
+                leftArrowEvent(e);
+            }
+            else if(keyCode.equals(RIGHT_ARROW_KEY))
+            {
+                rightArrowEvent(e);
+            }
+            else if(keyCode.equals(UP_ARROW_KEY))
+            {
+                upArrowEvent(e);
+            }
+            else if(keyCode.equals(DOWN_ARROW_KEY))
+            {
+                downArrowEvent(e);
+            }
+            else if(keyCode.equals(SHIFT_KEY))
+            {
+                shiftEvent(e, false);
             }
             e.consume();
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
     /**
      * This is an override-able function that gets called whenever ANY KEY is pressed
@@ -218,7 +236,7 @@ public class WGTextInputKeyListener implements KeyListener
         
         //Check that the character can be added to the text based on the masks.
         boolean allowed = allAllowed;
-        char addedChar = e.getKeyChar();
+        char addedChar = e.getCharacter().charAt(0);
         if(alphabeticalAllowed && Character.isAlphabetic(addedChar))
         {
             allowed = true;

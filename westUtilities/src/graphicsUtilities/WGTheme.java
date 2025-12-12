@@ -5,9 +5,9 @@
 package graphicsUtilities;
 
 import dataStructures.HashTable;
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Font;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  *

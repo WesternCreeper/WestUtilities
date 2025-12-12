@@ -4,22 +4,23 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.FontMetrics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import utilities.FXFontMetrics;
 
 /**
  *
  * @author Westley
  */
-public class WGTextScrollableListener implements MouseWheelListener, MouseMotionListener, MouseListener
+public class WGTextScrollableListener implements EventHandler<Event>
 {
     private WGTextArea parentTextArea;
     private double scrollY = 0;
@@ -40,26 +41,48 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
     {
         this.parentTextArea = parentTextArea;
     }
-    
-    @Override
+
+
+	@Override
+	public void handle(Event e) 
+	{
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(ScrollEvent.SCROLL))
+			{
+				mouseWheelMoved((ScrollEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+    	});
+	}
+	
     /**
      * Scrolls the pane according to the setUp data
      */
-    public void mouseWheelMoved(MouseWheelEvent e) 
+    public void mouseWheelMoved(ScrollEvent e) 
     {
         if(isWithinBounds(e) && !e.isConsumed())
         {
-            doScroll(e.getWheelRotation(), true);
+            doScroll(e.getDeltaX(), true);
         }
     }
 
-    @Override
     public void mouseDragged(MouseEvent e) 
     {
         if(allowedToScroll && isWithinBounds(e) && !e.isConsumed())
         {
             double distance = 0;
-            double currentY = e.getPoint().getY();
+            double currentY = e.getY();
             distance = currentY - yStart;
             yStart = currentY;
             distance /= seeableArea / totalArea;
@@ -67,33 +90,19 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         }
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {}
-
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-
-    @Override
     public void mousePressed(MouseEvent e) 
     {
         if(isWithinScrollBarBounds(e) && !e.isConsumed())
         {
-            yStart = e.getPoint().getY();
+            yStart = e.getY();
             allowedToScroll = true;
         }
     }
 
-    @Override
     public void mouseReleased(MouseEvent e) 
     {
         allowedToScroll = false;
     }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
     
     /**
      * Sets up the scrollBar based on the given information:
@@ -103,10 +112,10 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
     {
         seeableArea = parentTextArea.getHeight();
         //Finds the totalArea
-        FontMetrics textFM = parentTextArea.getParent().getFontMetrics(parentTextArea.getTextFont());
+        FXFontMetrics textFM = new FXFontMetrics(parentTextArea.getTextFont());
         
         //The addition of descent is entirely redundent. However, it guarentees that the text shown does not have tails going off the page (Such as the letters "p", "g", etc.)
-        totalArea = text.size() * (textFM.getHeight()) + textFM.getDescent(); 
+        totalArea = text.size() * (textFM.getHeight("l")); 
         
         scrollBarHeight = seeableArea / totalArea * seeableArea;
         scrollY = 0;
@@ -120,10 +129,22 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
      * @param e
      * @return 
      */
+    protected boolean isWithinBounds(ScrollEvent e)
+    {
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = (Rectangle2D)parentTextArea.getBounds();
+        return objectBounds.contains(clickLoaction);
+    }
+    
+    /**
+     * Figures out if the point given by the mouseEvent is within the given object's bounds
+     * @param e
+     * @return 
+     */
     protected boolean isWithinBounds(MouseEvent e)
     {
-        Point2D clickLoaction = e.getPoint();
-        Rectangle2D.Double objectBounds = (Rectangle2D.Double)parentTextArea.getBounds();
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = (Rectangle2D)parentTextArea.getBounds();
         return objectBounds.contains(clickLoaction);
     }
     
@@ -134,7 +155,7 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
      */
     protected boolean isWithinScrollBarBounds(MouseEvent e)
     {
-        Point2D clickLoaction = e.getPoint();
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
         double scrollBoundsX = 0;
         double scrollBoundsY = 0;
         double scrollBoundsWidth = 0;
@@ -149,7 +170,7 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         scrollBoundsHeight = scrollBarHeight;
         scrollBoundsX += parentTextArea.getWidth() - scrollBoundsWidth - parentTextArea.getBorderSize();
         
-        Rectangle2D.Double objectBounds = new Rectangle2D.Double(scrollBoundsX, scrollBoundsY, scrollBoundsWidth, scrollBoundsHeight);
+        Rectangle2D objectBounds = new Rectangle2D(scrollBoundsX, scrollBoundsY, scrollBoundsWidth, scrollBoundsHeight);
         return objectBounds.contains(clickLoaction);
     }
     
@@ -159,7 +180,6 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         {
             return;
         }
-        Component parent = parentTextArea.getParent();
         double movement = mouseMovement;
         if(useScrollSpeed)
         {
@@ -174,7 +194,6 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
             parentTextArea.setStringYOffset(minY);
             scrollY = minY;
             scrollBarY = 0;
-            WestGraphics.doRepaintJob(parent);
             return;
         }
         else if(scrollY + movement > maxY)
@@ -183,7 +202,6 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
             parentTextArea.setStringYOffset(maxY);
             scrollY = maxY;
             scrollBarY = seeableArea - scrollBarHeight;
-            WestGraphics.doRepaintJob(parent);
             return;
         }
         //Now scroll:
@@ -195,7 +213,6 @@ public class WGTextScrollableListener implements MouseWheelListener, MouseMotion
         //Now set all of the components to the correct location:
         parentTextArea.setStringYOffset(scrollY);
         shown = totalArea > seeableArea;
-        WestGraphics.doRepaintJob(parent);
     }
     
     //Getters:

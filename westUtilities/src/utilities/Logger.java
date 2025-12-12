@@ -5,24 +5,27 @@
 package utilities;
 
 import graphicsUtilities.Console;
-import graphicsUtilities.WGAnimation.WGAAnimationManager;
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGLabel;
+import graphicsUtilities.WGAnimation.WGAAnimationManager;
+import javafx.animation.KeyFrame;
+import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGTextArea;
 import graphicsUtilities.WestGraphics;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.geom.Rectangle2D;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -37,7 +40,7 @@ import java.util.ArrayList;
 public class Logger extends Console
 {
     //Static Varibles:
-    private static Component currentParent;
+    private static Canvas currentParent;
     
     //Final Variables:
     private final double slotSize = 50; //The standard size of the grid. AKA each slotSize is 1/50th of the screen in both x and y directions
@@ -47,32 +50,32 @@ public class Logger extends Console
     private final String errorFile = "Error Log.txt";
     
     //Display Info variables:
-    private final Rectangle2D.Double displayInformationBounds = new Rectangle2D.Double(0, 0, 6/slotSize, 6/slotSize);
+    private final Rectangle2D displayInformationBounds = new Rectangle2D(0, 0, 6/slotSize, 6/slotSize);
     private final String[] displayInformationText = {"Logger v0.2", "Running..."};
-    private final Font displayInformationFont = new Font("Monospaced", Font.BOLD, 10);
+    private final Font displayInformationFont = Font.font("Monospaced", FontWeight.BOLD, FontPosture.REGULAR, 10);
     
     //Error Output variables:
-    private final Rectangle2D.Double errorOutputBounds = new Rectangle2D.Double(6/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
-    private final Rectangle2D.Double errorOutputLabelBounds = new Rectangle2D.Double(6/slotSize, 0, 20/slotSize, 5/slotSize);
-    private final Font errorOutputFont = new Font("Serif", Font.PLAIN, 24);
+    private final Rectangle2D errorOutputBounds = new Rectangle2D(6/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
+    private final Rectangle2D errorOutputLabelBounds = new Rectangle2D(6/slotSize, 0, 20/slotSize, 5/slotSize);
+    private final Font errorOutputFont = Font.font("Serif", FontWeight.NORMAL, FontPosture.REGULAR, 24);
     
     //Output variables:
-    private final Rectangle2D.Double outputBounds = new Rectangle2D.Double(26/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
-    private final Rectangle2D.Double outputLabelBounds = new Rectangle2D.Double(26/slotSize, 0, 20/slotSize, 5/slotSize);
-    private final Font outputFont = new Font("Serif", Font.PLAIN, 24);
+    private final Rectangle2D outputBounds = new Rectangle2D(26/slotSize, 5/slotSize, 20/slotSize, (slotSize - 5)/slotSize);
+    private final Rectangle2D outputLabelBounds = new Rectangle2D(26/slotSize, 0, 20/slotSize, 5/slotSize);
+    private final Font outputFont = Font.font("Serif", FontWeight.NORMAL, FontPosture.REGULAR, 24);
     
     //switch to logs variables:
-    private final Rectangle2D.Double switchToLogsBounds = new Rectangle2D.Double(47/slotSize, 1/slotSize, 2/slotSize, 2/slotSize);
-    private final Font switchToLogsFont = new Font("SanSerif", Font.BOLD, 24);
+    private final Rectangle2D switchToLogsBounds = new Rectangle2D(47/slotSize, 1/slotSize, 2/slotSize, 2/slotSize);
+    private final Font switchToLogsFont = Font.font("SanSerif", FontWeight.BOLD, FontPosture.REGULAR, 24);
     
     //switch to unit tests variables:
-    private final Rectangle2D.Double switchToUnitTestsBounds = new Rectangle2D.Double(47/slotSize, 4/slotSize, 2/slotSize, 2/slotSize);
-    private final Font switchToUnitTestsFont = new Font("SanSerif", Font.BOLD, 24);
+    private final Rectangle2D switchToUnitTestsBounds = new Rectangle2D(47/slotSize, 4/slotSize, 2/slotSize, 2/slotSize);
+    private final Font switchToUnitTestsFont = Font.font("SanSerif", FontWeight.BOLD, FontPosture.REGULAR, 24);
     
     //Unit Test variables:
-    private final Rectangle2D.Double unitTestDisplayBounds = new Rectangle2D.Double(0, 5/slotSize, 46/slotSize, (slotSize - 5)/slotSize);
-    private final Rectangle2D.Double unitTestDisplayLabelBounds = new Rectangle2D.Double(0, 0, 46/slotSize, 5/slotSize);
-    private final Font unitTestDisplayFont = new Font("Monospaced", Font.PLAIN, 24);
+    private final Rectangle2D unitTestDisplayBounds = new Rectangle2D(0, 5/slotSize, 46/slotSize, (slotSize - 5)/slotSize);
+    private final Rectangle2D unitTestDisplayLabelBounds = new Rectangle2D(0, 0, 46/slotSize, 5/slotSize);
+    private final Font unitTestDisplayFont = Font.font("Monospaced", FontWeight.NORMAL, FontPosture.REGULAR, 24);
     
     //Dynamic Variables
     private Color backgroundColor;
@@ -132,7 +135,7 @@ public class Logger extends Console
         catch(WGNullParentException e) {} //This should NEVER happen
         
         //Set up any animations:
-        animationManager.addTimer(updateTime, new StandardUpdateListener());
+        animationManager.addTimer(new KeyFrame(Duration.millis(updateTime), e -> new StandardUpdateListener().actionPerformed()));
         animationManager.startAllTimers();
         
         //Start on the proper page:
@@ -162,15 +165,18 @@ public class Logger extends Console
             }
         }
         
+        //Make sure the WestGraphics System has the correct mouseEvent always:
+        WestGraphics.setUpMouseListener(this);
     }
-    public void paintComponent(Graphics g) 
+    @Override
+    public void draw() 
     {
-        Graphics2D g2 = (Graphics2D)g;
+        GraphicsContext g2 = this.getGraphicsContext2D();
         WestGraphics g3 = new WestGraphics(g2);
         
         //Create the background:
-        g2.setColor(backgroundColor);
-        g2.fill(getBounds());
+        g2.setFill(backgroundColor);
+        g2.fillRect(0, 0, getPaneOwner().getWidth(), getPaneOwner().getHeight());
         
         //Buttons:
         g3.draw(switchToLogsButton);
@@ -195,22 +201,22 @@ public class Logger extends Console
     }
     
     @Override
-    public void launchConsole(String title, int width, int height, int closeOperation)
+    public void launchConsole(Stage paneOwner, String title, int width, int height)
     {
-        super.launchConsole(title, width, height, closeOperation);
-        getPaneOwner().addWindowListener(new ApplicationListener());
+        super.launchConsole(paneOwner,title, width, height);
+        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     @Override
-    public void launchConsole(String title, int width, int height, int extendedState, int closeOperation)
+    public void launchConsole(Stage paneOwner, String title, int width, int height, boolean maximized)
     {
-        super.launchConsole(title, width, height, closeOperation, closeOperation);
-        getPaneOwner().addWindowListener(new ApplicationListener());
+        super.launchConsole(paneOwner,title, width, height);
+        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     @Override
-    public void launchConsole(String title, int x, int y, int width, int height, int extendedState, int minimumWidth, int minimumHeight, int closeOperation)
+    public void launchConsole(Stage paneOwner, String title, int x, int y, int width, int height, boolean maximized, int minimumWidth, int minimumHeight)
     {
-        super.launchConsole(title, x, y, width, height, extendedState, minimumWidth, minimumHeight, closeOperation);
-        getPaneOwner().addWindowListener(new ApplicationListener());
+        super.launchConsole(paneOwner,title, x, y, width, height, maximized, minimumWidth, minimumHeight);
+        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     
     public final void logError(Exception e)
@@ -248,7 +254,7 @@ public class Logger extends Console
                 System.exit(-1);
             }
         }
-        this.requestFocus();
+        //this.requestFocus();
     }
     
     public final void logOutput(String message)
@@ -325,12 +331,11 @@ public class Logger extends Console
     }
     
     
-    private class StandardUpdateListener implements ActionListener
+    private class StandardUpdateListener
     {
         private final int runningTickMax = 4;
         private int runningTick = 0;
-        @Override
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed() 
         {
             String runningText = "Running" + ".".repeat(runningTick);
             runningTick++;
@@ -339,7 +344,7 @@ public class Logger extends Console
                 runningTick = 0;
             }
             standardDisplayInformation.setTextLine(1, runningText);
-            repaint();
+            draw();
         }
     }
     //Button classes:
@@ -370,20 +375,16 @@ public class Logger extends Console
             }
         }
     }
-    private static class ApplicationListener implements WindowListener
+    private static class ApplicationListener implements EventHandler<WindowEvent>
     {
-        public void windowDeactivated(WindowEvent e){}
-        public void windowActivated(WindowEvent e)
-        {
-            WestGraphics.setCurrentActiveParent(currentParent);
-        }
-        public void windowDeiconified(WindowEvent e)
-        {
-            WestGraphics.setCurrentActiveParent(currentParent);
-        }
-        public void windowIconified(WindowEvent e){}
-        public void windowClosed(WindowEvent e){}
-        public void windowOpened(WindowEvent e){}
-        public void windowClosing(WindowEvent e){}
+		@Override
+		public void handle(WindowEvent e) 
+		{
+			if(e.getEventType().equals(WindowEvent.WINDOW_SHOWN))
+			{
+	            WestGraphics.setCurrentActiveParent(currentParent);
+			}
+			
+		}
     }
 }

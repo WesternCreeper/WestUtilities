@@ -4,24 +4,27 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import javax.swing.SwingWorker;
+
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  *
  * @author Westley
  * The WG specific click listener. AKA a mouseListener that is specific to WG Objects
  */
-public class WGClickListener implements MouseListener
+public class WGClickListener implements EventHandler<Event>
 {
     private WGDrawingObject parentObject;
-    private WGPane parentOwningPane;
-    private Component parentComponent;
+    private Canvas parentComponent;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
@@ -46,7 +49,7 @@ public class WGClickListener implements MouseListener
      * @param parentObject The WGDrawingObject that allows for certain functions to work
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      */
-    public WGClickListener(WGDrawingObject parentObject, Component parentComponent)
+    public WGClickListener(WGDrawingObject parentObject, Canvas parentComponent)
     {
         this.parentObject = parentObject;
         this.parentComponent = parentComponent;
@@ -59,7 +62,7 @@ public class WGClickListener implements MouseListener
     {
         if(isWithinBounds(e) && !e.isConsumed() && parentObject.isShown())
         {
-            if(parentOwningPane != null && !parentOwningPane.isShown())
+            if(parentObject.getParentOwningPane() != null && !parentObject.getParentOwningPane().isShown())
             {
                 return;
             }
@@ -78,33 +81,55 @@ public class WGClickListener implements MouseListener
             }
             //Cursor:
             WestGraphics.checkCursor(e, getParentComponent(), parentObject);
-            WestGraphics.doRepaintJob(getParentObject().getParent());
         }
     }
 
-    @Override
     /**
      * See mouseClick Javadoc on how to use
      */
     public void mousePressed(MouseEvent e) {}
 
-    @Override
     /**
      * See mouseClick Javadoc on how to use
      */
     public void mouseReleased(MouseEvent e) {}
 
-    @Override
     /**
      * See mouseClick Javadoc on how to use
      */
     public void mouseEntered(MouseEvent e) {}
 
-    @Override
     /**
      * See mouseClick Javadoc on how to use
      */
     public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void handle(Event e) 
+	{
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+			{
+				mouseClicked((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+			{
+				mouseEntered((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+			{
+				mouseExited((MouseEvent)e);
+			}
+    	});
+	}
     
     /**
      * Figures out if the point given by the mouseEvent is within the given object's bounds
@@ -113,11 +138,27 @@ public class WGClickListener implements MouseListener
      */
     protected boolean isWithinBounds(MouseEvent e)
     {
-        Point2D clickLoaction = e.getPoint();
-        Rectangle2D.Double objectBounds = parentObject.getBounds();
-        if(parentOwningPane != null) //If there is a pane then mkae sure it is within both bounds!
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = parentObject.getBounds();
+        if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
         {
-            return objectBounds.contains(clickLoaction) && parentOwningPane.getBounds().contains(clickLoaction);
+            return objectBounds.contains(clickLoaction) && parentObject.getParentOwningPane().getBounds().contains(clickLoaction);
+        }
+        return objectBounds.contains(clickLoaction);
+    }
+    
+    /**
+     * Figures out if the point given by the mouseEvent is within the given object's bounds
+     * @param e
+     * @return 
+     */
+    protected boolean isWithinBounds(ScrollEvent e)
+    {
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = parentObject.getBounds();
+        if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
+        {
+            return objectBounds.contains(clickLoaction) && parentObject.getParentOwningPane().getBounds().contains(clickLoaction);
         }
         return objectBounds.contains(clickLoaction);
     }
@@ -125,9 +166,9 @@ public class WGClickListener implements MouseListener
     protected boolean isParentShown()
     {
         boolean result = parentObject.isShown();
-        if(parentOwningPane != null)
+        if(parentObject.getParentOwningPane() != null)
         {
-            result = result && parentOwningPane.isShown();
+            result = result && parentObject.getParentOwningPane().isShown();
         }
         return result;
     }
@@ -137,7 +178,7 @@ public class WGClickListener implements MouseListener
         return WestGraphics.getHoverCursor();
     }
     
-    public Component getParentComponent() {
+    public Canvas getParentComponent() {
         return parentComponent;
     }
 
@@ -145,20 +186,12 @@ public class WGClickListener implements MouseListener
         return parentObject;
     }
 
-    public WGPane getParentOwningPane() {
-        return parentOwningPane;
-    }
-
-    public void setParentComponent(Component parentComponent) {
+    public void setParentComponent(Canvas parentComponent) {
         this.parentComponent = parentComponent;
     }
 
     public void setParentObject(WGDrawingObject parentObject) {
         this.parentObject = parentObject;
-    }
-
-    public void setParentOwningPane(WGPane parentOwningPane) {
-        this.parentOwningPane = parentOwningPane;
     }
     
     public void clickEvent(MouseEvent e) {}

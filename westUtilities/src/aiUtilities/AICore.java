@@ -3,9 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package aiUtilities;
-import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import utilities.Logger;
 
 /**
@@ -30,7 +32,7 @@ public class AICore
      * @param id The identification number of the AI
      * @param langFileDir The directory for the AI's language system
      */
-    public AICore(String memoryDir, String name, int id, String langFileDir)
+    public AICore(Stage stage, String memoryDir, String name, int id, String langFileDir)
     {
         identificationNumber = id;
         identificationName = name + " ID: " + id;
@@ -43,18 +45,18 @@ public class AICore
         langaugeCore = new AILanguageCore(this, memoryDir + "\\" + langFileDir);
         functions.say("Langauge Core loaded...");
         
-        logger = new Logger(new Color(67, 107, 171), new Color(51, 87, 145), new Color(255, 180, 115), new Color(39, 63, 102), new Color(59, 255, 78), new Color(0, 0, 0));
-        logger.launchConsole("Logger Console", 600, 600, JFrame.EXIT_ON_CLOSE);
+        logger = new Logger(Color.rgb(67, 107, 171), Color.rgb(51, 87, 145), Color.rgb(255, 180, 115), Color.rgb(39, 63, 102), Color.rgb(59, 255, 78), Color.rgb(0, 0, 0));
+        logger.launchConsole(stage, "Logger Console", 600, 600);
         functions.say("Launched the logger...");
         
         functions.say("Core construction completed!");
     }
     
     //Functions:
-    public void launchUserConsole()
+    public void launchUserConsole(Stage stage)
     {
         functions.say("Console launch requested...");
-        userConsole.launchConsole(identificationName, 600, 600, JFrame.EXIT_ON_CLOSE);
+        userConsole.launchConsole(stage, identificationName, 600, 600);
         functions.say("Console Launched!");
     }
     

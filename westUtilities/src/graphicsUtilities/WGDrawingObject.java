@@ -4,16 +4,17 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.GradientPaint;
-import java.awt.Paint;
-import java.awt.RadialGradientPaint;
-import java.awt.TexturePaint;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
 
 /**
  *
@@ -31,7 +32,7 @@ public abstract class WGDrawingObject
     public final static int DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE = 6;
     
     
-    private Component parent;
+    private Canvas parent;
     private WGClickListener clickListener;
     protected WGDrawingObjectResizeListener resizer;
     private WGToolTip toolTip;
@@ -40,8 +41,9 @@ public abstract class WGDrawingObject
     private double y = 0;
     private double width;
     private double height;
-    private float borderSize = 1;
+    private double borderSize = 1;
     private boolean isShown = true;
+    private WGPane parentOwningPane;
     private WGTheme currentTheme;
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
@@ -51,7 +53,7 @@ public abstract class WGDrawingObject
      * @param height The height of the object (In general this is the total height of the object because there may be other heights further defined inside the object)
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      */
-    protected WGDrawingObject(double x, double y, double width, double height, float borderSize)
+    protected WGDrawingObject(double x, double y, double width, double height, double borderSize)
     {
         this(x, y, width, height, borderSize, null);
     }
@@ -64,7 +66,7 @@ public abstract class WGDrawingObject
      * @param borderSize The size of the borders of the rectangular objects, vastly important to calculating the size of the text and internal components
      * @param parent The component that the object is on, and is used to determine how big this object is
      */
-    protected WGDrawingObject(double x, double y, double width, double height, float borderSize, Component parent)
+    protected WGDrawingObject(double x, double y, double width, double height, double borderSize, Canvas parent)
     {
         this.x = x;
         this.y = y;
@@ -83,7 +85,7 @@ public abstract class WGDrawingObject
      * @param parent The component that the object is on, and is used to determine how big this object is
      * @param currentTheme The theme that is currently being used. This is for background operations, like gradients to work properly
      */
-    protected WGDrawingObject(double x, double y, double width, double height, float borderSize, Component parent, WGTheme currentTheme)
+    protected WGDrawingObject(double x, double y, double width, double height, double borderSize, Canvas parent, WGTheme currentTheme)
     {
         this.x = x;
         this.y = y;
@@ -95,16 +97,16 @@ public abstract class WGDrawingObject
     }
     
     //Methods:
-    public abstract Rectangle2D.Double getBounds();
+    public abstract Rectangle2D getBounds();
     
-    public Rectangle2D.Double getRelativeBounds()
+    public Rectangle2D getRelativeBounds()
     {
-        return new Rectangle2D.Double(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent());
+        return new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent());
     }
     
     public abstract void setUpBounds();
     
-    public abstract void setBounds(Rectangle2D.Double newBounds);
+    public abstract void setBounds(Rectangle2D newBounds);
     
     public abstract void removeListeners();
     
@@ -135,26 +137,23 @@ public abstract class WGDrawingObject
         }
         
         Paint newPaint;
-        if(paint instanceof GradientPaint)
+        if(paint instanceof LinearGradient)
         {
-            GradientPaint oldPaint = (GradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
-            newPaint = new GradientPaint(points[0], oldPaint.getColor1(), points[1], oldPaint.getColor2());
+        	LinearGradient oldPaint = (LinearGradient)paint;
+            Point2D[] points = getGradientPoints(gradOrient, e, x, y, width, height);
+            newPaint = new LinearGradient(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), false, oldPaint.getCycleMethod(), oldPaint.getStops());
         }
-        else if(paint instanceof RadialGradientPaint)
+        else if(paint instanceof RadialGradient)
         {
-            RadialGradientPaint oldPaint = (RadialGradientPaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
-            newPaint = new RadialGradientPaint(points[0], (float)points[1].getX(), oldPaint.getFractions(), oldPaint.getColors());
+        	RadialGradient oldPaint = (RadialGradient)paint;
+            Point2D[] points = getGradientPoints(gradOrient, e, x, y, width, height);
+            newPaint = new RadialGradient(0, 0, points[0].getX(), points[0].getY(), points[1].getX(), false, oldPaint.getCycleMethod(), oldPaint.getStops());
         }
-        else if(paint instanceof TexturePaint)
+        else if(paint instanceof ImagePattern)
         {
-            TexturePaint oldPaint = (TexturePaint)paint;
-            Point2D.Double[] points = getGradientPoints(gradOrient, e, x, y, width, height);
-            BufferedImage image = oldPaint.getImage();
-            int imageWidth = image.getWidth();
-            int imageHeight = image.getHeight();
-            newPaint = new TexturePaint(image, new Rectangle2D.Double(points[0].getX(), points[0].getY(), imageWidth, imageHeight));
+        	ImagePattern oldPaint = (ImagePattern)paint;
+            Image image = oldPaint.getImage();
+            newPaint = new ImagePattern(image);
         }
         else
         {
@@ -169,18 +168,18 @@ public abstract class WGDrawingObject
      * @param height The height of the object
      * @return the points that help define this gradient so that it follows the proper orientation.
      */
-    private Point2D.Double[] getGradientPoints(int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
+    private Point2D[] getGradientPoints(int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
     {
-        Point2D.Double[] points = new Point2D.Double[2];
+        Point2D[] points = new Point2D[2];
         
         switch(gradientOrientationPreference)
         {
             case VERTICAL_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(x, y);
-                points[1] = new Point2D.Double(x, y + height);
+                points[0] = new Point2D(x, y);
+                points[1] = new Point2D(x, y + height);
                 break;
             case RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(x + (width/2), y + (height/2));
+                points[0] = new Point2D(x + (width/2), y + (height/2));
                 
                 double radius = (width/2);
                 double heightRadius = (height/2);
@@ -193,16 +192,16 @@ public abstract class WGDrawingObject
                     radius = 1;
                 }
                 
-                points[1] = new Point2D.Double(radius, 0);
+                points[1] = new Point2D(radius, 0);
                 break;
             case RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE:
                 if(e != null)
                 {
-                    points[0] = new Point2D.Double(e.getX(), e.getY());
+                    points[0] = new Point2D(e.getX(), e.getY());
                 }
                 else
                 {
-                    points[0] = new Point2D.Double(x + (width/2), y + (height/2));
+                    points[0] = new Point2D(x + (width/2), y + (height/2));
                 }
                 
                 radius = (width/2);
@@ -216,23 +215,23 @@ public abstract class WGDrawingObject
                     radius = 1;
                 }
                 
-                points[1] = new Point2D.Double(radius, 0);
+                points[1] = new Point2D(radius, 0);
                 break;
             case HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(x, y);
-                points[1] = new Point2D.Double(x + width, y);
+                points[0] = new Point2D(x, y);
+                points[1] = new Point2D(x + width, y);
                 break;
             case DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(x, y);
-                points[1] = new Point2D.Double(x + width, y + height);
+                points[0] = new Point2D(x, y);
+                points[1] = new Point2D(x + width, y + height);
                 break;
             case DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D.Double(x, y + height);
-                points[1] = new Point2D.Double(x + width, y);
+                points[0] = new Point2D(x, y + height);
+                points[1] = new Point2D(x + width, y);
                 break;
             default:
-                points[0] = new Point2D.Double(x, y);
-                points[1] = new Point2D.Double(x, y);
+                points[0] = new Point2D(x, y);
+                points[1] = new Point2D(x, y);
                 break;
         }
         
@@ -264,7 +263,7 @@ public abstract class WGDrawingObject
         this.height = height;
     }
 
-    public void setBorderSize(float borderSize) {
+    public void setBorderSize(double borderSize) {
         this.borderSize = borderSize;
     }
 
@@ -276,6 +275,10 @@ public abstract class WGDrawingObject
         this.shownCursor = shownCursor;
     }
 
+    public void setParentOwningPane(WGPane parentOwningPane) {
+        this.parentOwningPane = parentOwningPane;
+    }
+
     /**
      * A very important not about this:
      * Do NOT use this function if this object is a tool tip!
@@ -284,6 +287,10 @@ public abstract class WGDrawingObject
      * @param toolTip The Tool Tip that is added to this object, important when the tool tip no longer has a reference but needs to be changed
     */ 
     public void setToolTip(WGToolTip toolTip) {
+    	if(this instanceof WGToolTip) //This is for safety, to prevent tooltips from having tooltips, which is impossible
+    	{
+    		return; 
+    	}
         this.toolTip = toolTip;
     }
 
@@ -313,11 +320,11 @@ public abstract class WGDrawingObject
         return height;
     }
 
-    public float getBorderSize() {
+    public double getBorderSize() {
         return borderSize;
     }
 
-    public Component getParent() {
+    public Canvas getParent() {
         return parent;
     }
     
@@ -339,5 +346,9 @@ public abstract class WGDrawingObject
 
     public WGTheme getCurrentTheme() {
         return currentTheme;
+    }
+
+    public WGPane getParentOwningPane() {
+        return parentOwningPane;
     }
 }

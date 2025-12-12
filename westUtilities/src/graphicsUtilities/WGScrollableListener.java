@@ -4,20 +4,21 @@
  */
 package graphicsUtilities;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  * This can only be used with a WGPane, however it makes it so that the pane can easily scroll anything, WGButtons or more complex items such as another WGPane
  * @author Westley
  */
-public class WGScrollableListener implements MouseWheelListener, MouseMotionListener, MouseListener
+public class WGScrollableListener implements EventHandler<Event>
 {
     private WGPane parentPane;
     private double scrollY = 0;
@@ -43,22 +44,43 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
     {
         this.parentPane = parentPane;
     }
+
+	@Override
+	public void handle(Event e) 
+	{
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(ScrollEvent.SCROLL))
+			{
+				mouseWheelMoved((ScrollEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+    	});
+	}
     
-    @Override
     /**
      * Scrolls the pane according to the setUp data
      */
-    public void mouseWheelMoved(MouseWheelEvent e) 
+    public void mouseWheelMoved(ScrollEvent e) 
     {
         if(preferred && isWithinBounds(e) && !e.isConsumed())
         {
-            doScroll(e.getWheelRotation(), true);
+            doScroll(-e.getDeltaY(), true);
             //Cursor:
             WestGraphics.setProperHoverDuringScroll(parentPane.getParent());
         }
     }
 
-    @Override
     public void mouseDragged(MouseEvent e) 
     {
         if(allowedToScroll && isWithinBounds(e) && !e.isConsumed())
@@ -66,7 +88,7 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             double distance = 0;
             if(vertical)
             {
-                double currentY = e.getPoint().getY();
+                double currentY = e.getY();
                 distance = currentY - yStart;
                 yStart = currentY;
                 distance /= seeableArea / totalArea;
@@ -74,7 +96,7 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             }
             else
             {
-                double currentX = e.getPoint().getX();
+                double currentX = e.getX();
                 distance = currentX - yStart;
                 yStart = currentX;
                 distance /= seeableArea / totalArea;
@@ -85,25 +107,18 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
         }
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {}
-
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-
-    @Override
     public void mousePressed(MouseEvent e) 
     {
         if(isWithinScrollBarBounds(e) && !e.isConsumed())
         {
             if(vertical)
             {
-                yStart = e.getPoint().getY();
+                yStart = e.getY();
                 allowedToScroll = true;
             }
             else
             {
-                yStart = e.getPoint().getX();
+                yStart = e.getX();
                 allowedToScroll = true;
             }
             //Cursor:
@@ -111,17 +126,10 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
         }
     }
 
-    @Override
     public void mouseReleased(MouseEvent e) 
     {
         allowedToScroll = false;
     }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
     
     /**
      * Sets up the scrollBar based on the given information:
@@ -139,14 +147,7 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             double smallestY = 0;
             double biggestY = 0;
             for(int i = 0 ; i < components.size() ; i++)
-            {
-                //Make sure to close all dropdowns that are within this object:
-                if(components.get(i) instanceof WGDropDown)
-                {
-                    WGDropDown dropDown = (WGDropDown)components.get(i);
-                    dropDown.setDroppedDown(false);
-                }
-                
+            {   
                 double newSmallestY = components.get(i).getY();
                 double newbiggestY = newSmallestY + components.get(i).getHeight() - parentPane.getY();
                 if(newSmallestY < smallestY)
@@ -171,13 +172,6 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             double biggestX = 0;
             for(int i = 0 ; i < components.size() ; i++)
             {
-                //Make sure to close all dropdowns that are within this object:
-                if(components.get(i) instanceof WGDropDown)
-                {
-                    WGDropDown dropDown = (WGDropDown)components.get(i);
-                    dropDown.setDroppedDown(false);
-                }
-                
                 double newSmallestX = components.get(i).getX();
                 double newbiggestX = newSmallestX + components.get(i).getWidth() - parentPane.getX();
                 if(newSmallestX < smallestX)
@@ -309,8 +303,20 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
      */
     protected boolean isWithinBounds(MouseEvent e)
     {
-        Point2D clickLoaction = e.getPoint();
-        Rectangle2D.Double objectBounds = (Rectangle2D.Double)parentPane.getBounds();
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = (Rectangle2D)parentPane.getBounds();
+        return objectBounds.contains(clickLoaction);
+    }
+    
+    /**
+     * Figures out if the point given by the mouseEvent is within the given object's bounds
+     * @param e
+     * @return 
+     */
+    protected boolean isWithinBounds(ScrollEvent e)
+    {
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Rectangle2D objectBounds = (Rectangle2D)parentPane.getBounds();
         return objectBounds.contains(clickLoaction);
     }
     
@@ -321,7 +327,7 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
      */
     protected boolean isWithinScrollBarBounds(MouseEvent e)
     {
-        Point2D clickLoaction = e.getPoint();
+        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
         double scrollBoundsX = 0;
         double scrollBoundsY = 0;
         double scrollBoundsWidth = 0;
@@ -343,7 +349,7 @@ public class WGScrollableListener implements MouseWheelListener, MouseMotionList
             scrollBoundsWidth = scrollBarHeight;
             scrollBoundsY += parentPane.getHeight() - scrollBoundsHeight - parentPane.getBorderSize();
         }
-        Rectangle2D.Double objectBounds = new Rectangle2D.Double(scrollBoundsX, scrollBoundsY, scrollBoundsWidth, scrollBoundsHeight);
+        Rectangle2D objectBounds = new Rectangle2D(scrollBoundsX, scrollBoundsY, scrollBoundsWidth, scrollBoundsHeight);
         return objectBounds.contains(clickLoaction);
     }
     

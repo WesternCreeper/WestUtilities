@@ -4,33 +4,29 @@
  */
 package graphicsUtilities.WGAnimation;
 
-import graphicsUtilities.WGDrawingObject;
 import graphicsUtilities.WGButton;
+import graphicsUtilities.WGDrawingObject;
 import graphicsUtilities.WestGraphics;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Color;
 
 /**
  *
  * @author Westley
  */
-public class WGAPopupAnimationListener implements ActionListener
+public class WGAPopupAnimationListener
 {
     private final Color fullTransparentColor = new Color(0, 0, 0, 0);
     private boolean popOut = false;
     private boolean isWorking = false;
     private WGAColorAnimator colorAnimator;
-    private Component parent;
     private WGDrawingObject parentComp;
-    public WGAPopupAnimationListener(WGAColorAnimator colorAnimator, Component parent, WGDrawingObject parentObject)
+    public WGAPopupAnimationListener(WGAColorAnimator colorAnimator, WGDrawingObject parentObject)
     {
         this.colorAnimator = colorAnimator;
-        this.parent = parent;
         parentComp = parentObject;
     }
-    public synchronized void actionPerformed(ActionEvent e)
+    public synchronized void actionPerformed()
     {
         isWorking = !colorAnimator.isDone();
         if(!colorAnimator.isDone())
@@ -53,7 +49,6 @@ public class WGAPopupAnimationListener implements ActionListener
                 colorAnimator.fadeFrom(fullTransparentColor);
                 setColorsForParent();
             }
-            WestGraphics.doRepaintJob(parent);
         }
         else
         {

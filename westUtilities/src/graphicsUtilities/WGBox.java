@@ -4,10 +4,10 @@
  */
 package graphicsUtilities;
 
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.geom.Rectangle2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 /**
  *
@@ -20,7 +20,7 @@ public abstract class WGBox extends WGDrawingObject
     private boolean isHovered = false;
     private Paint hoverBackgroundColor;
     
-    protected WGBox(float borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Component parent)
+    protected WGBox(double borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Canvas parent)
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.backgroundColor = backgroundColor;
@@ -28,7 +28,7 @@ public abstract class WGBox extends WGDrawingObject
         this.borderColor = borderColor;
     }
     
-    protected WGBox(float borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Component parent, WGTheme theme)
+    protected WGBox(double borderSize, Paint backgroundColor, Paint hoverBackgroundColor, Paint borderColor, Canvas parent, WGTheme theme)
     {
         super(0, 0, 0, 0, borderSize, parent, theme);
         this.backgroundColor = backgroundColor;
@@ -37,16 +37,16 @@ public abstract class WGBox extends WGDrawingObject
     }
     
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
         return bounds;
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -54,8 +54,12 @@ public abstract class WGBox extends WGDrawingObject
     {
         super.setTheme(theme);
         setBorderSize(theme.getBorderSize());
-        setBackgroundColor(theme.getBackgroundColor());
-        hoverBackgroundColor = theme.getHoverBackgroundColor();
+        Paint newHoverBackgroundColor = theme.getHoverBackgroundColor();
+    	setBackgroundColor(theme.getBackgroundColor());
+        if(newHoverBackgroundColor != null)
+        {
+        	hoverBackgroundColor = newHoverBackgroundColor;
+        }
         setBorderColor(theme.getBorderColor());
     }
     
@@ -69,12 +73,10 @@ public abstract class WGBox extends WGDrawingObject
         {
             hoverBackgroundColor = WGColorHelper.getDarkerOrLighter((Color)backgroundColor);
         }
-        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setBorderColor(Paint borderColor) {
         this.borderColor = borderColor;
-        WestGraphics.doRepaintJob(getParent());
     }
 
     public void setHovered(boolean isHovered) {

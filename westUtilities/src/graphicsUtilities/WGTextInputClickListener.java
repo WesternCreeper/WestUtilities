@@ -4,27 +4,63 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.FontMetrics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
+import utilities.FXFontMetrics;
 
 /**
  *
  * @author Westley
  */
-public class WGTextInputClickListener extends WGClickListener implements MouseMotionListener
+public class WGTextInputClickListener extends WGClickListener
 {
     private Paint originalBackgroundColor;
     /**
      * Use ONLY with subclasses and make sure you know that the parent is NOT null by the time it is listening in to the object
      */
     public WGTextInputClickListener() {}
-    public WGTextInputClickListener (WGDrawingObject parentObject, Component parentComponent)
+    public WGTextInputClickListener (WGDrawingObject parentObject, Canvas parentComponent)
     {
         super(parentObject, parentComponent);
+    }
+    
+    @Override
+    public void handle(Event e)
+    {
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+			{
+				mouseClicked((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+			{
+				mouseEntered((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+			{
+				mouseExited((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+			{
+				mouseMoved((MouseEvent)e);
+			}
+    	});
     }
     @Override
     public void mouseClicked(MouseEvent e) 
@@ -65,10 +101,8 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
         {
             parent.setFocused(false);
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
 
-    @Override
     public void mouseDragged(MouseEvent e) 
     {
         if(e.isConsumed())
@@ -81,15 +115,12 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             parent.setHighlightEnd(getCursorPosition(e));
             parent.setHighlightShown(true);
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
 
-    @Override
     public void mouseMoved(MouseEvent e)
     {
         //Cursor:
         WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
-        WestGraphics.doRepaintJob(getParentObject().getParent());
     }
     
     @Override
@@ -109,7 +140,6 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
             int cursorPos = getCursorPosition(e);
             parent.setHighlightStart(cursorPos);
         }
-        WestGraphics.doRepaintJob(parent.getParent());
     }
     
     @Override
@@ -136,7 +166,7 @@ public class WGTextInputClickListener extends WGClickListener implements MouseMo
     {
         WGTextInput parent = (WGTextInput)getParentObject();
         //Figure out where the cursor should go in relation to the text:
-        FontMetrics textFM = parent.getParent().getFontMetrics(parent.getTextFont());
+        FXFontMetrics textFM = new FXFontMetrics(parent.getTextFont());
         String text = parent.getText();
         double totalStringWidth = textFM.stringWidth(text);
         double textStartX = parent.getX() + (parent.getWidth() - totalStringWidth) / 2.0;

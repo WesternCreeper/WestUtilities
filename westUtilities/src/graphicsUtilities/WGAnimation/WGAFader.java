@@ -5,25 +5,21 @@
 package graphicsUtilities.WGAnimation;
 
 import graphicsUtilities.WestGraphics;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Color;
 
 /**
  *
  * @author Westley
  */
-public abstract class WGAFader implements ActionListener
+public abstract class WGAFader
 {
     private Color fadeColor;
     private Color fadeOverlay;
     private WGAColorAnimator colorAnimator;
-    private Component parent;
     private boolean isDone = false;
-    public WGAFader(int tickMax, Color fadeColor, Color fadeToColor, Component parent)
+    public WGAFader(int tickMax, Color fadeColor, Color fadeToColor)
     {
-        this.parent = parent;
         this.fadeColor = fadeToColor;
         colorAnimator = new WGAColorAnimator(tickMax, 0, fadeColor);
         
@@ -31,7 +27,7 @@ public abstract class WGAFader implements ActionListener
         isDone = true;
         colorAnimator.setTick(tickMax);
     }
-    public synchronized void actionPerformed(ActionEvent e)
+    public synchronized void actionPerformed()
     {
         if(!colorAnimator.isDone())
         {
@@ -46,7 +42,6 @@ public abstract class WGAFader implements ActionListener
                 isDone = true;
             }
         }
-        WestGraphics.doRepaintJob(parent);
     }
     public synchronized void reset()
     {

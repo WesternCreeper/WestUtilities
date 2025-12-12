@@ -4,10 +4,13 @@
  */
 package graphicsUtilities;
 
-import java.awt.Font;
-import java.awt.Component;
-import java.awt.FontMetrics;
 import java.util.ArrayList;
+
+import javafx.scene.canvas.Canvas;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import utilities.FXFontMetrics;
 
 /**
  *
@@ -27,7 +30,7 @@ public class WGFontHelper
      * @param maxSize The absolute maximum size of the text, this is used to have a starting point to determine if the font will fit or not.
      * @return
      */
-    public static Font getFittedFontForBox(Font originalFont, Component parent, double boxWidth, double boxHeight, String text, int maxSize)
+    public static Font getFittedFontForBox(Font originalFont, Canvas parent, double boxWidth, double boxHeight, String text, int maxSize)
     {
         int minimumSize = 1;
         int maximumSize = maxSize;
@@ -36,13 +39,13 @@ public class WGFontHelper
         while(true)
         {
             currentSize = (int)((minimumSize + maximumSize) /2.0);
-            newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
-            FontMetrics testFM = parent.getFontMetrics(newFont);
-            if(testFM.getHeight() >= boxHeight || testFM.stringWidth(text) >= boxWidth)
+            newFont = generateFont(originalFont, currentSize);
+            FXFontMetrics testFM = new FXFontMetrics(newFont);
+            if(testFM.getHeight(text) >= boxHeight || testFM.stringWidth(text) >= boxWidth)
             {
                 maximumSize = currentSize;
             }
-            else if(testFM.getHeight() < boxHeight || testFM.stringWidth(text) < boxWidth)
+            else if(testFM.getHeight(text) < boxHeight || testFM.stringWidth(text) < boxWidth)
             {
                 minimumSize = currentSize;
             }
@@ -52,7 +55,7 @@ public class WGFontHelper
             }
             else if(minimumSize+1 == maximumSize)
             {
-                newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), minimumSize);
+                newFont = generateFont(originalFont, minimumSize);
                 break;
             }
         }
@@ -69,7 +72,7 @@ public class WGFontHelper
      * @param maxSize The absolute maximum size of the text, this is used to have a starting point to determine if the font will fit or not.
      * @return
      */
-    public static Font getFittedFontForWidth(Font originalFont, Component parent, double boxWidth, String text, int maxSize)
+    public static Font getFittedFontForWidth(Font originalFont, Canvas parent, double boxWidth, String text, int maxSize)
     {
         int minimumSize = 1;
         int maximumSize = maxSize;
@@ -78,8 +81,8 @@ public class WGFontHelper
         while(true)
         {
             currentSize = (int)((minimumSize + maximumSize) /2.0);
-            newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
-            FontMetrics testFM = parent.getFontMetrics(newFont);
+            newFont = generateFont(originalFont, currentSize);
+            FXFontMetrics testFM = new FXFontMetrics(newFont);
             if(testFM.stringWidth(text) >= boxWidth)
             {
                 maximumSize = currentSize;
@@ -94,7 +97,7 @@ public class WGFontHelper
             }
             else if(minimumSize+1 == maximumSize)
             {
-                newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), minimumSize);
+                newFont = generateFont(originalFont, minimumSize);
                 break;
             }
         }
@@ -111,7 +114,7 @@ public class WGFontHelper
      * @param maxSize The absolute maximum size of the text, this is used to have a starting point to determine if the font will fit or not.
      * @return
      */
-    public static Font getFittedFontForHeight(Font originalFont, Component parent, double boxHeight, String text, int maxSize)
+    public static Font getFittedFontForHeight(Font originalFont, Canvas parent, double boxHeight, String text, int maxSize)
     {
         int minimumSize = 1;
         int maximumSize = maxSize;
@@ -120,13 +123,13 @@ public class WGFontHelper
         while(true)
         {
             currentSize = (int)((minimumSize + maximumSize) /2.0);
-            newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), currentSize);
-            FontMetrics testFM = parent.getFontMetrics(newFont);
-            if(testFM.getHeight() >= boxHeight)
+            newFont = generateFont(originalFont, currentSize);
+            FXFontMetrics testFM = new FXFontMetrics(newFont);
+            if(testFM.getHeight(text) >= boxHeight)
             {
                 maximumSize = currentSize;
             }
-            else if(testFM.getHeight() < boxHeight)
+            else if(testFM.getHeight(text) < boxHeight)
             {
                 minimumSize = currentSize;
             }
@@ -136,16 +139,16 @@ public class WGFontHelper
             }
             else if(minimumSize+1 == maximumSize)
             {
-                newFont = new Font(originalFont.getFontName(), originalFont.getStyle(), minimumSize);
+                newFont = generateFont(originalFont, minimumSize);
                 break;
             }
         }
         return newFont;
     }
-    public static ArrayList<String> wrapText(ArrayList<String> currentList, double objectWidth, Font usedFont, Component parent)
+    public static ArrayList<String> wrapText(ArrayList<String> currentList, double objectWidth, Font usedFont, Canvas parent)
     {
         ArrayList<String> newList = new ArrayList<String>(currentList.size());
-        FontMetrics textFM = parent.getFontMetrics(usedFont);
+        FXFontMetrics textFM = new FXFontMetrics(usedFont);
         //First copy over the strings:
         for(int i = 0 ; i < currentList.size() ; i++)
         {
@@ -212,6 +215,38 @@ public class WGFontHelper
             }
         }
         return newList;
+    }
+    /**
+     * Generates a new font based on the last one, which keeps all settings except the size, which is set to the given size
+     * @param font Original font that the new font is based on
+     * @param newSize The new size for the new font
+     * @return Font The new font
+     */
+    public static Font generateFont(Font font, int newSize)
+    {
+        String[] fontParts = font.getStyle().split(" ");
+        FontPosture posture = FontPosture.REGULAR;
+        if(fontParts.length == 2)
+        {
+        	posture = FontPosture.findByName(fontParts[1].toUpperCase());
+        }
+        return Font.font(font.getName(), FontWeight.findByName(fontParts[0].toUpperCase()), posture, newSize);
+    }
+    /**
+     * Generates a new font based on the last one, which keeps all settings except the font name, which is set to the given name
+     * @param font The original font, whose settings are used
+     * @param name The new name for the font. (Think like Arial, or Dialog)
+     * @return Font The new Font
+     */
+    public static Font generateFont(Font font, String name)
+    {
+        String[] fontParts = font.getStyle().split(" ");
+        FontPosture posture = FontPosture.REGULAR;
+        if(fontParts.length == 2)
+        {
+        	posture = FontPosture.findByName(fontParts[1].toUpperCase());
+        }
+        return Font.font(name, FontWeight.findByName(fontParts[0].toUpperCase()), posture, font.getSize());
     }
     protected WGFontHelper(){}
 }

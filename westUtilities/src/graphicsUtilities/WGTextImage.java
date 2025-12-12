@@ -4,12 +4,13 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import utilities.FXFontMetrics;
 
 /**
  *
@@ -24,7 +25,7 @@ public class WGTextImage extends WGDrawingObject
     public static final int TEXT_UPPER_LEFT_CORNER = 1;
     public static final int TEXT_UPPER_RIGHT_CORNER = 2;
     public static final int TEXT_LOWER_RIGHT_CORNER = 3;
-    private BufferedImage displayImage;
+    private Image displayImage;
     private String imageText;
     private Font textFont;
     private Paint textColor;
@@ -53,9 +54,9 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, Image displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textFont, textColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textFont, textColor, parent);
     }
     /**
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
@@ -68,7 +69,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D bounds, Image displayedImage, int imageResizeOption, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
@@ -81,8 +82,9 @@ public class WGTextImage extends WGDrawingObject
         textYSizePercent = 0.25;
         if(getParent() != null)
         {
-            resizer = new ImageResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new ImageResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -108,9 +110,9 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, BufferedImage displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(double xPercent, double yPercent, double widthPercent, double heightPercent, Image displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), displayedImage, imageResizeOption, text, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, parent);
     }
     /**
      * This creates a standard image with text, in the lower left corner, and makes sure to stretch the image to fit the box given.
@@ -126,7 +128,7 @@ public class WGTextImage extends WGDrawingObject
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGTextImage(Rectangle2D bounds, Image displayedImage, int imageResizeOption, String text, int textPosition, double textXSizePercent, double textYSizePercent, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, 0, parent);
         this.displayImage = displayedImage;
@@ -139,8 +141,9 @@ public class WGTextImage extends WGDrawingObject
         this.textYSizePercent = textYSizePercent;
         if(getParent() != null)
         {
-            resizer = new ImageResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new ImageResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -158,23 +161,23 @@ public class WGTextImage extends WGDrawingObject
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextImage(Rectangle2D.Double bounds, BufferedImage displayedImage, int imageResizeOption, String text, Component parent, WGTheme theme) throws WGNullParentException
+    public WGTextImage(Rectangle2D bounds, Image displayedImage, int imageResizeOption, String text, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, displayedImage, imageResizeOption, text, theme.getTextPosition(), theme.getTextXSizePercent(), theme.getTextYSizePercent(), theme.getTextFont(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
     }
     
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-        Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
         return bounds;
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -183,7 +186,8 @@ public class WGTextImage extends WGDrawingObject
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -202,7 +206,7 @@ public class WGTextImage extends WGDrawingObject
     
     
     //Getters:
-    public BufferedImage getDisplayImage() {
+    public Image getDisplayImage() {
         return displayImage;
     }
 
@@ -242,9 +246,12 @@ public class WGTextImage extends WGDrawingObject
         return imageOffSetY;
     }
     
+    public int getTextPosition() {
+		return textPosition;
+	}
     
-    //Setters:
-    public void setDisplayImage(BufferedImage displayImage) {
+	//Setters:
+    public void setDisplayImage(Image displayImage) {
         this.displayImage = displayImage;
         resizer.resizeComps();
     }
@@ -277,15 +284,15 @@ public class WGTextImage extends WGDrawingObject
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
             if(displayImage == null) //If there is no image, then save time by not calculating anything
             {
                 return;
             }
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
             setY(getYPercent() * parentHeight);
@@ -331,29 +338,29 @@ public class WGTextImage extends WGDrawingObject
             
             //Now make sure the image is in the correct location:
             textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), width * textXSizePercent, height * textYSizePercent, imageText, 100);
-            FontMetrics textFM = getParent().getFontMetrics(textFont); 
+            FXFontMetrics textFM = new FXFontMetrics(textFont); 
             
             switch(textPosition)
             {
                 case TEXT_LOWER_LEFT_CORNER:
                     //Place in the lower left corner, relative to the position of the object:
                     textX = 0;
-                    textY = height - textFM.getDescent();
+                    textY = height - getBorderSize();
                     break;
                 case TEXT_UPPER_LEFT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
                     textX = 0;
-                    textY = textFM.getAscent() - textFM.getDescent();
+                    textY = getBorderSize();
                     break;
                 case TEXT_UPPER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
                     textX = width - textFM.stringWidth(imageText);
-                    textY = textFM.getAscent() - textFM.getDescent();
+                    textY = getBorderSize();
                     break;
                 case TEXT_LOWER_RIGHT_CORNER:
                     //Place in the upper left corner, relative to the position of the object:
                     textX = width - textFM.stringWidth(imageText);
-                    textY = height - textFM.getDescent();
+                    textY = height - getBorderSize();
                     break;
             }
 
@@ -362,9 +369,6 @@ public class WGTextImage extends WGDrawingObject
             {
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

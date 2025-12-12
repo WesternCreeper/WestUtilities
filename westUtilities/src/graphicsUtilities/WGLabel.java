@@ -4,10 +4,11 @@
  */
 package graphicsUtilities;
 
-import java.awt.Paint;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.geom.Rectangle2D;
+import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  * This is a simple component that just has a text inside of box that isn't drawn. That's it, nothing else interesting to note here
@@ -31,7 +32,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(Rectangle2D.Double bounds, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGLabel(Rectangle2D bounds, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = text;
@@ -40,8 +41,9 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         this.textStyle = textStyle;
         if(getParent() != null)
         {
-            resizer = new LabelResizeListener(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-            getParent().addComponentListener(resizer);
+            resizer = new LabelResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+            getParent().widthProperty().addListener(resizer.getResizeListener());
+            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -64,9 +66,9 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Component parent) throws WGNullParentException
+    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D.Double(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
     }
     
     /**
@@ -77,7 +79,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(Rectangle2D.Double bounds, String text, Component parent, WGTheme theme) throws WGNullParentException
+    public WGLabel(Rectangle2D bounds, String text, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         this(bounds, theme.getBorderSize(), theme.getTextStyle(), text, theme.getTextFont(), theme.getTextColor(), parent);
         setCurrentTheme(theme);
@@ -86,16 +88,16 @@ public class WGLabel extends WGDrawingObject implements TextStyles
     
     //Methods:
     @Override
-    public Rectangle2D.Double getBounds() 
+    public Rectangle2D getBounds() 
     {
-       Rectangle2D.Double bounds = new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+       Rectangle2D bounds = new Rectangle2D(getX(), getY(), getWidth(), getHeight());
        return bounds;
     }
     public void setUpBounds()
     {
-        resizer.resizeComps();
+        resizer.resizeCompsWithoutDelay();
     }
-    public void setBounds(Rectangle2D.Double newBounds)
+    public void setBounds(Rectangle2D newBounds)
     {
         resizer.setBounds(newBounds);
     }
@@ -112,7 +114,8 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().removeComponentListener(resizer);
+        getParent().widthProperty().removeListener(resizer.getResizeListener());
+        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -164,11 +167,11 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeComps()
+        public void resizeCompsWithoutDelay()
         {
             //Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getSize().getWidth();
-            double parentHeight = getParent().getSize().getHeight();
+            double parentWidth = getParent().getWidth();
+            double parentHeight = getParent().getHeight();
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setX(getXPercent() * parentWidth);
@@ -182,9 +185,6 @@ public class WGLabel extends WGDrawingObject implements TextStyles
             {
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
-            
-            //Then repaint the parent to make sure the parent sees the change
-            WestGraphics.doRepaintJob(getParent());
         }
     }
 }

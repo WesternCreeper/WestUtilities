@@ -4,18 +4,21 @@
  */
 package graphicsUtilities;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+
 import javax.swing.Timer;
+
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
  * @author Westley
  */
-public class WGToolTipListener extends WGClickListener implements MouseMotionListener
+public class WGToolTipListener extends WGClickListener
 {
     private static final int Y_MOUSE_OFFSET = 16;
     public static final int BASE_WAIT_TIME = 2500;
@@ -50,20 +53,52 @@ public class WGToolTipListener extends WGClickListener implements MouseMotionLis
      * @param parentComponent The parent of the WGDrawingObject. This definition is needed if the parentObject returns null
      * @param waitTime The time this class waits before showing the tooltip
      */
-    public WGToolTipListener(int waitTime, WGDrawingObject parentObject, Component parentComponent)
+    public WGToolTipListener(int waitTime, WGDrawingObject parentObject, Canvas parentComponent)
     {
         super(parentObject, parentComponent);
         waitTimer = new Timer(waitTime, new WaitListener());
         waitTimer.setRepeats(false);
     }
+	@Override
+	public void handle(Event e) 
+	{
+    	Platform.runLater(() -> {
+			if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+			{
+				mouseClicked((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+			{
+				mousePressed((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_RELEASED))
+			{
+				mouseReleased((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_ENTERED))
+			{
+				mouseEntered((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_EXITED))
+			{
+				mouseExited((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_DRAGGED))
+			{
+				mouseDragged((MouseEvent)e);
+			}
+			else if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+			{
+				mouseMoved((MouseEvent)e);
+			}
+    	});
+	}
 
-    @Override
     public void mouseDragged(MouseEvent e) 
     {
         mouseOps(e);
     }
 
-    @Override
     public void mouseMoved(MouseEvent e)
     {
         mouseOps(e);
