@@ -149,6 +149,7 @@ public class WGCheckBox extends WGBox
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -166,6 +167,7 @@ public class WGCheckBox extends WGBox
                 setBorderColor(fixPaintBounds(getBorderColor(), getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BORDER_COLOR)));
                 checkColor = fixPaintBounds(checkColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.CHECK_COLOR));
             }
+        	setResizing(false);
         }
     }
 }

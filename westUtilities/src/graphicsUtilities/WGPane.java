@@ -5,6 +5,9 @@
 package graphicsUtilities;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
@@ -411,6 +414,7 @@ public class WGPane extends WGBox
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -430,11 +434,29 @@ public class WGPane extends WGBox
             }
             
             //Wait for all of the components added to this object to finish setting up:
-            for(int i = 0 ; i < containedObjects.size() ; i++)
+            if(containedObjects.size() > 0)
             {
-                containedObjects.get(i).setUpBounds();
+	            ExecutorService executors = Executors.newFixedThreadPool(containedObjects.size());
+	            for(int i = 0 ; i < containedObjects.size() ; i++)
+	            {
+	            	executors.execute(new RunTask(i));
+	            }
+	            executors.shutdown();
             }
             setUpScroll();
+        	setResizing(false);
+        }
+        class RunTask implements Runnable
+        {
+        	private int i;
+        	RunTask(int i)
+        	{
+        		this.i = i;
+        	}
+        	public void run()
+        	{
+        		containedObjects.get(i).setUpBounds();
+        	}
         }
     }
 }

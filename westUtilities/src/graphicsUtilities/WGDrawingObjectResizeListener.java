@@ -40,6 +40,7 @@ public abstract class WGDrawingObjectResizeListener
     public final void resizeComps()
     {
     	Platform.runLater(() -> {
+    		
     		resizeCompsWithoutDelay();
     	});
     }

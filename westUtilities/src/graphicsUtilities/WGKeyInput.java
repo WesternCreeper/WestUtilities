@@ -308,6 +308,7 @@ public class WGKeyInput extends WGBox
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -327,6 +328,7 @@ public class WGKeyInput extends WGBox
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 backgroundOnFocusColor = fixPaintBounds(backgroundOnFocusColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.FOCUSED_BACKGROUND_COLOR));
             }
+        	setResizing(false);
         }
         public void setUpFont()
         {

@@ -257,6 +257,7 @@ public class WGAnnouncementCard extends WGBox
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -296,6 +297,7 @@ public class WGAnnouncementCard extends WGBox
                 splitColor = fixPaintBounds(splitColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SPLIT_COLOR));
                 subTitleColor = fixPaintBounds(subTitleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SUBTITLE_COLOR));
             }
+        	setResizing(false);
         }
     }
 }

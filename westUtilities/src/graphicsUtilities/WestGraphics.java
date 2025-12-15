@@ -8,7 +8,6 @@ import dataStructures.HashTable;
 import dataStructures.Queue;
 import dataStructures.WGObjectBoundList;
 import dataStructures.WGObjectBoundNode;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
@@ -21,6 +20,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import utilities.FXFontMetrics;
 
@@ -35,7 +37,8 @@ import java.util.ArrayList;
 public class WestGraphics
 {
     //Static Package wide important stuff:
-    private static Canvas currentActiveParent;
+	private static WGOverlay RESIZE_NOT_DONE_OVERLAY = new WGOverlay("Loading... Please Wait", Font.font("SanSerif", FontWeight.BOLD, FontPosture.REGULAR, 45), Color.BLACK, Color.WHITE);
+	private static Canvas currentActiveParent;
     private static WGBox lastHoverOject;
     private static HashTable<MouseEvent> lastMouseEvents = new HashTable<MouseEvent>(5, HashTable.HASHING_OPTION_LINEAR);
     private static WGObjectBoundList allClickables = new WGObjectBoundList();
@@ -336,7 +339,7 @@ public class WestGraphics
      */
     public void draw(WGDrawingObject obj, boolean drawToolTip)
     {
-        if(obj.isShown())
+        if(obj.isShown() && !obj.isResizing())
         {
             if(obj instanceof WGButton)
             {
@@ -406,6 +409,9 @@ public class WestGraphics
                     toolTipOrder.enqueue(addedToolTip);
                 }
             }
+            
+            //Draw the overlay accordingly:
+            drawOverlay(obj.getOverlay(), obj);
         }
     }
     
@@ -434,6 +440,10 @@ public class WestGraphics
         	g2.rect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
         	g2.clip();
             drawDropDown(dropDown);
+            
+            //Draw the overlay accordingly:
+            drawOverlay(dropDown.getOverlay(), dropDown);
+            
             g2.restore();
         }
     }
@@ -445,7 +455,11 @@ public class WestGraphics
     {
         while(!toolTipOrder.isEmpty())
         {
-            drawToolTip(toolTipOrder.dequeue());
+        	WGToolTip toolTip = toolTipOrder.dequeue();
+            drawToolTip(toolTip);
+            
+            //Draw the overlay accordingly:
+            drawOverlay(toolTip.getOverlay(), toolTip);
         }
     }
     
@@ -819,6 +833,10 @@ public class WestGraphics
             if(obj instanceof WGPane)
             {
                 drawPane((WGPane)obj, true, pane.getBounds());
+                
+                //Draw the overlay accordingly:
+                drawOverlay(obj.getOverlay(), obj);
+                
                 //Remember to collect the toolTip:
                 WGToolTip addedToolTip = obj.getToolTip();
                 if(addedToolTip != null && addedToolTip.isShown())
@@ -1309,6 +1327,31 @@ public class WestGraphics
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);
+    }
+    
+    private void drawOverlay(WGOverlay overlay, WGDrawingObject obj)
+    {
+    	if(overlay == null)
+    	{
+    		return;
+    	}
+        //Save the original stroke in case the user wanted that one
+    	VPos lastpos = g2.getTextBaseline();
+    	g2.setTextBaseline(VPos.CENTER);
+    	
+    	Rectangle2D rect = obj.getBounds();
+    	
+    	g2.setFill(overlay.getOverlayColor());
+    	fill(rect);
+    	
+    	g2.setFill(overlay.getTextColor());
+    	String text = overlay.getText();
+    	g2.setFont(overlay.getTextFont());
+    	FXFontMetrics fm = new FXFontMetrics(overlay.getTextFont());
+    	g2.fillText(text, rect.getMinX() + (rect.getWidth() - fm.stringWidth(text))/2, rect.getMinY() + rect.getHeight()/2);
+
+        //And reload it at the end
+        g2.setTextBaseline(lastpos);
     }
     
     //Porting functions:

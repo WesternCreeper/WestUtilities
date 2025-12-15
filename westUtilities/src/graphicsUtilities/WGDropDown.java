@@ -242,6 +242,7 @@ public class WGDropDown extends WGBox
         }
         public void resizeCompsWithoutDelay(boolean doXYLocation)
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -305,6 +306,7 @@ public class WGDropDown extends WGBox
                     y += buttonHeight;
                 }
             }
+        	setResizing(false);
         }
     }
 }

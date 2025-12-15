@@ -210,6 +210,7 @@ public class WGLoadingBar extends WGBox
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             title = originalTitle + (showPercentage ? " " + (int)(percentFilled * 100) + "%" : "");
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
@@ -231,6 +232,7 @@ public class WGLoadingBar extends WGBox
                 titleColor = fixPaintBounds(titleColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 barColor = fixPaintBounds(barColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.BAR_COLOR));
             }
+        	setResizing(false);
         }
     }
 }

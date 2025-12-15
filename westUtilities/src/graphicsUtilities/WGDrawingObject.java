@@ -5,6 +5,7 @@
 package graphicsUtilities;
 
 
+import dataStructures.Stack;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -42,10 +43,12 @@ public abstract class WGDrawingObject
     private double width;
     private double height;
     private double borderSize = 1;
+    private boolean isResizing = false;
     private boolean isShown = true;
     private WGPane parentOwningPane;
     private WGDragDropBar dragAndDropBar;
     private WGTheme currentTheme;
+    private Stack<WGOverlay> overlays = new Stack<WGOverlay>();
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
      * @param x The X that starts the object
@@ -254,6 +257,26 @@ public abstract class WGDrawingObject
     	}
     }
     
+    public void addOverlay(WGOverlay overlay)
+    {
+    	overlays.push(overlay);
+    }
+    
+    public void removeCurrentOverlay()
+    {
+    	overlays.pop();
+    }
+    
+    public void removeOverlay(WGOverlay overlay)
+    {
+    	overlays.pop(overlay);
+    }
+    
+    public WGOverlay getOverlay()
+    {
+    	return overlays.top();
+    }
+    
     
     //Setters:
     public void setShown(boolean isShown) 
@@ -319,6 +342,10 @@ public abstract class WGDrawingObject
 		this.dragAndDropBar = dragAndDropBar;
 	}
 	
+	public void setResizing(boolean isResizing) {
+		this.isResizing = isResizing;
+	}
+	
 	
 	//Getters:
     public boolean isShown() {
@@ -375,5 +402,9 @@ public abstract class WGDrawingObject
     
     public WGDragDropBar getDragAndDropBar() {
 		return dragAndDropBar;
+	}
+    
+	public boolean isResizing() {
+		return isResizing;
 	}
 }

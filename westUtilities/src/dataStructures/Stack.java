@@ -39,6 +39,10 @@ public class Stack <E>
     */
     public E top()
     {
+    	if(top == null)
+    	{
+    		return null;
+    	}
         return top.getObject();
     }
     /**
@@ -49,6 +53,32 @@ public class Stack <E>
         if(!isEmpty())
         {
             top = top.next();
+        }
+    }
+    /**
+    * This function removes the specific object. If the stack is already empty, then this function will do nothing
+    */
+    public void pop(E obj)
+    {
+        if(!isEmpty())
+        {
+        	if(top.getObject() == obj) //Check the top first...
+        	{
+                top = top.next();
+        	}
+        	LinkedListNode<E> searchNode = top.next();
+        	LinkedListNode<E> prevNode = top;
+            while(searchNode != null)
+            {
+            	if(searchNode.getObject() == obj)
+            	{
+            		//We need to remove this specific one:
+            		prevNode.setNext(searchNode.next());
+            		return;
+            	}
+            	prevNode = searchNode;
+            	searchNode = searchNode.next();
+            }
         }
     }
     /**

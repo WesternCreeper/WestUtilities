@@ -338,6 +338,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -449,6 +450,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                 scrollBarColor = fixPaintBounds(scrollBarColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.SCROLL_BAR_COLOR));
             }
+        	setResizing(false);
         }
     }
 }

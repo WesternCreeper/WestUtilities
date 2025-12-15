@@ -286,6 +286,7 @@ public class WGTextImage extends WGDrawingObject
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             if(displayImage == null) //If there is no image, then save time by not calculating anything
             {
                 return;
@@ -369,6 +370,7 @@ public class WGTextImage extends WGDrawingObject
             {
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
+        	setResizing(false);
         }
     }
 }

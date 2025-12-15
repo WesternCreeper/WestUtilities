@@ -169,6 +169,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         }
         public void resizeCompsWithoutDelay()
         {
+        	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
@@ -185,6 +186,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
             {
                 textColor = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
             }
+        	setResizing(false);
         }
     }
 }
