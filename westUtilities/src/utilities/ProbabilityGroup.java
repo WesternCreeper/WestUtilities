@@ -1,21 +1,21 @@
 package utilities;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProbabilityGroup 
 {
-	private List<Object> objects;
-	private List<BigDecimal> probabilities;
+	private ArrayList<Object> objects;
+	private ArrayList<BigDecimal> probabilities;
 	private boolean ignoreNonOneProbabilityCase = false;
 	
-	public ProbabilityGroup(List<Object> objects, List<BigDecimal> probabilities)
+	public ProbabilityGroup(ArrayList<Object> objects, ArrayList<BigDecimal> probabilities)
 	{
-		if(objects.size() == probabilities.size()) 
+		if(objects != null && probabilities != null && objects.size() == probabilities.size()) 
 		{
-			this.objects = objects;
-			this.probabilities = probabilities;
+			this.objects = new ArrayList<>(objects);
+			this.probabilities = new ArrayList<>(probabilities);
 		}
 		else
 		{
@@ -24,7 +24,7 @@ public class ProbabilityGroup
 		}
 	}
 	
-	public ProbabilityGroup(List<Object> objects, List<BigDecimal> probabilities, boolean ignoreMaxProbabilityCase)
+	public ProbabilityGroup(ArrayList<Object> objects, ArrayList<BigDecimal> probabilities, boolean ignoreMaxProbabilityCase)
 	{
 		this(objects, probabilities);
 		this.ignoreNonOneProbabilityCase = ignoreMaxProbabilityCase;
@@ -110,11 +110,11 @@ public class ProbabilityGroup
 
 	
 	//Getters:
-	public List<Object> getObjects() {
+	public ArrayList<Object> getObjects() {
 		return objects;
 	}
 
-	public List<BigDecimal> getProbabilities() {
+	public ArrayList<BigDecimal> getProbabilities() {
 		return probabilities;
 	}
 
@@ -124,12 +124,12 @@ public class ProbabilityGroup
 	
 	
 	//Setters:
-	public void setObjects(List<Object> objects) {
-		this.objects = objects;
+	public void setObjects(ArrayList<Object> objects) {
+		this.objects = new ArrayList<>(objects);
 	}
 
-	public void setProbabilities(List<BigDecimal> probabilities) {
-		this.probabilities = probabilities;
+	public void setProbabilities(ArrayList<BigDecimal> probabilities) {
+		this.probabilities = new ArrayList<>(probabilities);
 	}
 
 	public void setIgnoreNonOneProbabilityCase(boolean ignoreNonOneProbabilityCase) {

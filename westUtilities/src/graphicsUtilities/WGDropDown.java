@@ -76,6 +76,7 @@ public class WGDropDown extends WGBox
         {
             throw new WGNullParentException();
         }
+        setCurrentTheme(theme);
     }
     /**
      * For the custom drop down listener

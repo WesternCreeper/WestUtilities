@@ -87,6 +87,15 @@ public class WestGraphics
     }
     
     /**
+     * This function updates an already existing WGObject in the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
+     * @param obj The Object to be updated (MUST ALREADY EXIST)
+     */
+    static void update(WGDrawingObject obj)
+    {
+        allClickables.updateNode(new WGObjectBoundNode(obj));
+    }
+    
+    /**
      * This function removes a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
      * @param obj The Object to be removed
      */
@@ -140,7 +149,7 @@ public class WestGraphics
             }
             return; //We have already set the cursor, no touch!
         }
-        Point2D realPoint = new Point2D(lastMouseEvent.getX(), lastMouseEvent.getY());
+        Point2D realPoint = new Point2D(lastMouseEvent.getSceneX(), lastMouseEvent.getSceneY());
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
@@ -192,7 +201,7 @@ public class WestGraphics
             if(sourceObject instanceof WGBox)
             {
                 //Verify that we can do this:
-                Point2D realPoint = new Point2D(e.getX(), e.getY());
+                Point2D realPoint = new Point2D(e.getSceneX(), e.getSceneY());
                 WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
                 if(absoluteClickCursor != null)
                 {
@@ -208,7 +217,7 @@ public class WestGraphics
             }
             return; //We have already set the cursor, no touch!
         }
-        Point2D realPoint = new Point2D(e.getX(), e.getY());
+        Point2D realPoint = new Point2D(e.getSceneX(), e.getSceneY());
         WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
         if(clickCursor != null)
         {
@@ -378,6 +387,13 @@ public class WestGraphics
                 WGDropDown dropdown = (WGDropDown)obj;
                 Canvas parent = dropdown.getParent();
                 dropDownOrder.enqueue(new WGQueuedDrawing(dropdown, new Rectangle2D(parent.getLayoutBounds().getMinX(), parent.getLayoutBounds().getMinY(), parent.getWidth(), parent.getHeight())));
+            }
+            
+            //Now draw the drag and drop if it exists:
+            WGDragDropBar dragAndDropBar = obj.getDragAndDropBar();
+            if(dragAndDropBar != null)
+            {
+            	drawDragAndDropBar(dragAndDropBar);
             }
             
             //Now make sure to draw the tool tip that is part of this object:
@@ -824,6 +840,13 @@ public class WestGraphics
             		draw(obj);
             	}
             }
+            
+            //Now draw the drag and drop if it exists:
+            WGDragDropBar dragAndDropBar = obj.getDragAndDropBar();
+            if(dragAndDropBar != null)
+            {
+            	drawDragAndDropBar(dragAndDropBar);
+            }
         }
         
         //Draw the scrollBars
@@ -1260,6 +1283,32 @@ public class WestGraphics
         //And reload it at the end
         g2.setLineWidth(oldStroke);
         g2.setTextBaseline(lastpos);
+    }
+    private void drawDragAndDropBar(WGDragDropBar bar)
+    {
+        //Save the original stroke in case the user wanted that one
+        Double oldStroke = g2.getLineWidth();
+
+        //Make the bar:
+        if(bar.isHovered())
+        {
+        	//Make the whole background:
+        	g2.setFill(bar.getHoverBackgroundColor());
+        	fill(bar.getBounds());
+        }
+        
+        //Now do the three dots:
+        g2.setFill(bar.getBarColor());
+        double diameter = bar.getBorderSize();
+        double radius = diameter/2;
+        double x = bar.getX() + radius;
+        double y = bar.getY() + radius;
+        g2.fillOval(x, y, diameter, diameter);
+        g2.fillOval((bar.getX() + bar.getWidth()/2.0) - radius/2, y, diameter, diameter);
+        g2.fillOval((bar.getX() + bar.getWidth()) - diameter, y, diameter, diameter);
+        
+        //And reload it at the end
+        g2.setLineWidth(oldStroke);
     }
     
     //Porting functions:

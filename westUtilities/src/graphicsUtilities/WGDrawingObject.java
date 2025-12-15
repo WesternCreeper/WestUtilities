@@ -44,6 +44,7 @@ public abstract class WGDrawingObject
     private double borderSize = 1;
     private boolean isShown = true;
     private WGPane parentOwningPane;
+    private WGDragDropBar dragAndDropBar;
     private WGTheme currentTheme;
     /**
      * This defines a basic WGDrawingObject, which is another term for a shared commonality among different drawable objects. Specifically this defines the X, Y, Width, Height, and Border Size of a drawable object
@@ -238,6 +239,21 @@ public abstract class WGDrawingObject
         return points;
     }
     
+    public void allowDragAndDrop(WGTheme theme)
+    {
+    	if(this instanceof WGDragDropBar)
+    	{
+    		return; //Don't allow a drag and drop bar to be dragged and dropped
+    	}
+    	if(dragAndDropBar == null)
+    	{
+    		double barWidth = resizer.getWidthPercent() / 10;
+    		double barHeight = resizer.getHeightPercent() / 20;
+    		Rectangle2D bounds = new Rectangle2D(resizer.getXPercent() + resizer.getWidthPercent()/2 - barWidth/2, resizer.getYPercent(), barWidth, barHeight);
+    		dragAndDropBar = new WGDragDropBar(bounds, borderSize, this, parent, theme);
+    	}
+    }
+    
     
     //Setters:
     public void setShown(boolean isShown) 
@@ -299,7 +315,12 @@ public abstract class WGDrawingObject
         setTheme(currentTheme);
     }
     
-    //Getters:
+	public void setDragAndDropBar(WGDragDropBar dragAndDropBar) {
+		this.dragAndDropBar = dragAndDropBar;
+	}
+	
+	
+	//Getters:
     public boolean isShown() {
         return isShown;
     }
@@ -351,4 +372,8 @@ public abstract class WGDrawingObject
     public WGPane getParentOwningPane() {
         return parentOwningPane;
     }
+    
+    public WGDragDropBar getDragAndDropBar() {
+		return dragAndDropBar;
+	}
 }

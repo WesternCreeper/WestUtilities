@@ -138,7 +138,7 @@ public class WGClickListener implements EventHandler<Event>
      */
     protected boolean isWithinBounds(MouseEvent e)
     {
-        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Point2D clickLoaction = new Point2D(e.getSceneX(), e.getSceneY());
         Rectangle2D objectBounds = parentObject.getBounds();
         if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
         {
@@ -154,7 +154,7 @@ public class WGClickListener implements EventHandler<Event>
      */
     protected boolean isWithinBounds(ScrollEvent e)
     {
-        Point2D clickLoaction = new Point2D(e.getX(), e.getY());
+        Point2D clickLoaction = new Point2D(e.getSceneX(), e.getSceneY());
         Rectangle2D objectBounds = parentObject.getBounds();
         if(parentObject.getParentOwningPane() != null) //If there is a pane then make sure it is within both bounds!
         {

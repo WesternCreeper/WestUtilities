@@ -387,6 +387,13 @@ public class WGScrollableListener implements EventHandler<Event>
                     {
                         doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                     }
+                    
+                    //Make sure to move the drag and drops too:
+                    WGDragDropBar bar = obj.getDragAndDropBar();
+                    if(bar != null)
+                	{
+                    	bar.setY(bar.getY() + Math.abs(minY - scrollY));
+                	}
                 }
                 if(parentPane == this.parentPane)
                 {
@@ -409,6 +416,13 @@ public class WGScrollableListener implements EventHandler<Event>
                     {
                         doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                     }
+                    
+                    //Make sure to move the drag and drops too:
+                    WGDragDropBar bar = obj.getDragAndDropBar();
+                    if(bar != null)
+                	{
+                    	bar.setY(bar.getY() - Math.abs(maxY - scrollY));
+                	}
                 }
                 if(parentPane == this.parentPane)
                 {
@@ -430,6 +444,13 @@ public class WGScrollableListener implements EventHandler<Event>
                 {
                     doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                 }
+                
+                //Make sure to move the drag and drops too:
+                WGDragDropBar bar = obj.getDragAndDropBar();
+                if(bar != null)
+            	{
+                	bar.setY(bar.getY() - movement);
+            	}
             }
             if(parentPane == this.parentPane)
             {
@@ -464,6 +485,13 @@ public class WGScrollableListener implements EventHandler<Event>
                     {
                         doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                     }
+                    
+                    //Make sure to move the drag and drops too:
+                    WGDragDropBar bar = obj.getDragAndDropBar();
+                    if(bar != null)
+                	{
+                    	bar.setX(bar.getX() + Math.abs(minX - scrollY));
+                	}
                 }
                 if(parentPane == this.parentPane)
                 {
@@ -486,6 +514,13 @@ public class WGScrollableListener implements EventHandler<Event>
                     {
                         doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                     }
+                    
+                    //Make sure to move the drag and drops too:
+                    WGDragDropBar bar = obj.getDragAndDropBar();
+                    if(bar != null)
+                	{
+                    	bar.setX(bar.getX() - Math.abs(maxX - scrollY));
+                	}
                 }
                 if(parentPane == this.parentPane)
                 {
@@ -507,6 +542,13 @@ public class WGScrollableListener implements EventHandler<Event>
                 {
                     doScroll((WGPane)obj, mouseMovement, useScrollSpeed);
                 }
+                
+                //Make sure to move the drag and drops too:
+                WGDragDropBar bar = obj.getDragAndDropBar();
+                if(bar != null)
+            	{
+                	bar.setX(bar.getX() - movement);
+            	}
             }
             if(parentPane == this.parentPane)
             {
@@ -529,6 +571,13 @@ public class WGScrollableListener implements EventHandler<Event>
             {
                 WGDrawingObject obj = parentPane.getComponent(i);
                 obj.setY(obj.getY() + Math.abs(scrollY));
+                
+                //Make sure to move the drag and drops too:
+                WGDragDropBar bar = obj.getDragAndDropBar();
+                if(bar != null)
+            	{
+                	bar.setX(bar.getY() + Math.abs(scrollY));
+            	}
             }
             scrollY = 0;
             scrollBarY = 0;
@@ -542,6 +591,13 @@ public class WGScrollableListener implements EventHandler<Event>
             {
                 WGDrawingObject obj = parentPane.getComponent(i);
                 obj.setX(obj.getX() + Math.abs(scrollY));
+                
+                //Make sure to move the drag and drops too:
+                WGDragDropBar bar = obj.getDragAndDropBar();
+                if(bar != null)
+            	{
+                	bar.setX(bar.getX() + Math.abs(scrollY));
+            	}
             }
             scrollY = 0;
             scrollBarY = 0;

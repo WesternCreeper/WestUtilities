@@ -6,6 +6,7 @@ package dataStructures;
 
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGDrawingObject;
+import graphicsUtilities.WGPane;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.geometry.Rectangle2D;
@@ -137,7 +138,7 @@ public class WGObjectBoundList
                 }
                 
                 //We finally have our location:
-                if(searchNode.equals(node))
+                if(searchNode != null && searchNode.equals(node))
                 {
                     if(prev != null)
                     {
@@ -181,6 +182,12 @@ public class WGObjectBoundList
             }
         }
     }
+    
+    public void updateNode(WGObjectBoundNode node)
+    {
+    	removeNode(node);
+    	addNode(node);
+    }
     public WGDrawingObject contains(Point2D point, Canvas currentParent)
     {
         WGDrawingObject foundInstance = containsUseRelative(point, currentParent);
@@ -222,7 +229,14 @@ public class WGObjectBoundList
                         //Now check the y-coor:
                         if(y >= nodeBounds.getMinY() && y <= nodeBounds.getMinY() + nodeBounds.getHeight())
                         {
-                            return searchChild.getObject();
+                        	WGDrawingObject foundInstance = searchChild.getObject();
+                            //Now check to make sure that this is not on a pane covering a drag and drop:
+                            WGPane pane = foundInstance.getParentOwningPane();
+                            if(pane != null && pane.getDragAndDropBar() != null && pane.getDragAndDropBar().getBounds().contains(point))
+                            {
+                            	return pane.getDragAndDropBar();
+                            }
+                            return foundInstance;
                         }
                         searchChild = searchChild.getChild();
                     }
@@ -278,7 +292,14 @@ public class WGObjectBoundList
                         //Now check the y-coor:
                         if(y >= nodeBounds.getMinY() && y <= nodeBounds.getMinY() + nodeBounds.getHeight())
                         {
-                            return searchChild.getObject();
+                        	WGDrawingObject foundInstance = searchChild.getObject();
+                            //Now check to make sure that this is not on a pane covering a drag and drop:
+                            WGPane pane = foundInstance.getParentOwningPane();
+                            if(pane != null && pane.getDragAndDropBar() != null && pane.getDragAndDropBar().getBounds().contains(point))
+                            {
+                            	return pane.getDragAndDropBar();
+                            }
+                            return foundInstance;
                         }
                         searchChild = searchChild.getChild();
                     }

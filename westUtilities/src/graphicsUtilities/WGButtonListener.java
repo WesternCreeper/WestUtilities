@@ -6,6 +6,8 @@ package graphicsUtilities;
 
 import javafx.application.Platform;
 import javafx.event.Event;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;

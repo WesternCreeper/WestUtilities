@@ -289,6 +289,18 @@ public class WGPane extends WGBox
             containedObjects.get(i).setBorderSize(newStrokeSize);
         }
     }
+    /**
+     * Takes the given object and attempts to bring it to the top of the array (Drawn on top)
+     * @param obj The object contained on this pane
+     */
+    public void bringComponentToTop(WGDrawingObject obj)
+    {
+    	if(containedObjects.contains(obj)) //We actually have it, so let's do it
+    	{
+			containedObjects.remove(obj);
+    		containedObjects.add(obj);
+    	}
+    }
     
     /**
      * This sets up the scroll so that the current area can scroll properly

@@ -35,6 +35,7 @@ public class WGTheme implements TextStyles
     public static final String FOCUSED_BACKGROUND_COLOR = "Focused Background Color";
     public static final String HOVER_BACKGROUND_COLOR = "Hover Background Color";
     public static final String BAR_COLOR = "Bar Color";
+    public static final String DRAG_AND_DROP_BAR_COLOR = "Drag And Drop Bar Color";
     public static final String CURSOR_COLOR = "Cursor Color";
     public static final String HIGHLIGHT_COLOR = "Highlight Color";
     public static final HashTable DEFAULT_PREFERRENCES = new HashTable(20, HashTable.HASHING_OPTION_LINEAR, 22);
@@ -52,6 +53,7 @@ public class WGTheme implements TextStyles
     private Paint backgroundColor;
     private Paint hoverBackgroundColor;
     private Paint focusedBackgroundColor;
+    private Paint dragAndDropBarColor;
     private Paint borderColor;
     private Paint textColor;
     private Paint checkColor;
@@ -101,6 +103,7 @@ public class WGTheme implements TextStyles
         this.checkColor = toPaint(themeData.find(WGTheme.CHECK_COLOR));
         this.hoverBackgroundColor = toPaint(themeData.find(WGTheme.HOVER_BACKGROUND_COLOR));
         this.focusedBackgroundColor = toPaint(themeData.find(WGTheme.FOCUSED_BACKGROUND_COLOR));
+        this.dragAndDropBarColor = toPaint(themeData.find(WGTheme.DRAG_AND_DROP_BAR_COLOR));
         this.gradientOrientationPreferences = gradientOrientationPreferences;
         
         if(hoverBackgroundColor == null)
@@ -137,6 +140,7 @@ public class WGTheme implements TextStyles
         this.checkColor = oldTheme.getCheckColor();
         this.hoverBackgroundColor = oldTheme.getHoverBackgroundColor();
         this.focusedBackgroundColor = oldTheme.getFocusedBackgroundColor();
+        this.dragAndDropBarColor = oldTheme.getDragAndDropBarColor();
         this.gradientOrientationPreferences = oldTheme.getGradientOrientationPreferences();
     }
     
@@ -259,8 +263,12 @@ public class WGTheme implements TextStyles
         this.focusedBackgroundColor = focusedBackgroundColor;
     }
     
+	public void setDragAndDropBarColor(Paint dragAndDropBarColor) {
+		this.dragAndDropBarColor = dragAndDropBarColor;
+	}
     
-    //Getters:
+    
+	//Getters:
     public float getBorderSize() {
         return borderSize;
     }
@@ -328,4 +336,8 @@ public class WGTheme implements TextStyles
     public Paint getFocusedBackgroundColor() {
         return focusedBackgroundColor;
     }
+    
+    public Paint getDragAndDropBarColor() {
+		return dragAndDropBarColor;
+	}
 }
