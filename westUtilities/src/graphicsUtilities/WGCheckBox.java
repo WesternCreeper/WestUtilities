@@ -153,9 +153,19 @@ public class WGCheckBox extends WGBox
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
+            double parentX = 0;
+            double parentY = 0;
+            WGPane pane = getParentOwningPane();
+            if(pane != null && pane.isUseRelativePositions())
+            {
+            	parentWidth = pane.getWidth();
+                parentHeight = pane.getHeight();
+                parentX = pane.getX();
+                parentY = pane.getY();
+            }
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
+            setX(getXPercent() * parentWidth + parentX);
+            setY(getYPercent() * parentHeight + parentY);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             

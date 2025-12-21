@@ -353,7 +353,7 @@ public class WGScrollableListener implements EventHandler<Event>
         return objectBounds.contains(clickLoaction);
     }
     
-    private void doScroll(double mouseMovement, boolean useScrollSpeed)
+    public void doScroll(double mouseMovement, boolean useScrollSpeed)
     {
         doScroll(parentPane, mouseMovement, useScrollSpeed);
     }
@@ -637,6 +637,11 @@ public class WGScrollableListener implements EventHandler<Event>
 
     public boolean isShown() {
         return shown;
+    }
+    
+    public double getScrollAmount()
+    {
+    	return scrollY;
     }
     
     //Setters:

@@ -289,6 +289,12 @@ public class WGToolTip extends WGBox implements TextStyles
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
+            WGPane pane = getParentOwningPane();
+            if(pane != null && pane.isUseRelativePositions())
+            {
+            	parentWidth = pane.getWidth();
+                parentHeight = pane.getHeight();
+            }
             double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             setWidth(getWidthPercent() * parentWidth);

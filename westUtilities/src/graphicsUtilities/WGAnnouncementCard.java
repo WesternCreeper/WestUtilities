@@ -261,6 +261,16 @@ public class WGAnnouncementCard extends WGBox
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
+            double parentX = 0;
+            double parentY = 0;
+            WGPane pane = getParentOwningPane();
+            if(pane != null && pane.isUseRelativePositions())
+            {
+            	parentWidth = pane.getWidth();
+                parentHeight = pane.getHeight();
+                parentX = pane.getX();
+                parentY = pane.getY();
+            }
             double borderPadding = getBorderSize(); //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
             double optimalWidth = parentWidth * getWidthPercent();
@@ -277,9 +287,9 @@ public class WGAnnouncementCard extends WGBox
             double xTitlePlace = (getXPercent() * parentWidth) - (titleFM.stringWidth(title)/ 2);
             double xSubTitlePlace = (getXPercent() * parentWidth) - (subTitleFM.stringWidth(subTitle)/ 2);
             double xPlace = ((xTitlePlace < xSubTitlePlace) ? xTitlePlace : xSubTitlePlace);
-            setX(xPlace);
+            setX(xPlace + parentX);
             double yPlace = (getYPercent() * parentHeight) - (((titleFM.getHeight(title) + subTitleFM.getHeight(subTitle)) + splitHeight) / 2);
-            setY(yPlace);
+            setY(yPlace + parentY);
             double titleWidth = titleFM.stringWidth(title);
             double subTitleWidth = subTitleFM.stringWidth(subTitle) + borderPadding * 2;
             double totalWidth = (titleWidth > subTitleWidth ? titleWidth : subTitleWidth);

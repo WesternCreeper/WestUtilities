@@ -173,10 +173,20 @@ public class WGLabel extends WGDrawingObject implements TextStyles
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
+            double parentX = 0;
+            double parentY = 0;
+            WGPane pane = getParentOwningPane();
+            if(pane != null && pane.isUseRelativePositions())
+            {
+            	parentWidth = pane.getWidth();
+                parentHeight = pane.getHeight();
+                parentX = pane.getX();
+                parentY = pane.getY();
+            }
             double borderPadding = getBorderSize() * 2.0; //This is to make sure that the border does not interefere with the text that is drawn on the button
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
+            setX(getXPercent() * parentWidth + parentX);
+            setY(getYPercent() * parentHeight + parentY);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, getHeight() - borderPadding, text, 100);

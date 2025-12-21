@@ -25,6 +25,7 @@ public class WGPane extends WGBox
     public final static boolean VERTICAL_SCROLL_PREFERED = true;
     public final static boolean HORIZONTAL_SCROLL_PREFERED = false;
     private final boolean scrollable;
+    private final boolean useRelativePositions;
     private ArrayList<WGDrawingObject> containedObjects = new ArrayList<WGDrawingObject>(1);
     private Paint scrollBarColor;
     private WGScrollableListener verticalScroll;
@@ -41,11 +42,12 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, float borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.scrollBarColor = scrollBarColor;
         this.scrollable = scrollable;
+        this.useRelativePositions = useRelativePositions;
         if(getParent() != null)
         {
             resizer = new PaneResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
@@ -82,9 +84,9 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
-        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, backgroundColor, borderColor, scrollBarColor, parent);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, useRelativePositions, backgroundColor, borderColor, scrollBarColor, parent);
     }
     
     /**
@@ -95,9 +97,9 @@ public class WGPane extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, boolean scrollable, Canvas parent, WGTheme theme) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, boolean scrollable, boolean useRelativePositions, Canvas parent, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), scrollable, theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
+        this(bounds, theme.getBorderSize(), scrollable, useRelativePositions, theme.getBackgroundColor(), theme.getBorderColor(), theme.getScrollBarColor(), parent);
         setCurrentTheme(theme);
     }
     
@@ -111,9 +113,9 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, float borderSize, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, float borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
-        this(bounds, borderSize, false, backgroundColor, borderColor, null, parent);
+        this(bounds, borderSize, false, useRelativePositions, backgroundColor, borderColor, null, parent);
         
         //Now make the clickListener
         if(getParent() != null)
@@ -144,9 +146,9 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
-        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, backgroundColor, borderColor, parent, clickListener);
+        this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, useRelativePositions, backgroundColor, borderColor, parent, clickListener);
     }
     
     /**
@@ -157,9 +159,9 @@ public class WGPane extends WGBox
      * @param theme The theme being used to define a bunch of standard values. This makes a bunch of similar objects look the same, and reduces the amount of effort required to create one of these objects
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, Canvas parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, boolean useRelativePositions, Canvas parent, WGButtonListener clickListener, WGTheme theme) throws WGNullParentException
     {
-        this(bounds, theme.getBorderSize(), theme.getBackgroundColor(), theme.getBorderColor(), parent, clickListener);
+        this(bounds, theme.getBorderSize(), useRelativePositions, theme.getBackgroundColor(), theme.getBorderColor(), parent, clickListener);
         setCurrentTheme(theme);
     }
     
@@ -384,7 +386,11 @@ public class WGPane extends WGBox
         return scrollable;
     }
     
-    /**
+    public boolean isUseRelativePositions() {
+		return useRelativePositions;
+	}
+
+	/**
      * This is a wrapper for the ArrayList. All this does is get the size of the ArrayList of WGDrawingObjects inside of this pane
      * @return The size of the ArrayList
      */
@@ -418,9 +424,19 @@ public class WGPane extends WGBox
             //Find the parent width and height so that the x/y can be scaled accordingly
             double parentWidth = getParent().getWidth();
             double parentHeight = getParent().getHeight();
+            double parentX = 0;
+            double parentY = 0;
+            WGPane pane = getParentOwningPane();
+            if(pane != null && pane.isUseRelativePositions())
+            {
+            	parentWidth = pane.getWidth();
+                parentHeight = pane.getHeight();
+                parentX = pane.getX();
+                parentY = pane.getY();
+            }
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
+            setX(getXPercent() * parentWidth + parentX);
+            setY(getYPercent() * parentHeight + parentY);
             setWidth(getWidthPercent() * parentWidth);
             setHeight(getHeightPercent() * parentHeight);
             

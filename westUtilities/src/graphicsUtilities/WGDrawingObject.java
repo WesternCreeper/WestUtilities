@@ -6,6 +6,7 @@ package graphicsUtilities;
 
 
 import dataStructures.Stack;
+import graphicsUtilities.WGDragDropClickListener.DragDropType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -242,18 +243,26 @@ public abstract class WGDrawingObject
         return points;
     }
     
-    public void allowDragAndDrop(WGTheme theme)
+    public void allowDragAndDrop(WGTheme theme, DragDropType dragType) throws WGRDMNoParentException, WGDragDropNonRelativePaneException
     {
     	if(this instanceof WGDragDropBar)
     	{
     		return; //Don't allow a drag and drop bar to be dragged and dropped
     	}
+    	if(dragType == DragDropType.REDORDER_DRAG_MODE && this.parentOwningPane == null)
+    	{
+    		throw new WGRDMNoParentException();
+    	}
+    	if(this instanceof WGPane && !((WGPane)this).isUseRelativePositions())
+    	{
+    		throw new WGDragDropNonRelativePaneException();
+    	}
     	if(dragAndDropBar == null)
     	{
-    		double barWidth = resizer.getWidthPercent() / 10;
-    		double barHeight = resizer.getHeightPercent() / 20;
-    		Rectangle2D bounds = new Rectangle2D(resizer.getXPercent() + resizer.getWidthPercent()/2 - barWidth/2, resizer.getYPercent(), barWidth, barHeight);
-    		dragAndDropBar = new WGDragDropBar(bounds, borderSize, this, parent, theme);
+    		double barWidth = 1.0 / 10;
+			double barHeight = 1.0 / 20;
+			Rectangle2D bounds = new Rectangle2D(0.45, 0, barWidth, barHeight);
+			dragAndDropBar = new WGDragDropBar(bounds, borderSize, dragType, this, parent, theme);
     	}
     }
     

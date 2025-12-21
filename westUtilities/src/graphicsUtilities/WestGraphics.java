@@ -20,9 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
+import javafx.scene.shape.Path;
 import javafx.scene.transform.Affine;
 import utilities.FXFontMetrics;
 
@@ -37,7 +35,6 @@ import java.util.ArrayList;
 public class WestGraphics
 {
     //Static Package wide important stuff:
-	private static WGOverlay RESIZE_NOT_DONE_OVERLAY = new WGOverlay("Loading... Please Wait", Font.font("SanSerif", FontWeight.BOLD, FontPosture.REGULAR, 45), Color.BLACK, Color.WHITE);
 	private static Canvas currentActiveParent;
     private static WGBox lastHoverOject;
     private static HashTable<MouseEvent> lastMouseEvents = new HashTable<MouseEvent>(5, HashTable.HASHING_OPTION_LINEAR);
@@ -1324,6 +1321,15 @@ public class WestGraphics
         g2.fillOval(x, y, diameter, diameter);
         g2.fillOval((bar.getX() + bar.getWidth()/2.0) - radius/2, y, diameter, diameter);
         g2.fillOval((bar.getX() + bar.getWidth()) - diameter, y, diameter, diameter);
+        
+        //Now in the case that this exists, we need to draw the drag drop line:
+        if(bar.getClickListener() != null && ((WGDragDropClickListener)bar.getClickListener()).getDragDropLine() != null)
+        {
+        	g2.setLineWidth(bar.getBorderSize());
+        	Rectangle2D line = ((WGDragDropClickListener)bar.getClickListener()).getDragDropLine();
+            g2.setStroke(bar.getHoverBackgroundColor());
+            g2.strokeRect(line.getMinX(), line.getMinY(), line.getWidth(), line.getHeight());
+        }
         
         //And reload it at the end
         g2.setLineWidth(oldStroke);

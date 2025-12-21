@@ -1,5 +1,6 @@
 package graphicsUtilities;
 
+import graphicsUtilities.WGDragDropClickListener.DragDropType;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
@@ -14,22 +15,24 @@ import javafx.scene.paint.Paint;
 public class WGDragDropBar extends WGBox
 {
 	private Paint barColor;
-	public WGDragDropBar(Rectangle2D bounds, double borderSize, Paint barColor, Paint hoverColor, WGDrawingObject object, Canvas parent)
+	private WGDrawingObject parentObject;
+	public WGDragDropBar(Rectangle2D bounds, double borderSize, DragDropType dragType, Paint barColor, Paint hoverColor, WGDrawingObject object, Canvas parent)
 	{
 		super(borderSize, null, hoverColor, null, parent);
+		parentObject = object;
         resizer = new DragAndDropResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
         getParent().widthProperty().addListener(resizer.getResizeListener());
         getParent().heightProperty().addListener(resizer.getResizeListener());
-        super.setClickListener(new WGDragDropClickListener(this, object, parent));
+        super.setClickListener(new WGDragDropClickListener(dragType, this, object, parent));
         getParent().addEventHandler(MouseEvent.ANY, getClickListener());
         resizer.resizeComps();
 		this.barColor = barColor;
 		setHoverBackgroundColor(Color.RED);
         WestGraphics.add(this);
 	}
-	public WGDragDropBar(Rectangle2D bounds, double borderSize, WGDrawingObject object, Canvas parent, WGTheme theme)
+	public WGDragDropBar(Rectangle2D bounds, double borderSize, DragDropType dragType, WGDrawingObject object, Canvas parent, WGTheme theme)
 	{
-		this(bounds, borderSize, theme.getDragAndDropBarColor(), theme.getHoverBackgroundColor(), object, parent);
+		this(bounds, borderSize, dragType, theme.getDragAndDropBarColor(), theme.getHoverBackgroundColor(), object, parent);
 		setCurrentTheme(theme);
 	}
     
@@ -73,11 +76,13 @@ public class WGDragDropBar extends WGBox
         {
         	setResizing(true);
         	//Find the parent width and height so that the x/y can be scaled accordingly
-            double parentWidth = getParent().getWidth();
-            double parentHeight = getParent().getHeight();
+            double parentWidth = parentObject.getWidth();
+            double parentHeight = parentObject.getHeight();
+            double parentX = parentObject.getX();
+            double parentY = parentObject.getY();
             //Set up the x, y, width, and height components based on the percentages given and the parent's size
-            setX(getXPercent() * parentWidth);
-            setY(getYPercent() * parentHeight);
+            setX(getXPercent() * parentWidth + parentX);
+            setY(getYPercent() * parentHeight + parentY);
             setWidth(getWidthPercent() * parentWidth);
             
             //Make sure the height is always the same as the size of the dots:
