@@ -57,11 +57,9 @@ public class WGPane extends WGBox
             if(scrollable)
             {
                 verticalScroll = new WGScrollableListener(this);
-                getParent().addEventHandler(MouseEvent.ANY, verticalScroll);
-                getParent().addEventHandler(ScrollEvent.ANY, verticalScroll);
+                super.setVerticalScrollListener(verticalScroll);
                 horizontalScroll = new WGScrollableListener(this);
-                getParent().addEventHandler(MouseEvent.ANY, horizontalScroll);
-                getParent().addEventHandler(ScrollEvent.ANY, horizontalScroll);
+                super.setHorizontalScrollListener(horizontalScroll);
             }
         }
         else
@@ -123,9 +121,6 @@ public class WGPane extends WGBox
             super.setClickListener(clickListener);
             getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -210,27 +205,12 @@ public class WGPane extends WGBox
         {
             getToolTip().removeListeners();
         }
-        
-        WGScrollableListener scrollerH = getHorizontalScroll();
-        WGScrollableListener scrollerV = getVerticalScroll();
-        if(scrollerH != null)
-        {
-	        getParent().removeEventHandler(MouseEvent.ANY, scrollerH);
-	        getParent().removeEventHandler(ScrollEvent.ANY, scrollerH);
-        }
-        if(scrollerV != null)
-        {
-            getParent().removeEventHandler(MouseEvent.ANY, scrollerV);
-            getParent().removeEventHandler(ScrollEvent.ANY, scrollerV);
-        }
-        
-        WGClickListener clickListener = getClickListener();
-        if(clickListener != null)
-        {
-	        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
-	        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
-        }
+
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     /**
@@ -255,7 +235,6 @@ public class WGPane extends WGBox
         }
         
         //Remove all listeners, as they will still listen even after the object disappears
-        int count = 0;
         for(int i = containedObjects.size()-1 ; i >= 0 ; i--)
         {
             WGDrawingObject obj = containedObjects.remove(i);
@@ -265,10 +244,6 @@ public class WGPane extends WGBox
             	pane.removeAllDrawableObjects();
             }
             obj.removeListeners();
-            if(obj instanceof WGBox)
-            {
-                count++;
-            }
         }
     }
     /**
@@ -304,6 +279,7 @@ public class WGPane extends WGBox
     	{
 			containedObjects.remove(obj);
     		containedObjects.add(obj);
+    		obj.bringToTop();
     	}
     }
     

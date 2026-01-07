@@ -285,7 +285,6 @@ public class WGDragDropClickListener extends WGClickListener
 	    		dragObject.getResizer().setYPercent(dragObject.getY() / getParentObject().getParent().getHeight());
 	    		
 	    		//Make them permanent:
-	    		WestGraphics.update(dragObject);
 				if(dragObject instanceof WGPane)
 				{
 					for(int i = 0 ; i < ((WGPane) dragObject).getComponentNumber() ; i++)
@@ -293,7 +292,6 @@ public class WGDragDropClickListener extends WGClickListener
 						WGDrawingObject obj = ((WGPane) dragObject).getComponent(i);
 						obj.getResizer().setXPercent(obj.getX() / getParentObject().getParent().getWidth());
 						obj.getResizer().setYPercent(obj.getY() / getParentObject().getParent().getHeight());
-			    		WestGraphics.update(obj);
 					}
 				}
     		}
@@ -454,7 +452,6 @@ public class WGDragDropClickListener extends WGClickListener
 					WGDrawingObject obj = allComponents.get(i);
 					obj.getResizer().setXPercent((obj.getX()) / getParentObject().getParent().getWidth());
 					obj.getResizer().setYPercent((obj.getY()) / getParentObject().getParent().getHeight());
-		    		WestGraphics.update(obj);
 				}
     			dragDropLine = null;
     			autoscroller.stop();
@@ -462,10 +459,7 @@ public class WGDragDropClickListener extends WGClickListener
     	}
     }
     
-    public void mouseMoved(MouseEvent e)
-    {
-        hoverEvent(e);
-    }
+    public void mouseMoved(MouseEvent e) {}
     
     @Override
     public void handle(Event e)
@@ -500,12 +494,6 @@ public class WGDragDropClickListener extends WGClickListener
 				mouseMoved((MouseEvent)e);
 			}
     	});
-    }
-    
-    public void hoverEvent(MouseEvent e)
-    {
-        //Cursor:
-        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
     }
 	
 	

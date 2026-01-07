@@ -150,9 +150,6 @@ public class WGButton extends WGBox
                 super.setClickListener(clickListener);
                 getClickListener().setParentComponent(getParent());
                 getClickListener().setParentObject(this);
-                getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-                getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-                WestGraphics.add(this);
             }
         }
         else
@@ -177,9 +174,6 @@ public class WGButton extends WGBox
             super.setClickListener(clickListener);
             getClickListener().setParentComponent(getParent());
             getClickListener().setParentObject(this);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -285,25 +279,19 @@ public class WGButton extends WGBox
         {
             getToolTip().removeListeners();
         }
-        
-        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
-        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
+
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     public void setClickListner(WGClickListener clickListener)
     {
-        if(getClickListener() == null) //Check that this object has not been added already
-        {
-            WestGraphics.add(this);
-        }
-        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
-        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
         super.setClickListener(clickListener);
         clickListener.setParentComponent(getParent());
         clickListener.setParentObject(this);
-        getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-        getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
     }
     private void setUpImage()
     {

@@ -7,11 +7,14 @@ package graphicsUtilities;
 
 import dataStructures.Stack;
 import graphicsUtilities.WGDragDropClickListener.DragDropType;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.LinearGradient;
@@ -36,9 +39,12 @@ public abstract class WGDrawingObject
     
     private Canvas parent;
     private WGClickListener clickListener;
+    private EventHandler<Event> verticalScrollListener;
+    private EventHandler<Event> horizontalScrollListener;
     protected WGDrawingObjectResizeListener resizer;
     private WGToolTip toolTip;
     private Cursor shownCursor;
+    private int order = -1;
     private double x = 0;
     private double y = 0;
     private double width;
@@ -73,12 +79,7 @@ public abstract class WGDrawingObject
      */
     protected WGDrawingObject(double x, double y, double width, double height, double borderSize, Canvas parent)
     {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.borderSize  = borderSize;
-        this.parent = parent;
+        this(x, y, width, height, borderSize, parent, null);
     }
     /**
      * This defines a more advanced and capable WGDrawingObject. Specifically this defines the X, Y, Width, Height, Border Size, and the Parent Component of a drawable object
@@ -99,6 +100,8 @@ public abstract class WGDrawingObject
         this.borderSize  = borderSize;
         this.parent = parent;
         this.currentTheme = currentTheme;
+        WestGraphics.add(this);
+        order = WestGraphics.assignOrder();
     }
     
     //Methods:
@@ -106,6 +109,10 @@ public abstract class WGDrawingObject
     
     public Rectangle2D getRelativeBounds()
     {
+    	if(resizer == null)
+    	{
+    		return new Rectangle2D(0,0,0,0);
+    	}
         return new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent());
     }
     
@@ -285,14 +292,17 @@ public abstract class WGDrawingObject
     {
     	return overlays.top();
     }
+	
+	public void bringToTop() 
+	{
+		this.order = WestGraphics.assignOrder();
+	}
     
     
     //Setters:
     public void setShown(boolean isShown) 
     {
         this.isShown = isShown;
-        //Cursor:
-        WestGraphics.checkCursor(parent, this);
     }
 
     protected void setX(double x) {
@@ -354,11 +364,28 @@ public abstract class WGDrawingObject
 	public void setResizing(boolean isResizing) {
 		this.isResizing = isResizing;
 	}
+
+	public void setVerticalScrollListener(EventHandler<Event> verticalScrollListener) {
+		this.verticalScrollListener = verticalScrollListener;
+	}
+	
+	public void setHorizontalScrollListener(EventHandler<Event> horizontalScrollListener) {
+		this.horizontalScrollListener = horizontalScrollListener;
+	}
 	
 	
 	//Getters:
-    public boolean isShown() {
-        return isShown;
+    public boolean isShown() 
+    {
+        boolean shown = isShown;
+        
+        //Check that if the pane above us is shown and add that to the result:
+        if(parentOwningPane != null)
+        {
+        	shown = shown && parentOwningPane.isShown();
+        }
+        
+        return shown;
     }
 
     public double getX() {
@@ -415,5 +442,17 @@ public abstract class WGDrawingObject
     
 	public boolean isResizing() {
 		return isResizing;
+	}
+	
+	public EventHandler<Event> getVerticalScrollListener() {
+		return verticalScrollListener;
+	}
+	
+	public EventHandler<Event> getHorizontalScrollListener() {
+		return horizontalScrollListener;
+	}
+	
+	public int getOrder() {
+		return order;
 	}
 }

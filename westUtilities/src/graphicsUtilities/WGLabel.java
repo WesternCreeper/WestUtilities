@@ -120,6 +120,12 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         {
             getToolTip().removeListeners();
         }
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     

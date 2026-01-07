@@ -8,6 +8,8 @@ import dataStructures.HashTable;
 import dataStructures.Queue;
 import dataStructures.WGObjectBoundList;
 import dataStructures.WGObjectBoundNode;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
@@ -17,6 +19,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
@@ -37,11 +40,13 @@ public class WestGraphics
     //Static Package wide important stuff:
 	private static Canvas currentActiveParent;
     private static WGBox lastHoverOject;
+    private static HashTable<EventHandler<Event>> eventHandlers = new HashTable<EventHandler<Event>>(5, HashTable.HASHING_OPTION_LINEAR);
     private static HashTable<MouseEvent> lastMouseEvents = new HashTable<MouseEvent>(5, HashTable.HASHING_OPTION_LINEAR);
-    private static WGObjectBoundList allClickables = new WGObjectBoundList();
+    private static ArrayList<WGDrawingObject> allClickables = new ArrayList<WGDrawingObject>();
     private static Cursor defaultCursor = Cursor.DEFAULT;
     private static Cursor hoverCursor = Cursor.HAND;
     private static Cursor textCursor = Cursor.TEXT;
+    private static int currentOrder = 0;
     private static boolean allowComponentsToRepaint = true;
     
     /**
@@ -83,16 +88,8 @@ public class WestGraphics
      */
     static void add(WGDrawingObject obj)
     {
-        allClickables.addNode(new WGObjectBoundNode(obj));
-    }
-    
-    /**
-     * This function updates an already existing WGObject in the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
-     * @param obj The Object to be updated (MUST ALREADY EXIST)
-     */
-    static void update(WGDrawingObject obj)
-    {
-        allClickables.updateNode(new WGObjectBoundNode(obj));
+        allClickables.add(obj);
+        setUpListenersOnPane(obj.getParent());
     }
     
     /**
@@ -101,182 +98,23 @@ public class WestGraphics
      */
     static void remove(WGDrawingObject obj)
     {
-        allClickables.removeNode(new WGObjectBoundNode(obj));
+        allClickables.remove(obj);
     }
-    
-    static void setProperHoverDuringScroll(Canvas parent)
+
+    private static void setUpListenersOnPane(Canvas parent)
     {
-    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
-        if(lastMouseEvent == null)
-        {
-            return;
-        }
-        Point2D point = new Point2D(lastMouseEvent.getX(), lastMouseEvent.getY());
-        WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(point, parent);
-        if(lastHoverOject != null && absoluteClickCursor != null && absoluteClickCursor instanceof WGBox)
-        {
-            lastHoverOject.setHovered(false);
-            WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
-            absoluteBoxObject.setHovered(true);
-            lastHoverOject = absoluteBoxObject;
-        }
-        else if(absoluteClickCursor != null && absoluteClickCursor instanceof WGBox)
-        {
-            WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
-            lastHoverOject = absoluteBoxObject;
-        }
-        else if(absoluteClickCursor == null && lastHoverOject != null)
-        {
-            lastHoverOject.setHovered(false); //We went off the object, so make it so
-        }
+    	if(eventHandlers.find(parent.toString()) == null) //Does not exists so make it:
+    	{
+    		WestGraphicsEventHandler handler = new WestGraphicsEventHandler(parent);
+    		eventHandlers.insert(parent.toString(), handler);
+    		parent.addEventHandler(Event.ANY, handler);
+    	}
     }
     
-    /**
-     * This function checks the given point to verify that the cursor is in the right form. (This form uses the last mouse event)
-     * @param parent The parent for the Utility to change the cursor of
-     * @param sourceObject The source object that defines whether or not the correct listener does the operation
-     */
-    static void checkCursor(Canvas parent, WGDrawingObject sourceObject)
+    static int assignOrder()
     {
-    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
-        if(lastMouseEvent == null || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
-        {
-            //We have also already set the hover, so make sure to remember that:
-            if(sourceObject instanceof WGBox)
-            {
-                WGBox boxObject = (WGBox)sourceObject;
-                boxObject.setHovered(false);
-            }
-            return; //We have already set the cursor, no touch!
-        }
-        Point2D realPoint = new Point2D(lastMouseEvent.getSceneX(), lastMouseEvent.getSceneY());
-        WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
-        if(clickCursor != null)
-        {
-            if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
-            {
-                parent.setCursor(sourceObject.getClickListener().getCursorType());
-                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
-                if(absoluteClickCursor instanceof WGBox)
-                {
-                    WGBox boxObject = (WGBox)clickCursor;
-                    boxObject.setHovered(false);
-                    WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
-                    absoluteBoxObject.setHovered(true);
-                    lastHoverOject = absoluteBoxObject;
-                }
-            }
-            else
-            {
-                if(sourceObject instanceof WGBox)
-                {
-                    WGBox boxObject = (WGBox)sourceObject;
-                    boxObject.setHovered(false);
-                }
-            }
-        }
-        else
-        {
-            if(sourceObject instanceof WGBox)
-            {
-                WGBox boxObject = (WGBox)sourceObject;
-                boxObject.setHovered(false);
-            }
-            parent.setCursor(defaultCursor);
-        }
+    	return currentOrder++;
     }
-    
-    /**
-     * This function checks the given point to verify that the cursor is in the right form
-     * @param e The mouseEvent that was used for the click process
-     * @param parent The parent for the Utility to change the cursor of
-     * @param sourceObject The source object that defines whether or not the correct listener does the operation
-     */
-    static void checkCursor(MouseEvent e, Canvas parent, WGDrawingObject sourceObject)
-    {
-    	MouseEvent lastMouseEvent = lastMouseEvents.find(parent.toString());
-        if(lastMouseEvent == e || currentActiveParent != parent) //IF the active parent is not the current one, then the system will ignore the requests
-        {
-            //We have also already set the hover, so make sure to remember that:
-            if(sourceObject instanceof WGBox)
-            {
-                //Verify that we can do this:
-                Point2D realPoint = new Point2D(e.getSceneX(), e.getSceneY());
-                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
-                if(absoluteClickCursor != null)
-                {
-                    WGBox boxObject = (WGBox)absoluteClickCursor;
-                    boxObject.setHovered(true);
-                    lastHoverOject = boxObject;
-                }
-                if(absoluteClickCursor != sourceObject)
-                {
-                    WGBox boxObject = (WGBox)sourceObject;
-                    boxObject.setHovered(false);
-                }
-            }
-            return; //We have already set the cursor, no touch!
-        }
-        Point2D realPoint = new Point2D(e.getSceneX(), e.getSceneY());
-        WGDrawingObject clickCursor = allClickables.contains(realPoint, parent);
-        if(clickCursor != null)
-        {
-            boolean onPane = clickCursor.getParentOwningPane() != null;
-            if(sourceObject == clickCursor) //Makes sure that the correct clickListener tells us what to do
-            {
-            	lastMouseEvents.set(parent.toString(), e);
-                if(!onPane)
-                {
-                    parent.setCursor(sourceObject.getClickListener().getCursorType());
-                }
-                WGDrawingObject absoluteClickCursor = allClickables.containsUseAbsolute(realPoint, parent);
-                if(absoluteClickCursor instanceof WGBox)
-                {
-                    if(clickCursor != absoluteClickCursor)
-                    {
-                        WGBox boxObject = (WGBox)clickCursor;
-                        boxObject.setHovered(false);
-                        WGBox absoluteBoxObject = (WGBox)absoluteClickCursor;
-                        absoluteBoxObject.setHovered(true);
-                        lastHoverOject = absoluteBoxObject;
-                    }
-                    else
-                    {
-                        WGBox boxObject = (WGBox)clickCursor;
-                        boxObject.setHovered(true);
-                        lastHoverOject = boxObject;
-                    }
-                }
-                if(onPane && absoluteClickCursor != null)
-                {
-                    //Then make sure to set the click cursor:
-                    parent.setCursor(sourceObject.getClickListener().getCursorType());
-                }
-                else if(onPane)
-                {
-                    parent.setCursor(defaultCursor);
-                }
-            }
-            else
-            {
-                if(sourceObject instanceof WGBox)
-                {
-                    WGBox boxObject = (WGBox)sourceObject;
-                    boxObject.setHovered(false);
-                }
-            }
-        }
-        else
-        {
-            if(sourceObject instanceof WGBox)
-            {
-                WGBox boxObject = (WGBox)sourceObject;
-                boxObject.setHovered(false);
-            }
-            parent.setCursor(defaultCursor);
-        }
-    }
-    
     
     //Static setters:
     public static void setAllowComponentsToRepaint(boolean allowComponentsToRepaint) {
@@ -304,6 +142,10 @@ public class WestGraphics
     public static Cursor getTextCursor() {
         return textCursor;
     }
+
+    static ArrayList<WGDrawingObject> getAllClickables() {
+        return allClickables;
+    }
     
     
     
@@ -327,15 +169,6 @@ public class WestGraphics
      */
     public void draw(WGDrawingObject obj)
     {
-        draw(obj, true);
-    }
-    /**
-     * Draws the given WGDrawingObject based on internal functions
-     * @param obj The object to be drawn
-     * @param drawToolTip Draw the tool tip associated with this object?
-     */
-    public void draw(WGDrawingObject obj, boolean drawToolTip)
-    {
         if(obj.isShown() && !obj.isResizing())
         {
             if(obj instanceof WGButton)
@@ -350,7 +183,7 @@ public class WestGraphics
             {
                 drawAnnouncementCard((WGAnnouncementCard)obj);
             }
-            else if(obj instanceof WGToolTip && !drawToolTip)
+            else if(obj instanceof WGToolTip)
             {
                 drawToolTip((WGToolTip)obj);
             }
@@ -397,14 +230,11 @@ public class WestGraphics
             }
             
             //Now make sure to draw the tool tip that is part of this object:
-            if(drawToolTip)
+            WGToolTip addedToolTip = obj.getToolTip();
+            if(addedToolTip != null && addedToolTip.isShown())
             {
-                WGToolTip addedToolTip = obj.getToolTip();
-                if(addedToolTip != null && addedToolTip.isShown())
-                {
-                    //Make sure to add it to the toolTip list so that it can be drawn correctly, over everything else:
-                    toolTipOrder.enqueue(addedToolTip);
-                }
+                //Make sure to add it to the toolTip list so that it can be drawn correctly, over everything else:
+                toolTipOrder.enqueue(addedToolTip);
             }
             
             //Draw the overlay accordingly:
@@ -418,8 +248,8 @@ public class WestGraphics
      */
     public void drawAllEndDrawings()
     {
-    	drawAllToolTips();
     	drawAllDropDowns();
+    	drawAllToolTips();
     }
     
     /**

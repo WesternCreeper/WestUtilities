@@ -24,11 +24,9 @@ public class WGDragDropBar extends WGBox
         getParent().widthProperty().addListener(resizer.getResizeListener());
         getParent().heightProperty().addListener(resizer.getResizeListener());
         super.setClickListener(new WGDragDropClickListener(dragType, this, object, parent));
-        getParent().addEventHandler(MouseEvent.ANY, getClickListener());
         resizer.resizeComps();
 		this.barColor = barColor;
 		setHoverBackgroundColor(Color.RED);
-        WestGraphics.add(this);
 	}
 	public WGDragDropBar(Rectangle2D bounds, double borderSize, DragDropType dragType, WGDrawingObject object, Canvas parent, WGTheme theme)
 	{
@@ -43,13 +41,16 @@ public class WGDragDropBar extends WGBox
     {
         getParent().widthProperty().removeListener(resizer.getResizeListener());
         getParent().heightProperty().removeListener(resizer.getResizeListener());
-        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
         }
 
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
 	

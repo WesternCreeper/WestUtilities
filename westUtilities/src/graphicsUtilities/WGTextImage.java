@@ -192,6 +192,12 @@ public class WGTextImage extends WGDrawingObject
         {
             getToolTip().removeListeners();
         }
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     public void setTheme(WGTheme theme)
     {

@@ -132,6 +132,12 @@ public class WGLoadingBar extends WGBox
         {
             getToolTip().removeListeners();
         }
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     

@@ -45,15 +45,9 @@ public class WGButtonListener extends WGClickListener
 
     public void mouseDragged(MouseEvent e) {}
 
-    public void mouseMoved(MouseEvent e)
-    {
-        hoverEvent(e);
-    }
+    public void mouseMoved(MouseEvent e) {}
 
-    public void mouseWheelMoved(ScrollEvent e) 
-    {
-        hoverEvent(e);
-    }
+    public void mouseWheelMoved(ScrollEvent e) {}
     
     @Override
     public void handle(Event e)
@@ -92,17 +86,5 @@ public class WGButtonListener extends WGClickListener
 				mouseWheelMoved((ScrollEvent)e);
 			}
     	});
-    }
-    
-    public void hoverEvent(MouseEvent e)
-    {
-        //Cursor:
-        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
-    }
-    
-    public void hoverEvent(ScrollEvent e)
-    {
-        //Cursor:
-        WestGraphics.checkCursor(getParentComponent(), getParentObject());
     }
 }

@@ -84,9 +84,6 @@ public class WGDropDownListener extends WGButtonListener
             parent.setSelectedChoice(choice);
             //Force the pane owner to update!
             getParentObject().getParentOwningPane().getResizer().resizeComps();
-            
-            //Cursor:
-            WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
         }
     }
     public void hoverEvent(MouseEvent e)
@@ -111,7 +108,5 @@ public class WGDropDownListener extends WGButtonListener
                 parent.setHoveredIndex(index);
             }
         }
-        //Cursor:
-        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
     }
 }

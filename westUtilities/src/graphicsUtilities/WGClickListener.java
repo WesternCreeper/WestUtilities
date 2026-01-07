@@ -79,8 +79,6 @@ public class WGClickListener implements EventHandler<Event>
                 clickEvent(e);
                 e.consume();
             }
-            //Cursor:
-            WestGraphics.checkCursor(e, getParentComponent(), parentObject);
         }
     }
 

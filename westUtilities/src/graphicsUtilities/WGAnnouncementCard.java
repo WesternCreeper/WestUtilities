@@ -154,6 +154,12 @@ public class WGAnnouncementCard extends WGBox
         {
             getToolTip().removeListeners();
         }
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
 
     

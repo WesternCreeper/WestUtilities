@@ -37,9 +37,6 @@ public class WGKeyInputClickListener extends WGClickListener
             {
                 parent.setFocused(true);
                 e.consume();
-                
-                //Cursor:
-                WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
             }
         }
         else
@@ -61,9 +58,6 @@ public class WGKeyInputClickListener extends WGClickListener
             {
                 parent.setFocused(true);
                 e.consume();
-                
-                //Cursor:
-                WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
             }
         }
         else
@@ -72,11 +66,7 @@ public class WGKeyInputClickListener extends WGClickListener
         }
     }
 
-    public void mouseMoved(MouseEvent e)
-    {
-        //Cursor:
-        WestGraphics.checkCursor(e, getParentComponent(), getParentObject());
-    }
+    public void mouseMoved(MouseEvent e) {}
     
     @Override
     public void handle(Event e)

@@ -55,11 +55,10 @@ public class WGKeyInput extends WGBox
             getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = new WGKeyInputClickListener(this, parent);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
             clickListener.setOriginalBackgroundColor(backgroundColor);
+            setClickListener(clickListener);
             keyListener = new WGKeyInputKeyListener(this);
             getParent().addEventHandler(KeyEvent.ANY, keyListener);
-            WestGraphics.add(this);
         }
         else
         {
@@ -129,12 +128,11 @@ public class WGKeyInput extends WGBox
             this.clickListener = textClickListener;
             clickListener.setParentObject(this);
             clickListener.setParentComponent(parent);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
             clickListener.setOriginalBackgroundColor(backgroundColor);
+            setClickListener(clickListener);
             keyListener = textKeyListener;
             keyListener.setParent(this);
             getParent().addEventHandler(KeyEvent.ANY, keyListener);
-            WestGraphics.add(this);
         }
         else
         {
@@ -207,10 +205,13 @@ public class WGKeyInput extends WGBox
         }
         
         WGKeyInputKeyListener keyer = getKeyListener();
-        WGKeyInputClickListener clicker = getClickListener();
-        getParent().addEventHandler(MouseEvent.ANY, clicker);
         getParent().addEventHandler(KeyEvent.ANY, keyer);
+
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     public void setTheme(WGTheme theme)
     {
@@ -286,6 +287,7 @@ public class WGKeyInput extends WGBox
         return focused;
     }
 
+    @Override
     public WGKeyInputClickListener getClickListener() {
         return clickListener;
     }

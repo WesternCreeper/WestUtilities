@@ -17,6 +17,7 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
 {
     private static final KeyCode BACKSPACE_KEY = KeyCode.BACK_SPACE;
     private static final KeyCode ENTER_KEY = KeyCode.ENTER;
+    private static final int RETURN_KEY = 13;
     private static final KeyCode SHIFT_KEY = KeyCode.SHIFT;
     private static final KeyCode CLEAR_KEY = KeyCode.CLEAR;
     private static final KeyCode LEFT_ARROW_KEY = KeyCode.LEFT;
@@ -79,7 +80,7 @@ public class WGTextInputKeyListener implements EventHandler<KeyEvent>
             {
                 clearEvent(e);
             }
-            else if(keyCode.equals(ENTER_KEY.getChar()))
+            else if(keyCode.equals(ENTER_KEY.getChar()) || RETURN_KEY == keyCode.codePointAt(0))
             {
                 enterEvent(e);
             }

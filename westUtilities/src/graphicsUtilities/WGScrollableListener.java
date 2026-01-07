@@ -76,8 +76,6 @@ public class WGScrollableListener implements EventHandler<Event>
         if(preferred && isWithinBounds(e) && !e.isConsumed())
         {
             doScroll(-e.getDeltaY(), true);
-            //Cursor:
-            WestGraphics.setProperHoverDuringScroll(parentPane.getParent());
         }
     }
 
@@ -102,8 +100,6 @@ public class WGScrollableListener implements EventHandler<Event>
                 distance /= seeableArea / totalArea;
                 doScroll(distance, false);
             }
-            //Cursor:
-            WestGraphics.checkCursor(e, parentPane.getParent(), parentPane);
         }
     }
 
@@ -121,8 +117,6 @@ public class WGScrollableListener implements EventHandler<Event>
                 yStart = e.getX();
                 allowedToScroll = true;
             }
-            //Cursor:
-            WestGraphics.checkCursor(e, parentPane.getParent(), parentPane);
         }
     }
 

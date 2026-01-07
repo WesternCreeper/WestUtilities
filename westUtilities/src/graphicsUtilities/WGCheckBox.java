@@ -65,9 +65,6 @@ public class WGCheckBox extends WGBox
             getClickListener().setParentComponent(parent);
             getClickListener().setParentObject(this);
             ((WGCheckBoxClickListener)getClickListener()).setOriginalBackgroundColor(backgroundColor);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -101,9 +98,11 @@ public class WGCheckBox extends WGBox
             getToolTip().removeListeners();
         }
 
-        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
-        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     //Setters:

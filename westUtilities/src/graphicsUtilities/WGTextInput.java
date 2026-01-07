@@ -75,12 +75,10 @@ public class WGTextInput extends WGBox
             getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = new WGTextInputClickListener(this, parent);
-            getParent().addEventHandler(MouseEvent.ANY, clickListener);
-            getParent().addEventHandler(ScrollEvent.ANY, clickListener);
             clickListener.setOriginalBackgroundColor(backgroundColor);
+            setClickListener(clickListener);
             keyListener = new WGTextInputKeyListener(this);
             getParent().addEventHandler(KeyEvent.ANY, keyListener);
-            WestGraphics.add(this);
         }
         else
         {
@@ -159,13 +157,11 @@ public class WGTextInput extends WGBox
             this.clickListener = textClickListener;
             clickListener.setParentObject(this);
             clickListener.setParentComponent(parent);
-            getParent().addEventHandler(MouseEvent.ANY, clickListener);
-            getParent().addEventHandler(ScrollEvent.ANY, clickListener);
             clickListener.setOriginalBackgroundColor(backgroundColor);
+            setClickListener(clickListener);
             keyListener = textKeyListener;
             keyListener.setParent(this);
             getParent().addEventHandler(KeyEvent.ANY, keyListener);
-            WestGraphics.add(this);
         }
         else
         {
@@ -252,11 +248,13 @@ public class WGTextInput extends WGBox
         }
         
         WGTextInputKeyListener keyer = getKeyListener();
-        WGTextInputClickListener clicker = getClickListener();
-        getParent().removeEventHandler(MouseEvent.ANY, clicker);
-        getParent().removeEventHandler(ScrollEvent.ANY, clicker);
         getParent().removeEventHandler(KeyEvent.ANY, keyer);
+
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     

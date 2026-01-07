@@ -43,9 +43,6 @@ public class WGDropDown extends WGBox
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -68,9 +65,6 @@ public class WGDropDown extends WGBox
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -105,9 +99,6 @@ public class WGDropDown extends WGBox
             listener.setParentComponent(parent);
             listener.setParentObject(this);
             super.setClickListener(listener);
-            getParent().addEventHandler(MouseEvent.ANY, getClickListener());
-            getParent().addEventHandler(ScrollEvent.ANY, getClickListener());
-            WestGraphics.add(this);
         }
         else
         {
@@ -127,9 +118,11 @@ public class WGDropDown extends WGBox
             getToolTip().removeListeners();
         }
 
-        getParent().removeEventHandler(MouseEvent.ANY, getClickListener());
-        getParent().removeEventHandler(ScrollEvent.ANY, getClickListener());
         WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     public void setTheme(WGTheme theme)

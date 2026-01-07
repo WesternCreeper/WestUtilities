@@ -52,7 +52,7 @@ public class WGToolTip extends WGBox implements TextStyles
             listener.setParentComponent(parent);
             listener.setParentObject(toolTipOwner);
             listener.setToolTipObject(this);
-            getParent().addEventHandler(MouseEvent.ANY, listener);
+            setClickListener(listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
             getParent().widthProperty().addListener(resizer.getResizeListener());
@@ -131,7 +131,7 @@ public class WGToolTip extends WGBox implements TextStyles
             listener.setParentComponent(parent);
             listener.setParentObject(toolTipOwner);
             listener.setToolTipObject(this);
-            getParent().addEventHandler(MouseEvent.ANY, listener);
+            setClickListener(listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
             getParent().widthProperty().addListener(resizer.getResizeListener());
@@ -197,9 +197,12 @@ public class WGToolTip extends WGBox implements TextStyles
     {
         getParent().widthProperty().removeListener(resizer.getResizeListener());
         getParent().heightProperty().removeListener(resizer.getResizeListener());
-        
-        WGToolTipListener toolTip = getToolTipListener();
-        getParent().removeEventHandler(MouseEvent.ANY, toolTip);
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     public String getLongestString()

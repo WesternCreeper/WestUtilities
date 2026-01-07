@@ -129,8 +129,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
             getParent().widthProperty().addListener(resizer.getResizeListener());
             getParent().heightProperty().addListener(resizer.getResizeListener());
             verticalScroll = new WGTextScrollableListener(this);
-            getParent().addEventHandler(MouseEvent.ANY, verticalScroll);
-            getParent().addEventHandler(ScrollEvent.ANY, verticalScroll);
+            super.setVerticalScrollListener(verticalScroll);
         }
         else
         {
@@ -219,10 +218,12 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         {
             getToolTip().removeListeners();
         }
-        
-        WGTextScrollableListener scrollerV = getVerticalScroll();
-        getParent().removeEventHandler(MouseEvent.ANY, scrollerV);
-        getParent().removeEventHandler(ScrollEvent.ANY, scrollerV);
+
+        WestGraphics.remove(this);
+        if(getDragAndDropBar() != null)
+        {
+        	getDragAndDropBar().removeListeners();
+        }
     }
     
     public void setTextLine(int index, String information) throws IndexOutOfBoundsException
