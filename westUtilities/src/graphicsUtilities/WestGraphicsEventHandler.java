@@ -95,15 +95,22 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 						clickObject = clickObject.getParentOwningPane();
 					}
 				}
+
 				if(clickObject.getVerticalScrollListener() != null)
 				{
 					clickObject.getVerticalScrollListener().handle(se);
-		            parent.setCursor(originalObject.getClickListener().getCursorType());
+					if(originalObject.getClickListener() != null)
+					{
+						parent.setCursor(originalObject.getClickListener().getCursorType());
+					}
 				}
 				if(clickObject.getHorizontalScrollListener() != null)
 				{
 					clickObject.getHorizontalScrollListener().handle(se);
-		            parent.setCursor(originalObject.getClickListener().getCursorType());
+					if(originalObject.getClickListener() != null)
+					{
+						parent.setCursor(originalObject.getClickListener().getCursorType());
+					}
 				}
 				
 				//Now check the current position, post scroll and see if the cursor can be set:
@@ -148,7 +155,7 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 				continue;
 			}
 			//Skip unclickable objects:
-			if(objects.get(i).getClickListener() == null)
+			if(objects.get(i).getClickListener() == null && objects.get(i).getVerticalScrollListener() == null && objects.get(i).getHorizontalScrollListener() == null)
 			{
 				continue;
 			}

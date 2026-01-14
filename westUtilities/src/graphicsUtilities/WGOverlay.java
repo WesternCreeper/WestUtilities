@@ -1,5 +1,7 @@
 package graphicsUtilities;
 
+import java.util.ArrayList;
+
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
@@ -13,6 +15,7 @@ public class WGOverlay
 	private Paint overlayColor;
 	private String text;
 	private Font textFont;
+	private ArrayList<ColoredRectangle> overlayRectangles = new ArrayList<ColoredRectangle>();
 	public WGOverlay(String text, Font textFont, Paint overlayColor, Paint textColor) 
 	{
 		this.text = text;
@@ -26,7 +29,7 @@ public class WGOverlay
 	public String getText() {
 		return text;
 	}
-	
+
 	public Paint getOverlayColor() {
 		return overlayColor;
 	}
@@ -37,5 +40,9 @@ public class WGOverlay
 
 	public Font getTextFont() {
 		return textFont;
+	}
+	
+	public ArrayList<ColoredRectangle> getOverlayRectangles() {
+		return overlayRectangles;
 	}
 }

@@ -909,6 +909,11 @@ public class WestGraphics
         }
         if(allText != null)
         {
+        	WGPane pane = textArea.getParentOwningPane();
+        	if(pane != null)
+    		{
+        		textY += pane.getBorderSize();
+    		}
 	        textY += textArea.getStringYOffset();
 	        for(int i = 0 ; i < allText.size() ; i++)
 	        {
@@ -1172,22 +1177,41 @@ public class WestGraphics
     		return;
     	}
         //Save the original stroke in case the user wanted that one
+        Double oldStroke = g2.getLineWidth();
+        //Save the original stroke in case the user wanted that one
     	VPos lastpos = g2.getTextBaseline();
     	g2.setTextBaseline(VPos.CENTER);
     	
+    	//Set the stroke size in case of rectangles
+    	g2.setLineWidth(obj.getBorderSize());
+    	
+    	//Do the full overlay
     	Rectangle2D rect = obj.getBounds();
     	
     	g2.setFill(overlay.getOverlayColor());
     	fill(rect);
     	
+    	//Now do any of the smaller overlays:
+    	ArrayList<ColoredRectangle> rectangles = overlay.getOverlayRectangles();
+    	for(int i = 0 ; i < rectangles.size() ; i++)
+		{
+    		ColoredRectangle originalRectangle = rectangles.get(i);
+    		Rectangle2D newRectangularArea = new Rectangle2D(rect.getMinX() + (originalRectangle.getRectangularArea().getMinX() * rect.getWidth()), rect.getMinY() + (originalRectangle.getRectangularArea().getMinY() * rect.getHeight()), originalRectangle.getRectangularArea().getWidth() * rect.getWidth(), originalRectangle.getRectangularArea().getHeight() * rect.getHeight());
+    		draw(new ColoredRectangle(newRectangularArea, originalRectangle.getBorderColor(), originalRectangle.getBackgroundColor()));
+		}
+    	
+    	//Finally place any text needed
     	g2.setFill(overlay.getTextColor());
     	String text = overlay.getText();
     	g2.setFont(overlay.getTextFont());
     	FXFontMetrics fm = new FXFontMetrics(overlay.getTextFont());
     	g2.fillText(text, rect.getMinX() + (rect.getWidth() - fm.stringWidth(text))/2, rect.getMinY() + rect.getHeight()/2);
-
+    	
         //And reload it at the end
         g2.setTextBaseline(lastpos);
+        
+        //And reload it at the end
+        g2.setLineWidth(oldStroke);
     }
     
     //Porting functions:
@@ -1210,5 +1234,12 @@ public class WestGraphics
     	Double radiusX = oval.getRadiusX();
     	Double radiusY = oval.getRadiusY();
     	g2.strokeOval(oval.getCenterX() - radiusX, oval.getCenterY() - radiusY, radiusX * 2, radiusY * 2);
+    }
+    public void draw(ColoredRectangle rect)
+    {
+    	g2.setFill(rect.getBackgroundColor());
+    	fill(rect.getRectangularArea());
+    	g2.setStroke(rect.getBorderColor());
+    	draw(rect.getRectangularArea());
     }
 }

@@ -359,5 +359,13 @@ public class WGColorHelper
     	
     	return  Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), (int)(RGBAMAX * originalColor.getOpacity()));
     }
+    public static Color changeTransparency(Color originalColor, double newTransparency)
+    {
+    	int red = (int)(RGBAMAX * originalColor.getRed());
+    	int green = (int)(RGBAMAX * originalColor.getGreen());
+    	int blue = (int)(RGBAMAX * originalColor.getBlue());
+    	
+    	return  Color.rgb(putColorIntInRange(red), putColorIntInRange(green), putColorIntInRange(blue), newTransparency);
+    }
     protected WGColorHelper(){}
 }

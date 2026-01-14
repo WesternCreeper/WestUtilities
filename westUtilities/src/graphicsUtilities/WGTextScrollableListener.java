@@ -72,7 +72,7 @@ public class WGTextScrollableListener implements EventHandler<Event>
     {
         if(isWithinBounds(e) && !e.isConsumed())
         {
-            doScroll(e.getDeltaX(), true);
+            doScroll(-e.getDeltaY(), false);
         }
     }
 
@@ -190,7 +190,7 @@ public class WGTextScrollableListener implements EventHandler<Event>
         if(scrollY + movement < minY)
         {
             //Now set all of the components to the correct location:
-            parentTextArea.setStringYOffset(minY);
+            parentTextArea.setStringYOffset(-minY);
             scrollY = minY;
             scrollBarY = 0;
             return;
@@ -198,7 +198,7 @@ public class WGTextScrollableListener implements EventHandler<Event>
         else if(scrollY + movement > maxY)
         {
             //Now set all of the components to the correct location:
-            parentTextArea.setStringYOffset(maxY);
+            parentTextArea.setStringYOffset(-maxY);
             scrollY = maxY;
             scrollBarY = seeableArea - scrollBarHeight;
             return;
@@ -210,7 +210,7 @@ public class WGTextScrollableListener implements EventHandler<Event>
         scrollBarY += scrollBarMovement;
 
         //Now set all of the components to the correct location:
-        parentTextArea.setStringYOffset(scrollY);
+        parentTextArea.setStringYOffset(-scrollY);
         shown = totalArea > seeableArea;
     }
     
