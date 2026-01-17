@@ -48,7 +48,7 @@ public class WGAnnouncementCard extends WGBox
      * @param borderColor The color of the border of the box, if null then drawBackground is automatically set to false
      * @param parent The component that the object is on, and is used to determine how big this object is
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, float borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Canvas parent)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double borderSize, double splitPercentage, String title, Font titleFont, String subTitle, Font subTitleFont, Paint titleColor, Paint splitColor, Paint subTitleColor, Paint backgroundColor, Paint borderColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, null, borderColor, parent);
         this.splitHeight = 0;
@@ -71,6 +71,10 @@ public class WGAnnouncementCard extends WGBox
             getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
+        else
+        {
+            throw new WGNullParentException();
+        }
     }
     /**
      * This constructor allows for the announcement card to fully resize itself and it's components based off of a set sizes and widths.
@@ -88,7 +92,7 @@ public class WGAnnouncementCard extends WGBox
      * @param parent The component that the object is on, and is used to determine how big this object is
      * @param theme The theme that is being used for this object
      */
-    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Canvas parent, WGTheme theme)
+    public WGAnnouncementCard(double xCenter, double yCenter, double widthPercent, double heightPercent, double titleHeightPercentage, double subTitleHeightPercentage, double splitPercentage, String title, String subTitle, Paint splitColor, Canvas parent, WGTheme theme) throws WGNullParentException
     {
         super(theme.getBorderSize(), theme.getBackgroundColor(), null, theme.getBorderColor(), parent, theme);
         this.splitHeight = 0;
@@ -110,6 +114,10 @@ public class WGAnnouncementCard extends WGBox
             getParent().widthProperty().addListener(resizer.getResizeListener());
             getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
+        }
+        else
+        {
+            throw new WGNullParentException();
         }
     }
 
@@ -141,6 +149,20 @@ public class WGAnnouncementCard extends WGBox
         this.titleColor = theme.getTextColor();
         this.subTitleColor = theme.getTextColor();
         resizer.resizeComps();
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+    	
+    	if(getCurrentTheme() != null)
+    	{
+    		obj = new WGAnnouncementCard(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent(), ((AnnouncementResizeListener)resizer).getTitleHeightPercentage(), ((AnnouncementResizeListener)resizer).getSubTitleHeightPercentage(), ((AnnouncementResizeListener)resizer).getSplitPercentage(), title, subTitle, splitColor, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+    		obj = new WGAnnouncementCard(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent(), ((AnnouncementResizeListener)resizer).getTitleHeightPercentage(), ((AnnouncementResizeListener)resizer).getSubTitleHeightPercentage(), getBorderSize(), ((AnnouncementResizeListener)resizer).getSplitPercentage(), title, titleFont, subTitle, subTitleFont, titleColor, splitColor, subTitleColor, getBackgroundColor(), getBorderColor(), getParent());
+    	}
+    	return obj;
     }
     
     /**
@@ -315,5 +337,14 @@ public class WGAnnouncementCard extends WGBox
             }
         	setResizing(false);
         }
+		public double getTitleHeightPercentage() {
+			return titleHeightPercentage;
+		}
+		public double getSubTitleHeightPercentage() {
+			return subTitleHeightPercentage;
+		}
+		public double getSplitPercentage() {
+			return splitPercentage;
+		}
     }
 }

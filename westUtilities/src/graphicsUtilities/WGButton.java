@@ -59,7 +59,7 @@ public class WGButton extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
     }
@@ -75,7 +75,7 @@ public class WGButton extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D bounds, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGButton(Rectangle2D bounds, double borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = text;
@@ -123,7 +123,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, clickListener);
     }
@@ -140,7 +140,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D bounds, float borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(Rectangle2D bounds, double borderSize, String text, Font textFont, Color backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent);
         if(getParent() != null)
@@ -198,7 +198,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Image buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, Image buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, buttonImage, imagePlacementPeference, imageScalePeference, backgroundColor, borderColor, parent, clickListener);
     }
@@ -215,7 +215,7 @@ public class WGButton extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGButton(Rectangle2D bounds, float borderSize, Image buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGButton(Rectangle2D bounds, double borderSize, Image buttonImage, int imagePlacementPeference, int imageScalePeference, Color backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, null, null, backgroundColor, borderColor, null, parent, clickListener);
         this.imagePlacementPeference = imagePlacementPeference;
@@ -266,6 +266,39 @@ public class WGButton extends WGBox
         textColor = theme.getTextColor();
         textFont = theme.getTextFont();
         resizer.resizeComps();
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+		WGButtonListener clickListener = null;
+		if(getClickListener() != null)
+		{
+			clickListener = (WGButtonListener)getClickListener();
+		}
+    	if(getCurrentTheme() != null)
+    	{
+    		if(displayedImage == null)
+    		{
+    			obj = new WGButton(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), text, getParent(), clickListener, getCurrentTheme());
+    		}
+    		else
+    		{
+    			obj = new WGButton(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), displayedImage, imagePlacementPeference, imageScalePeference, getParent(), clickListener, getCurrentTheme());
+    		}
+    	}
+    	else
+    	{
+    		if(displayedImage == null)
+    		{
+    			obj = new WGButton(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), text, textFont, (Color) getBackgroundColor(), getBorderColor(), textColor, getParent(), clickListener);
+    		}
+    		else
+    		{
+    			obj = new WGButton(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), displayedImage, imagePlacementPeference, imageScalePeference, (Color) getBackgroundColor(), getBorderColor(), getParent(), clickListener);
+    		}
+    	}
+    	return obj;
     }
     
     /**

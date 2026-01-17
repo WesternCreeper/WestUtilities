@@ -28,9 +28,9 @@ public class WGDragDropBar extends WGBox
 		this.barColor = barColor;
 		setHoverBackgroundColor(Color.RED);
 	}
-	public WGDragDropBar(Rectangle2D bounds, double borderSize, DragDropType dragType, WGDrawingObject object, Canvas parent, WGTheme theme)
+	public WGDragDropBar(Rectangle2D bounds, DragDropType dragType, WGDrawingObject object, Canvas parent, WGTheme theme)
 	{
-		this(bounds, borderSize, dragType, theme.getDragAndDropBarColor(), theme.getHoverBackgroundColor(), object, parent);
+		this(bounds, theme.getBorderSize(), dragType, theme.getDragAndDropBarColor(), theme.getHoverBackgroundColor(), object, parent);
 		setCurrentTheme(theme);
 	}
     
@@ -51,6 +51,21 @@ public class WGDragDropBar extends WGBox
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	WGDragDropClickListener clickListener = (WGDragDropClickListener)getClickListener();
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGDragDropBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), clickListener.getDragType(), parentObject, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGDragDropBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), clickListener.getDragType(), barColor, getHoverBackgroundColor(), parentObject, getParent());
+    	}
+    	return obj;
     }
     
 	

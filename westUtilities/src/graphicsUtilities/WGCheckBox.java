@@ -9,6 +9,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 /**
@@ -34,7 +35,7 @@ public class WGCheckBox extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
+    public WGCheckBox(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, checked, backgroundColor, borderColor, checkColor, clickListener, parent);
     }
@@ -50,7 +51,7 @@ public class WGCheckBox extends WGBox
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
     */
-    public WGCheckBox(Rectangle2D bounds, float borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
+    public WGCheckBox(Rectangle2D bounds, double borderSize, boolean checked, Paint backgroundColor, Paint borderColor, Paint checkColor, WGCheckBoxClickListener clickListener, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.checked = checked;
@@ -103,6 +104,25 @@ public class WGCheckBox extends WGBox
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+		WGCheckBoxClickListener clickListener = null;
+		if(getClickListener() != null)
+		{
+			clickListener = (WGCheckBoxClickListener)getClickListener();
+		}
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGCheckBox(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), checked, clickListener, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGCheckBox(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), checked, getBackgroundColor(), getBorderColor(), checkColor, clickListener, getParent());
+    	}
+    	return obj;
     }
     
     //Setters:

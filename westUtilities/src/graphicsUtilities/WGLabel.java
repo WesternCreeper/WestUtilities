@@ -32,7 +32,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(Rectangle2D bounds, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGLabel(Rectangle2D bounds, double borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = text;
@@ -66,7 +66,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
     }
@@ -107,6 +107,20 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         this.textFont = theme.getTextFont();
         this.textColor = theme.getTextColor();
         this.textStyle = theme.getTextStyle();
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGLabel(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), text, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGLabel(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), textStyle, text, textFont, textColor, getParent());
+    	}
+    	return obj;
     }
     
     /**

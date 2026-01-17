@@ -44,7 +44,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D bounds, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, double borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.textStyle = textStyle;
@@ -84,7 +84,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, String[] text, Font textFont, int textStyle, Paint textColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textColor, parent);
     }
@@ -114,7 +114,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(Rectangle2D bounds, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGTextArea(Rectangle2D bounds, double borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         //Create the object
         super(0, 0, 0, 0, borderSize, parent);
@@ -161,7 +161,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      * @param scrollBarColor The color of the scrollBar
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGTextArea(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, String[] text, Font textFont, int textStyle, boolean textWrapped, Paint textColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, text, textFont, textStyle, textWrapped, textColor, scrollBarColor, parent);
     }
@@ -224,6 +224,34 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	if(getCurrentTheme() != null)
+    	{
+    		if(getVerticalScroll() != null)
+    		{
+    			obj = new WGTextArea(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), (String[])text.toArray(), textWrapped, getParent(), getCurrentTheme());
+    		}
+    		else
+    		{
+    			obj = new WGTextArea(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), (String[])text.toArray(), getParent(), getCurrentTheme());
+    		}
+    	}
+    	else
+    	{
+    		if(getVerticalScroll() != null)
+    		{
+    			obj = new WGTextArea(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), (String[])text.toArray(), textFont, textStyle, textColor, getParent());
+    		}
+    		else
+    		{
+    			obj = new WGTextArea(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), (String[])text.toArray(), textFont, textStyle, textWrapped, textColor, scrollBarColor, getParent());
+    		}
+    	}
+    	return obj;
     }
     
     public void setTextLine(int index, String information) throws IndexOutOfBoundsException

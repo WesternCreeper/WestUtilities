@@ -43,7 +43,7 @@ public class WGLoadingBar extends WGBox
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
      * @param parent The parent component upon which this object is being drawn on
      */
-    public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
+    public WGLoadingBar(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, title, showPercentage, titleFont, percentFilled, isHorizontal, barBackgroundColor, barBorderColor, titleColor, barColor, parent);
     }
@@ -62,7 +62,7 @@ public class WGLoadingBar extends WGBox
      * @param barColor The color of the percentage that is filled on the bar. This is the representation of the percent complete
      * @param parent The parent component upon which this object is being drawn on
      */
-    public WGLoadingBar(Rectangle2D bounds, float borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
+    public WGLoadingBar(Rectangle2D bounds, double borderSize, String title, boolean showPercentage, Font titleFont, double percentFilled, boolean isHorizontal, Paint barBackgroundColor, Paint barBorderColor, Paint titleColor, Paint barColor, Canvas parent)
     {
         super(borderSize, barBackgroundColor, barBackgroundColor, barBorderColor, parent);
         originalTitle = title;
@@ -119,6 +119,20 @@ public class WGLoadingBar extends WGBox
         this.titleColor = theme.getTextColor();
         this.barColor = theme.getBarColor();
         resizer.resizeComps();
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), title, showPercentage, percentFilled, isHorizontal, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), title, showPercentage, titleFont, percentFilled, isHorizontal, getBackgroundColor(), getBorderColor(), titleColor, barColor, getParent());
+    	}
+    	return obj;
     }
     
     /**

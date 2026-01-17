@@ -28,7 +28,7 @@ public class WGDropDown extends WGBox
     private int hoveredIndex = -1;
     private boolean droppedDown = false;
     
-    public WGDropDown(Rectangle2D bounds, float borderSize, String[] choices, int selectedChoice, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGDropDown(Rectangle2D bounds, double borderSize, String[] choices, int selectedChoice, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.choices = choices;
@@ -123,6 +123,25 @@ public class WGDropDown extends WGBox
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	WGDropDownListener clickListener = null;
+		if(getClickListener() != null)
+		{
+			clickListener = (WGDropDownListener)getClickListener();
+		}
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGDropDown(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), choices, selectedChoice, clickListener, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGDropDown(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), choices, selectedChoice, textFont, getBackgroundColor(), getBorderColor(), textColor, getParent());
+    	}
+    	return obj;
     }
     
     public void setTheme(WGTheme theme)

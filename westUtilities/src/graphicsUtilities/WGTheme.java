@@ -49,7 +49,7 @@ public class WGTheme implements TextStyles
     private int textPosition;
     private double textXSizePercent;
     private double textYSizePercent;
-    private float borderSize;
+    private double borderSize;
     private Paint backgroundColor;
     private Paint hoverBackgroundColor;
     private Paint focusedBackgroundColor;
@@ -269,7 +269,7 @@ public class WGTheme implements TextStyles
     
     
 	//Getters:
-    public float getBorderSize() {
+    public double getBorderSize() {
         return borderSize;
     }
 

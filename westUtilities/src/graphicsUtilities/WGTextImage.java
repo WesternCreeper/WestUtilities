@@ -209,6 +209,20 @@ public class WGTextImage extends WGDrawingObject
         this.textColor = theme.getTextColor();
         resizer.resizeComps();
     }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGTextImage(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), displayImage, imageResizeOption, imageText, getParent(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGTextImage(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), displayImage, imageResizeOption, imageText, textPosition, textXSizePercent, textYSizePercent, textFont, textColor, getParent());
+    	}
+    	return obj;
+    }
     
     
     //Getters:

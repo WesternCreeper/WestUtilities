@@ -502,7 +502,11 @@ public class WGDragDropClickListener extends WGClickListener
 		return dragDropLine;
 	}
 	
-	
+	public DragDropType getDragType() {
+		return dragType;
+	}
+
+
 	//Classes:
 	public enum	DragDropType
 	{

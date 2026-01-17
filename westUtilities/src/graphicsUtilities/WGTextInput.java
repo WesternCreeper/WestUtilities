@@ -60,7 +60,7 @@ public class WGTextInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(Rectangle2D bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGTextInput(Rectangle2D bounds, double borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
@@ -105,7 +105,7 @@ public class WGTextInput extends WGBox
      * @param parentAnimationManager The needed animation manager to get the text cursor to blink
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
+    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager);
     }
@@ -140,7 +140,7 @@ public class WGTextInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(Rectangle2D bounds, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
+    public WGTextInput(Rectangle2D bounds, double borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
         super(borderSize, backgroundColor, WGColorHelper.getDarkerOrLighter((Color)backgroundColor), borderColor, parent);
         this.text = "";
@@ -190,7 +190,7 @@ public class WGTextInput extends WGBox
      * @param textKeyListener The key listener, overrides the basic version
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
+    public WGTextInput(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Paint cursorColor, Paint highlightColor, Canvas parent, WGAAnimationManager parentAnimationManager, WGTextInputClickListener textClickListener, WGTextInputKeyListener textKeyListener) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textFont, backgroundColor, borderColor, textColor, cursorColor, highlightColor, parent, parentAnimationManager, textClickListener, textKeyListener);
     }
@@ -255,6 +255,25 @@ public class WGTextInput extends WGBox
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	WGTextInputClickListener clickListener = null;
+		if(getClickListener() != null)
+		{
+			clickListener = (WGTextInputClickListener)getClickListener();
+		}
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGTextInput(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getParent(), parentAnimationManager, clickListener, keyListener, getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGTextInput(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), textFont, getBackgroundColor(), getBorderColor(), textColor, cursorColor, highlightColor, getParent(), parentAnimationManager, clickListener, keyListener);
+    	}
+    	return obj;
     }
     
     

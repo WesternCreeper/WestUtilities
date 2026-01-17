@@ -41,7 +41,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, double borderSize, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         toolTipText = text.split("\n");
@@ -80,7 +80,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, double borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         this(widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, listener, toolTipOwner);
         this.textStyle = textStyle;
@@ -119,7 +119,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, float borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, double borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.autoResizeText = autoResizeText;
@@ -203,6 +203,26 @@ public class WGToolTip extends WGBox implements TextStyles
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+    	WGToolTipListener listener = (WGToolTipListener)getClickListener();
+    	String text = toolTipText[0];
+    	for(int i = 1 ; i < toolTipText.length ; i++)
+    	{
+    		text += "\n" + toolTipText[i];
+    	}
+    	if(getCurrentTheme() != null)
+    	{
+			obj = new WGToolTip(resizer.getWidthPercent(), resizer.getHeightPercent(), autoResizeText, text, getParent(), listener, listener.getParentObject(), getCurrentTheme());
+    	}
+    	else
+    	{
+			obj = new WGToolTip(resizer.getWidthPercent(), resizer.getHeightPercent(), autoResizeText, getBorderSize(), textStyle, text, toolTipFont, getBackgroundColor(), getBorderColor(), textColor, getParent(), listener, listener.getParentObject());
+    	}
+    	return obj;
     }
     
     public String getLongestString()

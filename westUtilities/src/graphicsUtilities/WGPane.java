@@ -42,7 +42,7 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, float borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, double borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.scrollBarColor = scrollBarColor;
@@ -82,7 +82,7 @@ public class WGPane extends WGBox
      * @param parent The component that the pane is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, boolean scrollable, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Paint scrollBarColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, scrollable, useRelativePositions, backgroundColor, borderColor, scrollBarColor, parent);
     }
@@ -111,7 +111,7 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(Rectangle2D bounds, float borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(Rectangle2D bounds, double borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(bounds, borderSize, false, useRelativePositions, backgroundColor, borderColor, null, parent);
         
@@ -141,7 +141,7 @@ public class WGPane extends WGBox
      * @param clickListener The WGClickListener that defines what will happen when the object has been clicked on. This is fully set up with baseline parameter before use so no need to set up base parameters
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, float borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
+    public WGPane(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, boolean useRelativePositions, Paint backgroundColor, Paint borderColor, Canvas parent, WGButtonListener clickListener) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, useRelativePositions, backgroundColor, borderColor, parent, clickListener);
     }
@@ -211,6 +211,45 @@ public class WGPane extends WGBox
         {
         	getDragAndDropBar().removeListeners();
         }
+    }
+    public WGDrawingObject cloneObject() throws WGNullParentException
+    {
+    	WGDrawingObject obj;
+
+		WGButtonListener clickListener = null;
+		if(getClickListener() != null)
+		{
+			clickListener = (WGButtonListener)getClickListener();
+		}
+    	if(getCurrentTheme() != null)
+    	{
+    		if(clickListener != null)
+    		{
+    			obj = new WGPane(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), useRelativePositions, getParent(), clickListener, getCurrentTheme());
+    		}
+    		else
+    		{
+    			obj = new WGPane(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), scrollable, useRelativePositions, getParent(), getCurrentTheme());
+    		}
+    	}
+    	else
+    	{
+    		if(clickListener != null)
+    		{
+    			obj = new WGPane(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), useRelativePositions, getBackgroundColor(), getBorderColor(), getParent(), clickListener);
+    		}
+    		else
+    		{
+    			obj = new WGPane(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), scrollable, useRelativePositions, getBackgroundColor(), getBorderColor(), scrollBarColor, getParent());
+    		}
+    	}
+    	//Now before the object can be returned, all components must be copied too:
+    	WGPane pane = (WGPane)obj;
+    	for(int i = 0 ; i < containedObjects.size() ; i++)
+    	{
+    		pane.addDrawableObject(containedObjects.get(i).cloneObject());
+    	}
+    	return obj;
     }
     
     /**

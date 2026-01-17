@@ -116,6 +116,8 @@ public abstract class WGDrawingObject
         return new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent());
     }
     
+    public abstract WGDrawingObject cloneObject() throws WGNullParentException;
+    
     public abstract void setUpBounds();
     
     public abstract void setBounds(Rectangle2D newBounds);
@@ -269,7 +271,7 @@ public abstract class WGDrawingObject
     		double barWidth = 1.0 / 10;
 			double barHeight = 1.0 / 20;
 			Rectangle2D bounds = new Rectangle2D(0.45, 0, barWidth, barHeight);
-			dragAndDropBar = new WGDragDropBar(bounds, borderSize, dragType, this, parent, theme);
+			dragAndDropBar = new WGDragDropBar(bounds, dragType, this, parent, theme);
     	}
     }
     
