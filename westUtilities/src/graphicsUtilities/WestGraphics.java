@@ -316,7 +316,7 @@ public class WestGraphics
     {
         Affine originalTransform = g2.getTransform();
         Affine currentTransform = new Affine(widthRescale,0, x, 0, heightRescale, y);
-        currentTransform.appendRotation(rotation);
+        currentTransform.appendRotation(rotation * 180 / Math.PI);
         g2.transform(currentTransform);
         
         g2.setImageSmoothing(false);
@@ -1241,5 +1241,39 @@ public class WestGraphics
     	fill(rect.getRectangularArea());
     	g2.setStroke(rect.getBorderColor());
     	draw(rect.getRectangularArea());
+    }
+    public void strokeString(FormattedString str, double x, double y)
+    {
+    	g2.setFont(str.getFont());
+    	g2.strokeText(str.getText(), x, y);
+    }
+    public void fillString(FormattedString str, double x, double y)
+    {
+    	g2.setFont(str.getFont());
+    	g2.fillText(str.getText(), x, y);
+    }
+    public void strokeString(ColoredString str, double x, double y)
+    {
+    	//Go through each of the strings drawing the formatted strings with each color one at a time:
+    	ArrayList<FormattedString> text = str.getText();
+    	ArrayList<Paint> colors = str.getColors();
+    	ArrayList<Double> textOffsets = str.getTextOffsets();
+    	for(int i = 0 ; i < text.size(); i++)
+    	{
+    		g2.setStroke(colors.get(i));
+    		strokeString(text.get(i), x + textOffsets.get(i), y);
+    	}
+    }
+    public void fillString(ColoredString str, double x, double y)
+    {
+    	//Go through each of the strings drawing the formatted strings with each color one at a time:
+    	ArrayList<FormattedString> text = str.getText();
+    	ArrayList<Paint> colors = str.getColors();
+    	ArrayList<Double> textOffsets = str.getTextOffsets();
+    	for(int i = 0 ; i < text.size(); i++)
+    	{
+    		g2.setFill(colors.get(i));
+    		fillString(text.get(i), x + textOffsets.get(i), y);
+    	}
     }
 }

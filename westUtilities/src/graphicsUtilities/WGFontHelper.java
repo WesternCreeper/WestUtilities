@@ -145,6 +145,12 @@ public class WGFontHelper
         }
         return newFont;
     }
+    public static ArrayList<String> wrapText(String stringToWrap, double objectWidth, Font usedFont, Canvas parent)
+    {
+    	ArrayList<String> currentList = new ArrayList<String>(1);
+    	currentList.add(stringToWrap);
+    	return wrapText(currentList, objectWidth, usedFont, parent);
+    }
     public static ArrayList<String> wrapText(ArrayList<String> currentList, double objectWidth, Font usedFont, Canvas parent)
     {
         ArrayList<String> newList = new ArrayList<String>(currentList.size());

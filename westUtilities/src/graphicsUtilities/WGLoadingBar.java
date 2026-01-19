@@ -126,11 +126,11 @@ public class WGLoadingBar extends WGBox
 
     	if(getCurrentTheme() != null)
     	{
-			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), title, showPercentage, percentFilled, isHorizontal, getParent(), getCurrentTheme());
+			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), originalTitle, showPercentage, percentFilled, isHorizontal, getParent(), getCurrentTheme());
     	}
     	else
     	{
-			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), title, showPercentage, titleFont, percentFilled, isHorizontal, getBackgroundColor(), getBorderColor(), titleColor, barColor, getParent());
+			obj = new WGLoadingBar(new Rectangle2D(resizer.getXPercent(), resizer.getYPercent(), resizer.getWidthPercent(), resizer.getHeightPercent()), getBorderSize(), originalTitle, showPercentage, titleFont, percentFilled, isHorizontal, getBackgroundColor(), getBorderColor(), titleColor, barColor, getParent());
     	}
     	return obj;
     }

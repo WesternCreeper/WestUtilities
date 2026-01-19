@@ -1,12 +1,11 @@
 package utilities;
 
 
+import graphicsUtilities.ColoredString;
+import graphicsUtilities.FormattedString;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-/**
- * Complete copy from ChatGPT! This is not my work, I take no credit for this!
- */
 public class FXFontMetrics 
 {
     private final Text fm;
@@ -26,6 +25,46 @@ public class FXFontMetrics
     {
     	fm.setText(s);
         return fm.getLayoutBounds().getWidth();
+    }
+
+    public double getHeight(FormattedString s) 
+    { 
+    	fm.setText(s.getText());
+    	return fm.getLayoutBounds().getHeight(); 
+    }
+    public double stringWidth(FormattedString s) 
+    {
+    	fm.setText(s.getText());
+        return fm.getLayoutBounds().getWidth();
+    }
+
+    public double getHeight(ColoredString s) 
+    { 
+    	//Find the largest height and return that:
+    	int largest = 0;
+    	fm.setText(s.getText().get(largest).getText());
+    	double largestHeight = fm.getLayoutBounds().getHeight(); 
+    	for(int i = 1 ; i < s.getText().size() ; i++)
+    	{
+        	fm.setText(s.getText().get(i).getText());
+        	double height = fm.getLayoutBounds().getHeight(); 
+    		if(height > largestHeight)
+    		{
+    			largest = i;
+    			largestHeight = height;
+    		}
+    	}
+    	fm.setText(s.getText().get(largest).getText());
+    	return fm.getLayoutBounds().getHeight(); 
+    }
+    public double stringWidth(ColoredString s) 
+    {
+    	double totalWidth = 0;
+    	for(int i = 0 ; i < s.getText().size(); i++) 
+    	{
+    		totalWidth += stringWidth(s.getText().get(i));
+    	}
+    	return totalWidth;
     }
 }
 

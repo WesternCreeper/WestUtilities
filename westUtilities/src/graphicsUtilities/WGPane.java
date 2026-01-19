@@ -300,7 +300,7 @@ public class WGPane extends WGBox
      * This function will go through every single component added to it and make the stroke size be the newStrokeSize and itself
      * @param newStrokeSize The stroke size that every component in the ArrayList will become
      */
-    public void standardizeStrokeSize(float newStrokeSize)
+    public void standardizeStrokeSize(double newStrokeSize)
     {
         setBorderSize(newStrokeSize);
         for(int i = 0 ; i < containedObjects.size() ; i++)
@@ -433,7 +433,7 @@ public class WGPane extends WGBox
         {
             super(xPercent, yPercent, widthPercent, heightPercent);
         }
-        public void resizeCompsWithoutDelay()
+        public synchronized void resizeCompsWithoutDelay()
         {
         	setResizing(true);
             //Find the parent width and height so that the x/y can be scaled accordingly
@@ -484,9 +484,12 @@ public class WGPane extends WGBox
         	{
         		this.i = i;
         	}
-        	public void run()
+        	public synchronized void run()
         	{
-        		containedObjects.get(i).setUpBounds();
+        		if(i < containedObjects.size())
+        		{
+        			containedObjects.get(i).setUpBounds();
+        		}
         	}
         }
     }

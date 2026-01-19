@@ -98,13 +98,9 @@ public class ProbabilityGroup
 		BigDecimal totalPercent = new BigDecimal(0);
 		for(int i = 0 ; i < probabilities.size(); i++)
 		{
-			totalPercent.add(probabilities.get(i));
+			totalPercent = totalPercent.add(probabilities.get(i));
 		}
 		
-		if(totalPercent.compareTo(BigDecimal.valueOf(1)) == 0)
-		{
-			return totalPercent;
-		}
 		return totalPercent;
 	}
 
