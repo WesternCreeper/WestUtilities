@@ -32,6 +32,8 @@ public abstract class WGAAnimator
         this.tick = tick;
     }
     
+    public abstract void animate();
+    
     
     //Getters:
     public int getTickMax() 

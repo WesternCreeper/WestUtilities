@@ -135,6 +135,7 @@ public class WGAColorAnimator extends WGAAnimator
             resetAnimation();
         }
     }
+    public void animate() {}
     
     
     //Getters:

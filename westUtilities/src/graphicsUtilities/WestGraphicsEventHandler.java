@@ -15,6 +15,8 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 	private Canvas parent;
 	private WGDrawingObject dragObject;
 	private WGBox previousHover;
+	private WGTextInput previousTextInput;
+	private WGKeyInput previousKeyInput;
 	public WestGraphicsEventHandler(Canvas parent)
 	{
 		this.parent = parent;
@@ -58,6 +60,31 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
                     previousHover = boxObject;
                     boxObject.setHovered(true);
                 }
+                
+	            //Now for the focusable objects, make sure to defoucus:
+	            if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
+	            {
+		            if(previousTextInput != null)
+		            {
+		            	previousTextInput.setFocused(false);
+		            	previousTextInput = null;
+		            }
+		            if(previousKeyInput != null)
+		            {
+		            	previousKeyInput.setFocused(false);
+		            	previousKeyInput = null;
+		            }
+	            
+		            //Now make sure the next object is set properly
+	                if(clickObject instanceof WGTextInput)
+	                {
+	                	previousTextInput = (WGTextInput)clickObject;
+	                }
+	                if(clickObject instanceof WGKeyInput)
+	                {
+	                	previousKeyInput = (WGKeyInput)clickObject;
+	                }
+	            }
 			}
 			else
 			{
@@ -65,6 +92,21 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 	            if(previousHover != null)
 	            {
 	            	previousHover.setHovered(false);
+	            }
+	            
+	            //Now for the focusable objects, make sure to defoucus:
+	            if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+	            {
+		            if(previousTextInput != null)
+		            {
+		            	previousTextInput.setFocused(false);
+		            	previousTextInput = null;
+		            }
+		            if(previousKeyInput != null)
+		            {
+		            	previousKeyInput.setFocused(false);
+		            	previousKeyInput = null;
+		            }
 	            }
 			}
 			
@@ -168,10 +210,25 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 					//Double check that this object's order is the highest:
 					if(objects.get(i).getOrder() > highestOrder)
 					{
-						//Possibly found it!
-						obj = objects.get(i);
-						//Keep checking to make sure this is the highest order:
-						highestOrder = obj.getOrder();
+						//Double check to see if there is a parent owner and to test that the parent owner doesn't clip the object
+						boolean clipped = false;
+						WGDrawingObject serach = objects.get(i);
+						while(serach.getParentOwningPane() != null)
+						{
+							serach = serach.getParentOwningPane();
+							if(!(point.getX() >= serach.getX() && point.getX() <= serach.getX() + serach.getWidth()) || !(point.getY() >= serach.getY() && point.getY() <= serach.getY() + serach.getHeight()))
+							{
+								clipped = true;
+								break;
+							}
+						}
+						if(!clipped)
+						{
+							//Possibly found it!
+							obj = objects.get(i);
+							//Keep checking to make sure this is the highest order:
+							highestOrder = obj.getOrder();
+						}
 					}
 				}
 			}

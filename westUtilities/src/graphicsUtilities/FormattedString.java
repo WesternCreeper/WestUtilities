@@ -4,13 +4,20 @@ import java.util.ArrayList;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import utilities.FileProcessor;
 
 public class FormattedString 
 {
 	private String text;
 	private Font font;
-	
+
+	public FormattedString(FormattedString text)
+	{
+		this.text = new String(text.getText());
+        this.font = text.getFont(); //No need to copy because this is immutable
+	}
 	public FormattedString(String text, Font font)
 	{
 		this.text = text;

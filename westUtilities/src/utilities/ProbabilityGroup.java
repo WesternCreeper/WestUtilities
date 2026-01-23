@@ -55,8 +55,8 @@ public class ProbabilityGroup
 				{
 					return objects.get(i);
 				}
-				totalPercent.add(probabilities.get(i));
-				nextPercent.add(probabilities.get(i+1));
+				totalPercent = totalPercent.add(probabilities.get(i));
+				nextPercent = nextPercent.add(probabilities.get(i+1));
 			}
 			//If we got here, then the last item in the list must be the one to return:
 			return objects.get(objects.size()-1);
@@ -77,8 +77,8 @@ public class ProbabilityGroup
 				{
 					return objects.get(i);
 				}
-				totalPercent.add(probabilities.get(i));
-				nextPercent.add(probabilities.get(i+1));
+				totalPercent = totalPercent.add(probabilities.get(i));
+				nextPercent = nextPercent.add(probabilities.get(i+1));
 			}
 			//If we got here, then the last item in the list must be the one to return:
 			return objects.get(objects.size()-1);
