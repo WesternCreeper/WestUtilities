@@ -71,8 +71,6 @@ public class WGTextInput extends WGBox
         if(getParent() != null)
         {
             resizer = new TextResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = new WGTextInputClickListener(this, parent);
             clickListener.setOriginalBackgroundColor(backgroundColor);
@@ -151,8 +149,6 @@ public class WGTextInput extends WGBox
         if(getParent() != null)
         {
             resizer = new TextResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             this.clickListener = textClickListener;
             clickListener.setParentObject(this);
@@ -240,8 +236,6 @@ public class WGTextInput extends WGBox
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();

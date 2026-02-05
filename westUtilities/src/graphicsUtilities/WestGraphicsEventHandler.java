@@ -6,7 +6,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -22,7 +21,7 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 		this.parent = parent;
 	}
 	@Override
-	public void handle(Event e) 
+	public synchronized void handle(Event e) 
 	{
 		//Find the event type first:
 		if(e instanceof MouseEvent)
@@ -179,7 +178,7 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 		}
 	}
 	
-	private WGDrawingObject contains(ArrayList<WGDrawingObject> objects, Point2D point, Canvas parent)
+	private synchronized WGDrawingObject contains(ArrayList<WGDrawingObject> objects, Point2D point, Canvas parent)
 	{
 		WGDrawingObject obj = null;
 		

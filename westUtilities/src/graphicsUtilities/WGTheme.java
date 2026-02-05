@@ -92,7 +92,7 @@ public class WGTheme implements TextStyles
         this.textXSizePercent = toDouble(themeData.find(WGTheme.TEXT_X_SIZE_PERCENT));
         this.textYSizePercent = toDouble(themeData.find(WGTheme.TEXT_Y_SIZE_PERCENT));
         this.textStyle = toInt(themeData.find(WGTheme.TEXT_STYLE));
-        this.borderSize = toFloat(themeData.find(WGTheme.BORDER_SIZE));
+        this.borderSize = toDouble(themeData.find(WGTheme.BORDER_SIZE));
         this.backgroundColor = toPaint(themeData.find(WGTheme.BACKGROUND_COLOR));
         this.borderColor = toPaint(themeData.find(WGTheme.BORDER_COLOR));
         this.textColor = toPaint(themeData.find(WGTheme.TEXT_COLOR));
@@ -157,7 +157,18 @@ public class WGTheme implements TextStyles
     {
         if(obj != null)
         {
-            return (int)obj;
+        	if(obj instanceof Integer)
+        	{
+        		return (int)obj;
+        	}
+        	else if(obj instanceof Float)
+        	{
+        		return ((Float)obj).intValue();
+        	}
+        	else if(obj instanceof Double)
+        	{
+        		return ((Double)obj).intValue();
+        	}
         }
         return 0;
     }
@@ -165,28 +176,24 @@ public class WGTheme implements TextStyles
     {
         if(obj != null)
         {
-            return (double)obj;
-        }
-        return 0;
-    }
-    private float toFloat(Object obj)
-    {
-        if(obj != null)
-        {
-            if(obj instanceof Float)
-            {
-                return (float)obj;
-            }
-            else if(obj instanceof Integer)
-            {
-                return (int)obj;
-            }
+        	if(obj instanceof Double)
+        	{
+        		return (double)obj;
+        	}
+        	else if(obj instanceof Float)
+        	{
+        		return ((Float)obj).floatValue();
+        	}
+        	else if(obj instanceof Integer)
+        	{
+        		return ((Integer)obj).intValue();
+        	}
         }
         return 0;
     }
     private Paint toPaint(Object obj)
     {
-        if(obj != null)
+        if(obj != null && obj instanceof Paint)
         {
             return (Paint)obj;
         }

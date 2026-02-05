@@ -30,11 +30,9 @@ public abstract class WGDrawingObject
 { 
     public final static int NO_GRADIENT_ORIENTATION_PREFERENCE = 0;
     public final static int VERTICAL_GRADIENT_ORIENTATION_PREFERENCE = 1;
-    public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE = 2;
-    public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE = 3;
-    public final static int HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE = 4;
-    public final static int DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT_GRADIENT_ORIENTATION_PREFERENCE = 5;
-    public final static int DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE = 6;
+    public final static int HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE = 2;
+    public final static int RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE = 3;
+    public final static int DIAGONAL_GRADIENT_ORIENTATION_PREFERENCE = 4;
     
     
     private Canvas parent;
@@ -131,17 +129,9 @@ public abstract class WGDrawingObject
     
     protected Paint fixPaintBounds(Paint paint)
     {
-        return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE, null);
+        return fixPaintBounds(paint, NO_GRADIENT_ORIENTATION_PREFERENCE);
     }
     protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference)
-    {
-        return fixPaintBounds(paint, gradientOrientationPreference, null);
-    }
-    protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference, MouseEvent e)
-    {
-        return fixPaintBounds(paint, gradientOrientationPreference, e, getX(), getY(), getWidth(), getHeight());
-    }
-    protected Paint fixPaintBounds(Paint paint, Object gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
     {
         //First convert the gradientOrientation into a usable form:
         int gradOrient = 0;
@@ -154,14 +144,14 @@ public abstract class WGDrawingObject
         if(paint instanceof LinearGradient)
         {
         	LinearGradient oldPaint = (LinearGradient)paint;
-            Point2D[] points = getGradientPoints(gradOrient, e, x, y, width, height);
-            newPaint = new LinearGradient(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), false, oldPaint.getCycleMethod(), oldPaint.getStops());
+        	double[] points = getGradientPoints(gradOrient);
+            newPaint = new LinearGradient(points[0], points[1], points[2], points[3], true, oldPaint.getCycleMethod(), oldPaint.getStops());
         }
         else if(paint instanceof RadialGradient)
         {
         	RadialGradient oldPaint = (RadialGradient)paint;
-            Point2D[] points = getGradientPoints(gradOrient, e, x, y, width, height);
-            newPaint = new RadialGradient(0, 0, points[0].getX(), points[0].getY(), points[1].getX(), false, oldPaint.getCycleMethod(), oldPaint.getStops());
+        	double[] points = getGradientPoints(gradOrient);
+            newPaint = new RadialGradient(0, 0, points[0], points[1], points[2], true, oldPaint.getCycleMethod(), oldPaint.getStops());
         }
         else if(paint instanceof ImagePattern)
         {
@@ -178,74 +168,39 @@ public abstract class WGDrawingObject
     /**
      * This function gets the points relative to this drawing object for the gradient to render correctly
      * @param gradientOrientationPreference The gradient orientation that determines how the points are created relative to the location of this object
-     * @param width The width of the object
-     * @param height The height of the object
      * @return the points that help define this gradient so that it follows the proper orientation.
      */
-    private Point2D[] getGradientPoints(int gradientOrientationPreference, MouseEvent e, double x, double y, double width, double height)
+    private double[] getGradientPoints(int gradientOrientationPreference)
     {
-        Point2D[] points = new Point2D[2];
+    	double[] points = new double[4];
         
         switch(gradientOrientationPreference)
         {
             case VERTICAL_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D(x, y);
-                points[1] = new Point2D(x, y + height);
-                break;
-            case RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D(x + (width/2), y + (height/2));
-                
-                double radius = (width/2);
-                double heightRadius = (height/2);
-                if(radius > heightRadius)
-                {
-                    radius = heightRadius;
-                }
-                if(radius <= 0)
-                {
-                    radius = 1;
-                }
-                
-                points[1] = new Point2D(radius, 0);
-                break;
-            case RADIAL_CENTER_GRADIENT_ORIENTATION_WITH_MOUSE_MOVE_PREFERENCE:
-                if(e != null)
-                {
-                    points[0] = new Point2D(e.getX(), e.getY());
-                }
-                else
-                {
-                    points[0] = new Point2D(x + (width/2), y + (height/2));
-                }
-                
-                radius = (width/2);
-                heightRadius = (height/2);
-                if(radius > heightRadius)
-                {
-                    radius = heightRadius;
-                }
-                if(radius <= 0)
-                {
-                    radius = 1;
-                }
-                
-                points[1] = new Point2D(radius, 0);
+                points[0] = 0;
+                points[1] = 0;
+                points[2] = 0;
+                points[3] = 1;
                 break;
             case HORIZONTAL_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D(x, y);
-                points[1] = new Point2D(x + width, y);
+                points[0] = 0;
+                points[1] = 0;
+                points[2] = 1;
+                points[3] = 0;
                 break;
-            case DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D(x, y);
-                points[1] = new Point2D(x + width, y + height);
+            case DIAGONAL_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = 0;
+                points[1] = 0;
+                points[2] = 1;
+                points[3] = 1;
                 break;
-            case DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT_GRADIENT_ORIENTATION_PREFERENCE:
-                points[0] = new Point2D(x, y + height);
-                points[1] = new Point2D(x + width, y);
+            case RADIAL_CENTER_GRADIENT_ORIENTATION_PREFERENCE:
+                points[0] = 0.5;
+                points[1] = 0.5;
+                points[2] = 0.5;
+                points[3] = 0;
                 break;
             default:
-                points[0] = new Point2D(x, y);
-                points[1] = new Point2D(x, y);
                 break;
         }
         
@@ -305,6 +260,10 @@ public abstract class WGDrawingObject
     public void setShown(boolean isShown) 
     {
         this.isShown = isShown;
+        if(resizer != null)
+        {
+        	resizer.resizeComps();
+        }
     }
 
     protected void setX(double x) {

@@ -204,19 +204,16 @@ public class Logger extends Console
     public void launchConsole(Stage paneOwner, String title, int width, int height)
     {
         super.launchConsole(paneOwner,title, width, height);
-        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     @Override
     public void launchConsole(Stage paneOwner, String title, int width, int height, boolean maximized)
     {
         super.launchConsole(paneOwner,title, width, height);
-        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     @Override
     public void launchConsole(Stage paneOwner, String title, int x, int y, int width, int height, boolean maximized, int minimumWidth, int minimumHeight)
     {
         super.launchConsole(paneOwner,title, x, y, width, height, maximized, minimumWidth, minimumHeight);
-        this.addEventHandler(WindowEvent.ANY, new ApplicationListener());
     }
     
     public final void logError(Exception e)
@@ -374,17 +371,5 @@ public class Logger extends Console
                 switchToUnitTestsButton.setShown(false);
             }
         }
-    }
-    private static class ApplicationListener implements EventHandler<WindowEvent>
-    {
-		@Override
-		public void handle(WindowEvent e) 
-		{
-			if(e.getEventType().equals(WindowEvent.WINDOW_SHOWN))
-			{
-	            WestGraphics.setCurrentActiveParent(currentParent);
-			}
-			
-		}
     }
 }

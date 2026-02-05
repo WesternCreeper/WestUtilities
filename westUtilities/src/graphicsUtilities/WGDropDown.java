@@ -38,8 +38,6 @@ public class WGDropDown extends WGBox
         if(getParent() != null)
         {
             resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
@@ -60,8 +58,6 @@ public class WGDropDown extends WGBox
         if(getParent() != null)
         {
             resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             super.setClickListener(new WGDropDownListener(this, parent));
@@ -92,8 +88,6 @@ public class WGDropDown extends WGBox
         if(getParent() != null)
         {
             resizer = new ButtonResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             
             listener.setParentComponent(parent);
@@ -111,8 +105,6 @@ public class WGDropDown extends WGBox
     @Override
     public void removeListeners() 
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -309,7 +301,7 @@ public class WGDropDown extends WGBox
                 double y = getY();
                 for(int i = 0 ; i < textColors.length ; i++)
                 {
-                    textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR), null, x, y, buttonWidth, buttonHeight);
+                    textColors[i] = fixPaintBounds(textColor, getCurrentTheme().getGradientOrientationPreferences().find(WGTheme.TEXT_COLOR));
                     y += buttonHeight;
                 }
             }
@@ -324,7 +316,7 @@ public class WGDropDown extends WGBox
                 double y = getY();
                 for(int i = 0 ; i < textColors.length ; i++)
                 {
-                    textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE, null, x, y, buttonWidth, buttonHeight);
+                    textColors[i] = fixPaintBounds(textColor, WGDrawingObject.NO_GRADIENT_ORIENTATION_PREFERENCE);
                     y += buttonHeight;
                 }
             }

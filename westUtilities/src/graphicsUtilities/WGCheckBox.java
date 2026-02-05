@@ -59,8 +59,6 @@ public class WGCheckBox extends WGBox
         if(getParent() != null)
         {
             resizer = new CheckBoxResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
             setClickListener(clickListener);
             getClickListener().setParentComponent(parent);
@@ -92,8 +90,6 @@ public class WGCheckBox extends WGBox
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();

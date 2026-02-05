@@ -42,8 +42,6 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         if(getParent() != null)
         {
             resizer = new LabelResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -128,8 +126,6 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();

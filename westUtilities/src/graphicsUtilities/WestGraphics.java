@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import utilities.FXFontMetrics;
 
@@ -38,9 +39,8 @@ import java.util.ArrayList;
 public class WestGraphics
 {
     //Static Package wide important stuff:
-	private static Canvas currentActiveParent;
-    private static WGBox lastHoverOject;
     private static HashTable<EventHandler<Event>> eventHandlers = new HashTable<EventHandler<Event>>(5, HashTable.HASHING_OPTION_LINEAR);
+    private static HashTable<WestGraphicsResizeListener> resizeHandlers = new HashTable<WestGraphicsResizeListener>(5, HashTable.HASHING_OPTION_LINEAR);
     private static HashTable<MouseEvent> lastMouseEvents = new HashTable<MouseEvent>(5, HashTable.HASHING_OPTION_LINEAR);
     private static ArrayList<WGDrawingObject> allClickables = new ArrayList<WGDrawingObject>();
     private static Cursor defaultCursor = Cursor.DEFAULT;
@@ -86,7 +86,7 @@ public class WestGraphics
      * This function adds a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
      * @param obj The Object to be added
      */
-    static void add(WGDrawingObject obj)
+    static synchronized void add(WGDrawingObject obj)
     {
         allClickables.add(obj);
         setUpListenersOnPane(obj.getParent());
@@ -96,7 +96,7 @@ public class WestGraphics
      * This function removes a WGObject to the internal cursor array, and is used to verify that the cursor maintains the proper look at all times
      * @param obj The Object to be removed
      */
-    static void remove(WGDrawingObject obj)
+    static synchronized void remove(WGDrawingObject obj)
     {
         allClickables.remove(obj);
     }
@@ -109,6 +109,11 @@ public class WestGraphics
     		eventHandlers.insert(parent.toString(), handler);
     		parent.addEventHandler(Event.ANY, handler);
     	}
+    	if(resizeHandlers.find(parent.toString()) == null)
+    	{
+    		WestGraphicsResizeListener handler = new WestGraphicsResizeListener(parent);
+    		resizeHandlers.insert(parent.toString(), handler);
+    	}
     }
     
     static int assignOrder()
@@ -119,10 +124,6 @@ public class WestGraphics
     //Static setters:
     public static void setAllowComponentsToRepaint(boolean allowComponentsToRepaint) {
         WestGraphics.allowComponentsToRepaint = allowComponentsToRepaint;
-    }
-
-    public static void setCurrentActiveParent(Canvas currentActiveParent) {
-        WestGraphics.currentActiveParent = currentActiveParent;
     }
     
     
@@ -143,7 +144,7 @@ public class WestGraphics
         return textCursor;
     }
 
-    static ArrayList<WGDrawingObject> getAllClickables() {
+    static synchronized ArrayList<WGDrawingObject> getAllClickables() {
         return allClickables;
     }
     
@@ -873,7 +874,7 @@ public class WestGraphics
         //Save the original stroke in case the user wanted that one
         Double oldStroke = g2.getLineWidth();
     	VPos lastpos = g2.getTextBaseline();
-    	g2.setTextBaseline(VPos.CENTER);
+    	g2.setTextBaseline(VPos.TOP);
         
         //Save the original clip in case the user wanted that one:
         g2.save();
@@ -1219,6 +1220,15 @@ public class WestGraphics
     {
     	g2.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
     }
+    public void fill(Rectangle rect)
+    {
+    	g2.save();
+    	Affine trans = new Affine(rect.getTransforms().getFirst());
+    	g2.setTransform(trans);
+    	g2.rect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    	g2.fill();
+    	g2.restore();
+    }
     public void fill(Ellipse oval)
     {
     	Double radiusX = oval.getRadiusX();
@@ -1228,6 +1238,15 @@ public class WestGraphics
     public void draw(Rectangle2D rect)
     {
     	g2.strokeRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+    }
+    public void draw(Rectangle rect)
+    {
+    	g2.save();
+    	Affine trans = new Affine(rect.getTransforms().getFirst());
+    	g2.setTransform(trans);
+    	g2.rect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    	g2.stroke();
+    	g2.restore();
     }
     public void draw(Ellipse oval)
     {

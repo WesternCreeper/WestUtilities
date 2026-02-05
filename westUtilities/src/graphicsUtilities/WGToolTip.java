@@ -55,8 +55,6 @@ public class WGToolTip extends WGBox implements TextStyles
             setClickListener(listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -134,8 +132,6 @@ public class WGToolTip extends WGBox implements TextStyles
             setClickListener(listener);
             toolTipListener = listener;
             resizer = new ToolTipResizeListener(0, 0, widthPercent, heightPercent);
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
         else
@@ -195,8 +191,6 @@ public class WGToolTip extends WGBox implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
 
         WestGraphics.remove(this);
         if(getDragAndDropBar() != null)

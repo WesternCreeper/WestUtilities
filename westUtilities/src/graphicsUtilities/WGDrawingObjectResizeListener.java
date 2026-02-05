@@ -25,7 +25,6 @@ public abstract class WGDrawingObjectResizeListener
         this.yPercent = yPercent;
         this.widthPercent = widthPercent;
         this.heightPercent = heightPercent;
-        this.resizeListener = (obs, oldVal, newVal) -> resizeComps();
     }
     public void setBounds(Rectangle2D newBounds)
     {
@@ -33,14 +32,12 @@ public abstract class WGDrawingObjectResizeListener
         yPercent = newBounds.getMinY();
         widthPercent = newBounds.getWidth();
         heightPercent = newBounds.getHeight();
-        this.resizeListener = (obs, oldVal, newVal) -> resizeComps();
         resizeComps();
     }
     
     public final void resizeComps()
     {
     	Platform.runLater(() -> {
-    		
     		resizeCompsWithoutDelay();
     	});
     }

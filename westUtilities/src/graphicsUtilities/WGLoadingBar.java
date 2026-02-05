@@ -76,8 +76,6 @@ public class WGLoadingBar extends WGBox
         if(getParent() != null)
         {
             resizer = new BarResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             resizer.resizeComps();
         }
     }
@@ -140,8 +138,6 @@ public class WGLoadingBar extends WGBox
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();

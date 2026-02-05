@@ -21,8 +21,6 @@ public class WGDragDropBar extends WGBox
 		super(borderSize, null, hoverColor, null, parent);
 		parentObject = object;
         resizer = new DragAndDropResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-        getParent().widthProperty().addListener(resizer.getResizeListener());
-        getParent().heightProperty().addListener(resizer.getResizeListener());
         super.setClickListener(new WGDragDropClickListener(dragType, this, object, parent));
         resizer.resizeComps();
 		this.barColor = barColor;
@@ -39,8 +37,6 @@ public class WGDragDropBar extends WGBox
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();

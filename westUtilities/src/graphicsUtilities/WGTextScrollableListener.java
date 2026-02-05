@@ -109,6 +109,8 @@ public class WGTextScrollableListener implements EventHandler<Event>
      */
     public void setUpScroll(ArrayList<String> text)
     {
+    	double oldTotalArea = totalArea;
+    	double oldScrollY = scrollY;
         seeableArea = parentTextArea.getHeight();
         //Finds the totalArea
         FXFontMetrics textFM = new FXFontMetrics(parentTextArea.getTextFont());
@@ -117,10 +119,21 @@ public class WGTextScrollableListener implements EventHandler<Event>
         totalArea = text.size() * (textFM.getHeight("l")); 
         
         scrollBarHeight = seeableArea / totalArea * seeableArea;
-        scrollY = 0;
-        scrollBarY = 0;
         
         shown = totalArea > seeableArea;
+        
+        if(shown && oldTotalArea > 0)
+        {
+            scrollY = (oldScrollY / oldTotalArea) * totalArea;
+            scrollBarY = (scrollY / totalArea) * (seeableArea);
+            
+        }
+        else
+        {
+        	scrollY = 0;
+        	scrollBarY = 0;
+        }
+        parentTextArea.setStringYOffset(-scrollY);
     }
     
     /**

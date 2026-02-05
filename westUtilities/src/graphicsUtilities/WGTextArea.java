@@ -53,8 +53,6 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         if(getParent() != null)
         {
             resizer = new TextAreaResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
         }
         else
         {
@@ -126,8 +124,6 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         if(getParent() != null)
         {
             resizer = new TextAreaResizeListener(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-            getParent().widthProperty().addListener(resizer.getResizeListener());
-            getParent().heightProperty().addListener(resizer.getResizeListener());
             verticalScroll = new WGTextScrollableListener(this);
             super.setVerticalScrollListener(verticalScroll);
         }
@@ -212,8 +208,6 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
      */
     public void removeListeners()
     {
-        getParent().widthProperty().removeListener(resizer.getResizeListener());
-        getParent().heightProperty().removeListener(resizer.getResizeListener());
         if(getToolTip() != null)
         {
             getToolTip().removeListeners();
@@ -278,7 +272,12 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
     {
         text.removeAll(text);
         textColors.removeAll(textColors);
-        stringYOffset = 0;
+        resizer.resizeComps();
+    }
+    public void removeAllTextButKeepScroll()
+    {
+        text.removeAll(text);
+        textColors.removeAll(textColors);
     }
     
     public String getLongestString()
@@ -481,7 +480,6 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
             {
                 textFont = WGFontHelper.getFittedFontForBox(textFont, getParent(), getWidth() - borderPadding, (double)(getHeight() - borderPadding) / text.size(), getLongestString(), 100);
             }
-            stringYOffset = 0;
 
             //Now fix the colors of this object:
             if(getCurrentTheme() != null && getCurrentTheme().getGradientOrientationPreferences() != null)
