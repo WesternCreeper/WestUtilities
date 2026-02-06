@@ -13,6 +13,7 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 {
 	private Canvas parent;
 	private WGDrawingObject dragObject;
+	private WGToolTip toolTip;
 	private WGBox previousHover;
 	private WGTextInput previousTextInput;
 	private WGKeyInput previousKeyInput;
@@ -60,6 +61,23 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
                     boxObject.setHovered(true);
                 }
                 
+                //For tooltips to show:
+                if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+                {
+                	if(clickObject.getToolTip() != null)
+                	{
+                		//For the original:
+                		if(toolTip != null)
+                		{
+                			toolTip.getClickListener().handle(me);
+                		}
+                		
+                		//Now do the new one:
+                		toolTip = clickObject.getToolTip();
+                		toolTip.getClickListener().handle(me);
+                	}
+                }
+                
 	            //Now for the focusable objects, make sure to defoucus:
 	            if(e.getEventType().equals(MouseEvent.MOUSE_PRESSED))
 	            {
@@ -92,6 +110,17 @@ public class WestGraphicsEventHandler implements EventHandler<Event>
 	            {
 	            	previousHover.setHovered(false);
 	            }
+                
+                //For tooltips to show:
+                if(e.getEventType().equals(MouseEvent.MOUSE_MOVED))
+                {
+            		//For the original:
+            		if(toolTip != null)
+            		{
+            			toolTip.getClickListener().handle(me);
+            			toolTip = null;
+            		}
+                }
 	            
 	            //Now for the focusable objects, make sure to defoucus:
 	            if(e.getEventType().equals(MouseEvent.MOUSE_CLICKED))

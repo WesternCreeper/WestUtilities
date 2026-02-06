@@ -34,7 +34,10 @@ public class FXFontMetrics
     }
     public double stringWidth(FormattedString s) 
     {
+    	Font oldFont = fm.getFont();
+        fm.setFont(s.getFont());
     	fm.setText(s.getText());
+        fm.setFont(oldFont);
         return fm.getLayoutBounds().getWidth();
     }
 
@@ -42,10 +45,13 @@ public class FXFontMetrics
     { 
     	//Find the largest height and return that:
     	int largest = 0;
+    	Font oldFont = fm.getFont();
+        fm.setFont(s.getText().get(largest).getFont());
     	fm.setText(s.getText().get(largest).getText());
     	double largestHeight = fm.getLayoutBounds().getHeight(); 
     	for(int i = 1 ; i < s.getText().size() ; i++)
     	{
+            fm.setFont(s.getText().get(i).getFont());
         	fm.setText(s.getText().get(i).getText());
         	double height = fm.getLayoutBounds().getHeight(); 
     		if(height > largestHeight)
@@ -55,6 +61,7 @@ public class FXFontMetrics
     		}
     	}
     	fm.setText(s.getText().get(largest).getText());
+        fm.setFont(oldFont);
     	return fm.getLayoutBounds().getHeight(); 
     }
     public double stringWidth(ColoredString s) 
