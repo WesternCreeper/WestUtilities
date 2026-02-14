@@ -63,11 +63,11 @@ public class WGTheme implements TextStyles
     private Paint barColor;
     private Font textFont;
     private HashTable gradientOrientationPreferences;
-    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
+    public WGTheme(double borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
     {
         this(borderSize, textStyle, textPosition, textXSizePercent, textYSizePercent, backgroundColor, borderColor, textColor, scrollBarColor, cursorColor, highlightColor, barColor, checkColor, textFont, DEFAULT_PREFERRENCES);
     }
-    public WGTheme(float borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont, HashTable gradientOrientationPreferences)
+    public WGTheme(double borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont, HashTable gradientOrientationPreferences)
     {
         this.textFont = textFont;
         this.textPosition = textPosition;
@@ -202,7 +202,7 @@ public class WGTheme implements TextStyles
     
     
     //Setters:
-    public void setBorderSize(float borderSize) {
+    public void setBorderSize(double borderSize) {
         this.borderSize = borderSize;
     }
 

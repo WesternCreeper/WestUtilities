@@ -2,7 +2,6 @@ package utilities;
 
 
 import graphicsUtilities.ColoredString;
-import graphicsUtilities.FormattedString;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -27,32 +26,19 @@ public class FXFontMetrics
         return fm.getLayoutBounds().getWidth();
     }
 
-    public double getHeight(FormattedString s) 
+    public static double getHeight(ColoredString s) 
     { 
-    	fm.setText(s.getText());
-    	return fm.getLayoutBounds().getHeight(); 
-    }
-    public double stringWidth(FormattedString s) 
-    {
-    	Font oldFont = fm.getFont();
-        fm.setFont(s.getFont());
-    	fm.setText(s.getText());
-        fm.setFont(oldFont);
-        return fm.getLayoutBounds().getWidth();
-    }
-
-    public double getHeight(ColoredString s) 
-    { 
+        Text fm = new Text("");
     	//Find the largest height and return that:
     	int largest = 0;
-    	Font oldFont = fm.getFont();
-        fm.setFont(s.getText().get(largest).getFont());
-    	fm.setText(s.getText().get(largest).getText());
+        fm.setFont(s.getFonts().get(largest));
+    	fm.setText(s.getText().get(largest));
     	double largestHeight = fm.getLayoutBounds().getHeight(); 
+    	//Check the string heights...
     	for(int i = 1 ; i < s.getText().size() ; i++)
     	{
-            fm.setFont(s.getText().get(i).getFont());
-        	fm.setText(s.getText().get(i).getText());
+            fm.setFont(s.getFonts().get(i));
+        	fm.setText(s.getText().get(i));
         	double height = fm.getLayoutBounds().getHeight(); 
     		if(height > largestHeight)
     		{
@@ -60,16 +46,45 @@ public class FXFontMetrics
     			largestHeight = height;
     		}
     	}
-    	fm.setText(s.getText().get(largest).getText());
-        fm.setFont(oldFont);
-    	return fm.getLayoutBounds().getHeight(); 
+    	fm.setText(s.getText().get(largest));
+    	double stringTallest = fm.getLayoutBounds().getHeight();
+    	
+    	//Now check the image heights:
+    	if(s.getImages().size() > 0)
+    	{
+	    	largest = 0;
+	    	largestHeight = s.getImages().get(0).getHeight(); 
+	    	for(int i = 1 ; i < s.getImages().size() ; i++)
+	    	{
+	        	double height = s.getImages().get(i).getHeight(); 
+	    		if(height > largestHeight)
+	    		{
+	    			largest = i;
+	    			largestHeight = height;
+	    		}
+	    	}
+    	}
+    	if(stringTallest > largestHeight)
+    	{
+    		return stringTallest;
+    	}
+    	return largestHeight; 
     }
-    public double stringWidth(ColoredString s) 
+    public static double stringWidth(ColoredString s) 
     {
+        Text fm = new Text("");
     	double totalWidth = 0;
+    	//Add the text width
     	for(int i = 0 ; i < s.getText().size(); i++) 
     	{
-    		totalWidth += stringWidth(s.getText().get(i));
+            fm.setFont(s.getFonts().get(i));
+            fm.setText(s.getText().get(i));
+    		totalWidth += fm.getLayoutBounds().getWidth();
+    	}
+    	//Now add the image widths:
+    	for(int i = 0 ; i < s.getImages().size(); i++) 
+    	{
+    		totalWidth += s.getImages().get(i).getWidth();
     	}
     	return totalWidth;
     }

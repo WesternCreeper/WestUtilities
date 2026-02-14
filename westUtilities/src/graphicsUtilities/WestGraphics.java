@@ -25,6 +25,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import utilities.FXFontMetrics;
 
@@ -1261,38 +1262,48 @@ public class WestGraphics
     	g2.setStroke(rect.getBorderColor());
     	draw(rect.getRectangularArea());
     }
-    public void strokeString(FormattedString str, double x, double y)
-    {
-    	g2.setFont(str.getFont());
-    	g2.strokeText(str.getText(), x, y);
-    }
-    public void fillString(FormattedString str, double x, double y)
-    {
-    	g2.setFont(str.getFont());
-    	g2.fillText(str.getText(), x, y);
-    }
     public void strokeString(ColoredString str, double x, double y)
     {
     	//Go through each of the strings drawing the formatted strings with each color one at a time:
-    	ArrayList<FormattedString> text = str.getText();
+    	ArrayList<String> text = str.getText();
+    	ArrayList<Font> font = str.getFonts();
     	ArrayList<Paint> colors = str.getColors();
     	ArrayList<Double> textOffsets = str.getTextOffsets();
     	for(int i = 0 ; i < text.size(); i++)
     	{
     		g2.setStroke(colors.get(i));
-    		strokeString(text.get(i), x + textOffsets.get(i), y);
+    		g2.setFont(font.get(i));
+    		g2.strokeText(text.get(i), x + textOffsets.get(i), y);
+    	}
+    	
+    	//Now draw each of the images for the string:
+    	ArrayList<Image> images = str.getImages();
+    	ArrayList<Double> imageOffsets = str.getImageOffsets();
+    	for(int i = 0 ; i < images.size() ; i++)
+    	{
+    		g2.drawImage(images.get(i), x + imageOffsets.get(i), y);
     	}
     }
     public void fillString(ColoredString str, double x, double y)
     {
     	//Go through each of the strings drawing the formatted strings with each color one at a time:
-    	ArrayList<FormattedString> text = str.getText();
+    	ArrayList<String> text = str.getText();
+    	ArrayList<Font> font = str.getFonts();
     	ArrayList<Paint> colors = str.getColors();
     	ArrayList<Double> textOffsets = str.getTextOffsets();
     	for(int i = 0 ; i < text.size(); i++)
     	{
     		g2.setFill(colors.get(i));
-    		fillString(text.get(i), x + textOffsets.get(i), y);
+    		g2.setFont(font.get(i));
+    		g2.fillText(text.get(i), x + textOffsets.get(i), y);
+    	}
+    	
+    	//Now draw each of the images for the string:
+    	ArrayList<Image> images = str.getImages();
+    	ArrayList<Double> imageOffsets = str.getImageOffsets();
+    	for(int i = 0 ; i < images.size() ; i++)
+    	{
+    		g2.drawImage(images.get(i), x + imageOffsets.get(i), y);
     	}
     }
 }

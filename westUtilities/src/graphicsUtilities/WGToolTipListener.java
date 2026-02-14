@@ -99,12 +99,12 @@ public class WGToolTipListener extends WGClickListener
         mouseOps(e);
     }
 
-    public void mouseMoved(MouseEvent e)
+    public synchronized void mouseMoved(MouseEvent e)
     {
         mouseOps(e);
     }
     
-    public void mouseOps(MouseEvent e)
+    public synchronized void mouseOps(MouseEvent e)
     {
         if(isWithinBounds(e) && !toolTipObject.getLongestString().isEmpty())
         {

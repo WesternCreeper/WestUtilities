@@ -219,7 +219,7 @@ public class WGToolTip extends WGBox implements TextStyles
     	return obj;
     }
     
-    public String getLongestString()
+    public synchronized String getLongestString()
     {
         if(toolTipText == null || toolTipText.length == 0)
         {

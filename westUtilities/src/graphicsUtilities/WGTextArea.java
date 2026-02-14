@@ -280,7 +280,7 @@ public class WGTextArea extends WGDrawingObject implements TextStyles
         textColors.removeAll(textColors);
     }
     
-    public String getLongestString()
+    public synchronized String getLongestString()
     {
         int large = 0;
         for(int i = 1 ; i < text.size() ; i++)
