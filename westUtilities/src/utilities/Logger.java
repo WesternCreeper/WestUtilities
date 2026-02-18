@@ -4,7 +4,9 @@
  */
 package utilities;
 
+import graphicsUtilities.ColoredString;
 import graphicsUtilities.Console;
+import graphicsUtilities.TextStyles;
 import graphicsUtilities.WGButton;
 import graphicsUtilities.WGButtonListener;
 import graphicsUtilities.WGLabel;
@@ -52,6 +54,7 @@ public class Logger extends Console
     //Display Info variables:
     private final Rectangle2D displayInformationBounds = new Rectangle2D(0, 0, 6/slotSize, 6/slotSize);
     private final String[] displayInformationText = {"Logger v0.2", "Running..."};
+    private Color textColor;
     private final Font displayInformationFont = Font.font("Monospaced", FontWeight.BOLD, FontPosture.REGULAR, 10);
     
     //Error Output variables:
@@ -117,20 +120,21 @@ public class Logger extends Console
         this.backgroundColor = backgroundColor;
         this.passColor = passColor;
         this.failColor = failColor;
+        this.textColor = textColor;
         currentParent = this;
         try
         {
-            standardDisplayInformation = new WGTextArea(displayInformationBounds, borderSize, displayInformationText, displayInformationFont, WGTextArea.TEXT_STYLE_LEFT, textColor, this);
-            errorOutputDisplay = new WGTextArea(errorOutputBounds, borderSize, new String[0], errorOutputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
-            outputDisplay = new WGTextArea(outputBounds, borderSize, new String[0], outputFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
-            errorOutputDisplayLabel = new WGLabel(errorOutputLabelBounds, borderSize, WGLabel.TEXT_STYLE_MIDDLE, "Error Output:", errorOutputFont, textColor, this);
-            outputDisplayLabel = new WGLabel(outputLabelBounds, borderSize, WGLabel.TEXT_STYLE_MIDDLE, "Regular Output:", errorOutputFont, textColor, this);
+            standardDisplayInformation = new WGTextArea(displayInformationBounds, borderSize, displayInformationText, displayInformationFont, TextStyles.TEXT_STYLE_LEFT, textColor, this);
+            errorOutputDisplay = new WGTextArea(errorOutputBounds, borderSize, new String[0], errorOutputFont, TextStyles.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
+            outputDisplay = new WGTextArea(outputBounds, borderSize, new String[0], outputFont, TextStyles.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
+            errorOutputDisplayLabel = new WGLabel(errorOutputLabelBounds, borderSize, TextStyles.TEXT_STYLE_MIDDLE, "Error Output:", errorOutputFont, textColor, this);
+            outputDisplayLabel = new WGLabel(outputLabelBounds, borderSize, TextStyles.TEXT_STYLE_MIDDLE, "Regular Output:", errorOutputFont, textColor, this);
         
             switchToLogsButton = new WGButton(switchToLogsBounds, borderSize, "Logs", switchToLogsFont, backgroundColor, borderColor, textColor, this, new SwitchToLogsListener());
             switchToUnitTestsButton = new WGButton(switchToUnitTestsBounds, borderSize, "Tests", switchToUnitTestsFont, backgroundColor, borderColor, textColor, this, new SwitchToUnitTestsListener());
         
-            unitTestDisplayLabel = new WGLabel(unitTestDisplayLabelBounds, borderSize, WGLabel.TEXT_STYLE_LEFT, "Unit Tests:", unitTestDisplayFont, textColor, this);
-            unitTestDisplay = new WGTextArea(unitTestDisplayBounds, borderSize, new String[0], unitTestDisplayFont, WGTextArea.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
+            unitTestDisplayLabel = new WGLabel(unitTestDisplayLabelBounds, borderSize, TextStyles.TEXT_STYLE_LEFT, "Unit Tests:", unitTestDisplayFont, textColor, this);
+            unitTestDisplay = new WGTextArea(unitTestDisplayBounds, borderSize, new String[0], unitTestDisplayFont, TextStyles.TEXT_STYLE_LEFT, true, textColor, scrollbarColor, this);
         }
         catch(WGNullParentException e) {} //This should NEVER happen
         
@@ -221,11 +225,11 @@ public class Logger extends Console
         String errorMessage = e.getLocalizedMessage();
         if(errorMessage != null)
         {
-            errorOutputDisplay.addTextLine(errorMessage);
+            errorOutputDisplay.addTextLine(new ColoredString(errorMessage, outputFont, textColor));
         }
         else
         {
-        errorOutputDisplay.addTextLine("Error Detected. Check the Error File for more information");
+        errorOutputDisplay.addTextLine(new ColoredString("Error Detected. Check the Error File for more information", outputFont, textColor));
         }
         
         try
@@ -270,7 +274,7 @@ public class Logger extends Console
             
             fileWritenTo = true;
         }
-        outputDisplay.addTextLine(message);
+        outputDisplay.addTextLine(new ColoredString(message, outputFont, textColor));
         if(outputWriterClosed)
         {
             try
@@ -313,7 +317,7 @@ public class Logger extends Console
         {
             textColor = failColor;
         }
-        unitTestDisplay.addTextLine(test.toString(), textColor);
+        unitTestDisplay.addTextLine(new ColoredString(test.toString(), outputFont, textColor));
     }
     
     public final void testUnitTest(String title, String expectedResult, String result)
@@ -340,7 +344,7 @@ public class Logger extends Console
             {
                 runningTick = 0;
             }
-            standardDisplayInformation.setTextLine(1, runningText);
+            standardDisplayInformation.setTextLine(1, new ColoredString(runningText, outputFont, textColor));
             draw();
         }
     }

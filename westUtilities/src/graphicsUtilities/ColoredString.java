@@ -17,6 +17,16 @@ public class ColoredString
 	private ArrayList<String> text;
 	private ArrayList<Font> fonts;
 	
+	public ColoredString()
+	{
+		textOffsets = new ArrayList<Double>();
+		colors = new ArrayList<Paint>();
+		this.text = new ArrayList<String>();
+		this.fonts = new ArrayList<Font>();
+		this.images = new ArrayList<Image>();
+		this.imageOffsets = new ArrayList<Double>();
+	}
+	
 	public ColoredString(ColoredString str)
 	{
 		textOffsets = new ArrayList<Double>();
@@ -61,7 +71,7 @@ public class ColoredString
 		//Add the string to the correct formatted string.
 		if(index >= 0 && index < text.size())
 		{
-			text.get(index).concat(formatString(str));
+			text.set(index, text.get(index).concat(formatString(str)));
 		}
 	}
 	public void addString(String str, Font font, Paint color)
@@ -140,6 +150,14 @@ public class ColoredString
 			}
 		}
 		return str;
+	}
+
+	public void setFont(Font font) 
+	{
+		for(int i = 0 ; i < fonts.size(); i++) 
+		{
+			fonts.set(i, font);
+		}
 	}
 	
 	

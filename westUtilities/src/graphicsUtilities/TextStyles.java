@@ -11,9 +11,9 @@ package graphicsUtilities;
  * 
  * NOTE: This is internal and specific to the package so this is NOT for use outside of this package!
  */
-interface TextStyles 
+public enum TextStyles 
 {
-    public static final int TEXT_STYLE_LEFT = 0;
-    public static final int TEXT_STYLE_MIDDLE = 1;
-    public static final int TEXT_STYLE_RIGHT = 2;
+    TEXT_STYLE_LEFT,
+    TEXT_STYLE_MIDDLE,
+    TEXT_STYLE_RIGHT;
 }

@@ -17,14 +17,14 @@ import utilities.FXFontMetrics;
  *
  * @author Westley
  */
-public class WGToolTip extends WGBox implements TextStyles
+public class WGToolTip extends WGBox
 {
     private String[] toolTipText;
     private Font toolTipFont;
     private WGToolTipListener toolTipListener;
     private Paint textColor;
     private double longestStringWidth = 0;
-    private int textStyle = 0;
+    private TextStyles textStyle;
     private boolean autoResizeText = true;
     /**
      * This creates a basic tooltip with a string given to it. This will turn that string into multiple lines of strings if newLine characters are in the original string
@@ -78,7 +78,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, double borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, double borderSize, TextStyles textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         this(widthPercent, heightPercent, borderSize, text, textFont, backgroundColor, borderColor, textColor, parent, listener, toolTipOwner);
         this.textStyle = textStyle;
@@ -117,7 +117,7 @@ public class WGToolTip extends WGBox implements TextStyles
      * @param toolTipOwner The owner of this toolTip, aka the object that this toolTip is locked to
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, double borderSize, int textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
+    public WGToolTip(double widthPercent, double heightPercent, boolean autoResizeText, double borderSize, TextStyles textStyle, String text, Font textFont, Paint backgroundColor, Paint borderColor, Paint textColor, Canvas parent, WGToolTipListener listener, WGDrawingObject toolTipOwner) throws WGNullParentException
     {
         super(borderSize, backgroundColor, backgroundColor, borderColor, parent);
         this.autoResizeText = autoResizeText;
@@ -261,7 +261,7 @@ public class WGToolTip extends WGBox implements TextStyles
         resizer.resizeComps();
     }
 
-    public void setTextStyle(int textStyle) {
+    public void setTextStyle(TextStyles textStyle) {
         this.textStyle = textStyle;
         resizer.resizeComps();
     }
@@ -284,7 +284,7 @@ public class WGToolTip extends WGBox implements TextStyles
         return longestStringWidth;
     }
 
-    public int getTextStyle() {
+    public TextStyles getTextStyle() {
         return textStyle;
     }
 

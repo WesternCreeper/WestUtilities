@@ -16,7 +16,7 @@ import javafx.scene.text.Font;
  * Basically think of this class like a theme on a web page, there are certain key components that are shared, like color, font type, font style, etc.
  * There is an additional constructor here that allows for a WGTheme, use this if you want to make another theme based on an old one
  */
-public class WGTheme implements TextStyles
+public class WGTheme
 {
     public static final String TEXT_FONT = "Text Font";
     public static final String TEXT_POSITION = "Text Position";
@@ -45,7 +45,7 @@ public class WGTheme implements TextStyles
         DEFAULT_PREFERRENCES.insert(TEXT_COLOR, WGDrawingObject.VERTICAL_GRADIENT_ORIENTATION_PREFERENCE);
     }
     
-    private int textStyle;
+    private TextStyles textStyle;
     private int textPosition;
     private double textXSizePercent;
     private double textYSizePercent;
@@ -63,11 +63,11 @@ public class WGTheme implements TextStyles
     private Paint barColor;
     private Font textFont;
     private HashTable gradientOrientationPreferences;
-    public WGTheme(double borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
+    public WGTheme(double borderSize, TextStyles textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont)
     {
         this(borderSize, textStyle, textPosition, textXSizePercent, textYSizePercent, backgroundColor, borderColor, textColor, scrollBarColor, cursorColor, highlightColor, barColor, checkColor, textFont, DEFAULT_PREFERRENCES);
     }
-    public WGTheme(double borderSize, int textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont, HashTable gradientOrientationPreferences)
+    public WGTheme(double borderSize, TextStyles textStyle, int textPosition, double textXSizePercent, double textYSizePercent, Paint backgroundColor, Paint borderColor, Paint textColor, Paint scrollBarColor, Paint cursorColor, Paint highlightColor, Paint barColor, Paint checkColor, Font textFont, HashTable gradientOrientationPreferences)
     {
         this.textFont = textFont;
         this.textPosition = textPosition;
@@ -91,7 +91,7 @@ public class WGTheme implements TextStyles
         this.textPosition = toInt(themeData.find(WGTheme.TEXT_POSITION));
         this.textXSizePercent = toDouble(themeData.find(WGTheme.TEXT_X_SIZE_PERCENT));
         this.textYSizePercent = toDouble(themeData.find(WGTheme.TEXT_Y_SIZE_PERCENT));
-        this.textStyle = toInt(themeData.find(WGTheme.TEXT_STYLE));
+        this.textStyle = (TextStyles)themeData.find(WGTheme.TEXT_STYLE);
         this.borderSize = toDouble(themeData.find(WGTheme.BORDER_SIZE));
         this.backgroundColor = toPaint(themeData.find(WGTheme.BACKGROUND_COLOR));
         this.borderColor = toPaint(themeData.find(WGTheme.BORDER_COLOR));
@@ -238,7 +238,7 @@ public class WGTheme implements TextStyles
         this.barColor = barColor;
     }
 
-    public void setTextStyle(int textStyle) {
+    public void setTextStyle(TextStyles textStyle) {
         this.textStyle = textStyle;
     }
 
@@ -312,7 +312,7 @@ public class WGTheme implements TextStyles
         return barColor;
     }
 
-    public int getTextStyle() {
+    public TextStyles getTextStyle() {
         return textStyle;
     }
 

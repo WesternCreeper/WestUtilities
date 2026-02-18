@@ -62,6 +62,49 @@ public class WGFontHelper
         return newFont;
     }
     /**
+     * This function returns a new Font that is the same as the original font given, but it can now fit the box that is created with the height and width variables given. 
+     * Essentially this means that you will get a font that can 100% fit into a box of the given size no matter where it is on the screen (As long as you use this font and not the old one)
+     * This is an exact formula, therefore it will take longer than the original one that used approximations 
+     * @param originalFont The original font that determines the fontName and fontStyle (see java.awt.font for more information)
+     * @param parent The component that the text is being drawn on. This is use to create FontMetrics that allow for the font to fit in the box
+     * @param boxWidth The width of the box that this font is going into
+     * @param boxHeight The height of the box that this font is going into
+     * @param text The text that is being drawn in the box
+     * @param maxSize The absolute maximum size of the text, this is used to have a starting point to determine if the font will fit or not.
+     * @return
+     */
+    public static void getFittedFontForBox(Canvas parent, double boxWidth, double boxHeight, ColoredString text, int maxSize)
+    {
+        int minimumSize = 1;
+        int maximumSize = maxSize;
+        int currentSize;
+        Font newFont;
+        while(true)
+        {
+            currentSize = (int)((minimumSize + maximumSize) /2.0);
+            newFont = generateFont(text.getFonts().get(0), currentSize);
+            text.setFont(newFont);
+            if(FXFontMetrics.getHeight(text) >= boxHeight || FXFontMetrics.stringWidth(text) >= boxWidth)
+            {
+                maximumSize = currentSize;
+            }
+            else if(FXFontMetrics.getHeight(text) < boxHeight || FXFontMetrics.stringWidth(text) < boxWidth)
+            {
+                minimumSize = currentSize;
+            }
+            if(minimumSize == maximumSize)
+            {
+                break;
+            }
+            else if(minimumSize+1 == maximumSize)
+            {
+                newFont = generateFont(text.getFonts().get(0), minimumSize);
+                text.setFont(newFont);
+                break;
+            }
+        }
+    }
+    /**
      * This function returns a new Font that is the same as the original font given, but it can now fit the box that is created with the width variables given. 
      * Essentially this means that you will get a font that can 100% fit into a box of the given size no matter where it is on the screen (As long as you use this font and not the old one)
      * This is an exact formula, therefore it will take longer than the original one that used approximations 
@@ -102,6 +145,49 @@ public class WGFontHelper
             }
         }
         return newFont;
+    }
+    /**
+     * This function returns a new Font that is the same as the original font given, but it can now fit the box that is created with the height and width variables given. 
+     * Essentially this means that you will get a font that can 100% fit into a box of the given size no matter where it is on the screen (As long as you use this font and not the old one)
+     * This is an exact formula, therefore it will take longer than the original one that used approximations 
+     * @param originalFont The original font that determines the fontName and fontStyle (see java.awt.font for more information)
+     * @param parent The component that the text is being drawn on. This is use to create FontMetrics that allow for the font to fit in the box
+     * @param boxWidth The width of the box that this font is going into
+     * @param boxHeight The height of the box that this font is going into
+     * @param text The text that is being drawn in the box
+     * @param maxSize The absolute maximum size of the text, this is used to have a starting point to determine if the font will fit or not.
+     * @return
+     */
+    public static void getFittedFontForWidth(Canvas parent, double boxWidth, ColoredString text, int maxSize)
+    {
+        int minimumSize = 1;
+        int maximumSize = maxSize;
+        int currentSize;
+        Font newFont;
+        while(true)
+        {
+            currentSize = (int)((minimumSize + maximumSize) /2.0);
+            newFont = generateFont(text.getFonts().get(0), currentSize);
+            text.setFont(newFont);
+            if(FXFontMetrics.stringWidth(text) >= boxWidth)
+            {
+                maximumSize = currentSize;
+            }
+            else if(FXFontMetrics.stringWidth(text) < boxWidth)
+            {
+                minimumSize = currentSize;
+            }
+            if(minimumSize == maximumSize)
+            {
+                break;
+            }
+            else if(minimumSize+1 == maximumSize)
+            {
+                newFont = generateFont(text.getFonts().get(0), minimumSize);
+                text.setFont(newFont);
+                break;
+            }
+        }
     }
     /**
      * This function returns a new Font that is the same as the original font given, but it can now fit the box that is created with the height variables given. 

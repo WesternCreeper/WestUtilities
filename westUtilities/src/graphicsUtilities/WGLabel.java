@@ -14,12 +14,12 @@ import javafx.scene.text.Font;
  * This is a simple component that just has a text inside of box that isn't drawn. That's it, nothing else interesting to note here
  * @author Westley
  */
-public class WGLabel extends WGDrawingObject implements TextStyles
+public class WGLabel extends WGDrawingObject
 {
     private String text;
     private Font textFont;
     private Paint textColor;
-    private int textStyle = 0;
+    private TextStyles textStyle;
     
     /**
      * This sets up a label, which resets its font size to fit the box created by the percents given
@@ -32,7 +32,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(Rectangle2D bounds, double borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGLabel(Rectangle2D bounds, double borderSize, TextStyles textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         super(0, 0, 0, 0, borderSize, parent);
         this.text = text;
@@ -64,7 +64,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
      * @param parent The component that the button is on, and is used to determine how big this object is
      * @throws WGNullParentException If the parent is non-existent, as in the parent is supplied as null, then this object cannot construct and will throw this exception
      */
-    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, int textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
+    public WGLabel(double xPercent, double yPercent, double widthPercent, double heightPercent, double borderSize, TextStyles textStyle, String text, Font textFont, Paint textColor, Canvas parent) throws WGNullParentException
     {
         this(new Rectangle2D(xPercent, yPercent, widthPercent, heightPercent), borderSize, textStyle, text, textFont, textColor, parent);
     }
@@ -153,7 +153,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         this.textColor = textColor;
     }
 
-    public void setTextStyle(int textStyle) {
+    public void setTextStyle(TextStyles textStyle) {
         this.textStyle = textStyle;
     }
     
@@ -171,7 +171,7 @@ public class WGLabel extends WGDrawingObject implements TextStyles
         return textColor;
     }
 
-    public int getTextStyle() {
+    public TextStyles getTextStyle() {
         return textStyle;
     }
     

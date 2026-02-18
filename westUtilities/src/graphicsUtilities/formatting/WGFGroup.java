@@ -1,5 +1,6 @@
 package graphicsUtilities.formatting;
 
+import graphicsUtilities.WGNullParentException;
 import graphicsUtilities.WGPane;
 
 public abstract class WGFGroup 
@@ -12,7 +13,9 @@ public abstract class WGFGroup
 	
 	
 	//Methods:
-	public abstract void setUp(Object... parameters);
+	public abstract void setUp(Object... parameters) throws WGNullParentException;
+	
+	public abstract void update(Object... parameters);
 	
 	
 	//Setters:

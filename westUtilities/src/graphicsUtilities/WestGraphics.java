@@ -8,6 +8,7 @@ import dataStructures.HashTable;
 import dataStructures.Queue;
 import dataStructures.WGObjectBoundList;
 import dataStructures.WGObjectBoundNode;
+import graphicsUtilities.formatting.WGFGroup;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -242,6 +243,14 @@ public class WestGraphics
             //Draw the overlay accordingly:
             drawOverlay(obj.getOverlay(), obj);
         }
+    }
+    /**
+     * Draws the given WGFGroup based on internal functions
+     * @param obj The group of objects to be drawn
+     */
+    public void draw(WGFGroup group)
+    {
+    	draw(group.getComponentHolder());
     }
     
     /**
@@ -588,7 +597,7 @@ public class WestGraphics
         g2.setFill(toolTip.getTextColor());
         FXFontMetrics textFM = new FXFontMetrics(toolTip.getToolTipFont());
         double textX = toolTip.getX();
-        if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
+        if(toolTip.getTextStyle() == TextStyles.TEXT_STYLE_LEFT)
         {
             textX = toolTip.getX() + toolTip.getBorderSize();
         }
@@ -597,11 +606,11 @@ public class WestGraphics
         String[] text = toolTip.getToolTipText();
         for(int i = 0 ; i < text.length ; i++)
         {
-            if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+            if(toolTip.getTextStyle() == TextStyles.TEXT_STYLE_MIDDLE)
             {
                 textX = toolTip.getX() + ((toolTip.getWidth() - textFM.stringWidth(text[i])) / 2);
             }
-            else if(toolTip.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+            else if(toolTip.getTextStyle() == TextStyles.TEXT_STYLE_RIGHT)
             {
                 textX = toolTip.getX() + toolTip.getWidth() - toolTip.getBorderSize() - textFM.stringWidth(text[i]);
             }
@@ -796,11 +805,11 @@ public class WestGraphics
         double textY = label.getY() + label.getBorderSize();
         g2.setFont(label.getTextFont());
         
-        if(label.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+        if(label.getTextStyle() == TextStyles.TEXT_STYLE_MIDDLE)
         {
             textX = label.getX() + ((label.getWidth() - textFM.stringWidth(label.getText())) / 2);
         }
-        else if(label.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+        else if(label.getTextStyle() == TextStyles.TEXT_STYLE_RIGHT)
         {
             textX = label.getX() + label.getWidth() - textFM.stringWidth(label.getText());
         }
@@ -887,27 +896,23 @@ public class WestGraphics
         g2.clip();
         
         //Draw the text:
-        FXFontMetrics textFM = new FXFontMetrics(textArea.getTextFont());
         double textX = textArea.getX();
         double textY = textArea.getY() + textArea.getBorderSize();
         
-        if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_LEFT)
+        if(textArea.getTextStyle() == TextStyles.TEXT_STYLE_LEFT)
         {
             textX = textArea.getX() + textArea.getBorderSize();
         }
         
-        g2.setFont(textArea.getTextFont());
-        ArrayList<String> allText = null;
+        ArrayList<ColoredString> allText = null;
         ArrayList<Paint> allTextColors;
         if(textArea.isTextWrapped())
         {
             allText = textArea.getFormatedText();
-            allTextColors = textArea.getFormatedColors();
         }
         else
         {
             allText = textArea.getText();
-            allTextColors = textArea.getTextColors();
         }
         if(allText != null)
         {
@@ -919,18 +924,17 @@ public class WestGraphics
 	        textY += textArea.getStringYOffset();
 	        for(int i = 0 ; i < allText.size() ; i++)
 	        {
-	            if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_MIDDLE)
+	            if(textArea.getTextStyle() == TextStyles.TEXT_STYLE_MIDDLE)
 	            {
-	                textX = textArea.getX() + ((textArea.getWidth() - textFM.stringWidth(allText.get(i))) / 2);
+	                textX = textArea.getX() + ((textArea.getWidth() - FXFontMetrics.stringWidth(allText.get(i))) / 2);
 	            }
-	            else if(textArea.getTextStyle() == WGToolTip.TEXT_STYLE_RIGHT)
+	            else if(textArea.getTextStyle() == TextStyles.TEXT_STYLE_RIGHT)
 	            {
-	                double stringWidth = textFM.stringWidth(allText.get(i));
+	                double stringWidth = FXFontMetrics.stringWidth(allText.get(i));
 	                textX = textArea.getX() + textArea.getWidth() - stringWidth - textArea.getBorderSize();
 	            }
-	            g2.setFill(allTextColors.get(i));
-	            g2.fillText(allText.get(i), textX, textY);
-	            textY += textFM.getHeight(allText.get(i));
+	            fillString(allText.get(i), textX, textY);
+	            textY += FXFontMetrics.getHeight(allText.get(i));
 	        }
         }
         

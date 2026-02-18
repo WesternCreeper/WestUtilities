@@ -107,16 +107,19 @@ public class WGTextScrollableListener implements EventHandler<Event>
      * Sets up the scrollBar based on the given information:
      * @param text The array of strings that are on the TextArea
      */
-    public void setUpScroll(ArrayList<String> text)
+    public void setUpScroll(ArrayList<ColoredString> text)
     {
     	double oldTotalArea = totalArea;
     	double oldScrollY = scrollY;
         seeableArea = parentTextArea.getHeight();
         //Finds the totalArea
-        FXFontMetrics textFM = new FXFontMetrics(parentTextArea.getTextFont());
         
-        //The addition of descent is entirely redundent. However, it guarentees that the text shown does not have tails going off the page (Such as the letters "p", "g", etc.)
-        totalArea = text.size() * (textFM.getHeight("l")); 
+        //Add up the height of each line
+        totalArea = 0.0; 
+        for(int i = 0 ; i < text.size(); i++) 
+        {
+        	totalArea += FXFontMetrics.getHeight(text.get(i));
+        }
         
         scrollBarHeight = seeableArea / totalArea * seeableArea;
         
